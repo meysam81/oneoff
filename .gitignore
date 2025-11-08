@@ -28,5 +28,30 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Binary output
+oneoff
+bin/
+dist/
+
+# Frontend
+node_modules/
+.cache/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

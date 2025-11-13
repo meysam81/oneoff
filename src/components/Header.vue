@@ -67,9 +67,11 @@ const refreshData = async () => {
 }
 
 onMounted(() => {
-  // Refresh every 5 seconds
   const interval = setInterval(refreshData, 5000)
-  return () => clearInterval(interval)
+})
+
+onUnmounted(() => {
+  clearInterval(interval)
 })
 </script>
 

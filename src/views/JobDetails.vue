@@ -24,7 +24,7 @@
               <n-button
                 v-if="job.status === 'scheduled' || job.status === 'running'"
                 type="error"
-                @click="cancel Job"
+                @click="cancelJob"
               >
                 Cancel
               </n-button>

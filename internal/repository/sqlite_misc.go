@@ -299,7 +299,7 @@ func (r *SQLiteRepository) RemoveJobTags(ctx context.Context, jobID string, tagI
 	return err
 }
 
-func (r *SQLiteRepository) GetJobTags(ctx context.Context, jobID string) ([]*domain.Tag, error) {
+func (r *SQLiteRepository) GetJobTags(ctx context.Context, jobID string) ([]domain.Tag, error) {
 	query := `
 		SELECT t.id, t.name, t.color, t.is_default, t.created_at
 		FROM tags t
@@ -314,9 +314,9 @@ func (r *SQLiteRepository) GetJobTags(ctx context.Context, jobID string) ([]*dom
 	}
 	defer rows.Close()
 
-	var tags []*domain.Tag
+	var tags []domain.Tag
 	for rows.Next() {
-		tag := &domain.Tag{}
+		tag := domain.Tag{}
 		var createdAt string
 
 		err := rows.Scan(&tag.ID, &tag.Name, &tag.Color, &tag.IsDefault, &createdAt)

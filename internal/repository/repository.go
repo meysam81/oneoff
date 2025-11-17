@@ -43,7 +43,7 @@ type Repository interface {
 	// Job-Tag operations
 	AddJobTags(ctx context.Context, jobID string, tagIDs []string) error
 	RemoveJobTags(ctx context.Context, jobID string, tagIDs []string) error
-	GetJobTags(ctx context.Context, jobID string) ([]*domain.Tag, error)
+	GetJobTags(ctx context.Context, jobID string) ([]domain.Tag, error)
 
 	// Chain operations
 	CreateChain(ctx context.Context, chain *domain.JobChain) error

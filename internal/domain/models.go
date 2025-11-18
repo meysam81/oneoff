@@ -105,7 +105,8 @@ type CreateJobRequest struct {
 	Name        string   `json:"name"`
 	Type        string   `json:"type"`
 	Config      string   `json:"config"`
-	ScheduledAt string   `json:"scheduled_at"` // ISO8601 format
+	ScheduledAt string   `json:"scheduled_at,omitempty"`
+	Immediate   bool     `json:"immediate,omitempty"`
 	Priority    int      `json:"priority,omitempty"`
 	ProjectID   string   `json:"project_id,omitempty"`
 	Timezone    string   `json:"timezone,omitempty"`

@@ -28,23 +28,31 @@ func NewJobService(repo repository.Repository, registry *domain.JobRegistry, poo
 
 // CreateJob creates a new job
 func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest) (*domain.Job, error) {
-	// Validate job type
 	if _, err := s.registry.Create(req.Type, req.Config); err != nil {
 		return nil, fmt.Errorf("invalid job type or config: %w", err)
 	}
 
-	// Parse scheduled time
-	scheduledAt, err := time.Parse(time.RFC3339, req.ScheduledAt)
-	if err != nil {
-		return nil, fmt.Errorf("invalid scheduled_at format (use RFC3339): %w", err)
+	var scheduledAt time.Time
+
+	if req.Immediate {
+		scheduledAt = time.Now().UTC()
+	} else {
+		if req.ScheduledAt == "" {
+			return nil, fmt.Errorf("scheduled_at is required when immediate is false")
+		}
+
+		parsed, err := time.Parse(time.RFC3339, req.ScheduledAt)
+		if err != nil {
+			return nil, fmt.Errorf("invalid scheduled_at format (use RFC3339): %w", err)
+		}
+
+		if parsed.Before(time.Now().UTC()) {
+			return nil, domain.ErrInvalidScheduleTime
+		}
+
+		scheduledAt = parsed.UTC()
 	}
 
-	// Validate schedule time is in the future
-	if scheduledAt.Before(time.Now().UTC()) {
-		return nil, domain.ErrInvalidScheduleTime
-	}
-
-	// Set defaults
 	priority := req.Priority
 	if priority == 0 {
 		priority = 5
@@ -58,7 +66,6 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 		projectID = "default"
 	}
 
-	// Verify project exists
 	if _, err := s.repo.GetProject(ctx, projectID); err != nil {
 		return nil, fmt.Errorf("project not found: %w", err)
 	}
@@ -68,12 +75,11 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 		timezone = "UTC"
 	}
 
-	// Create job
 	job := &domain.Job{
 		Name:        req.Name,
 		Type:        req.Type,
 		Config:      req.Config,
-		ScheduledAt: scheduledAt.UTC(),
+		ScheduledAt: scheduledAt,
 		Priority:    priority,
 		ProjectID:   projectID,
 		Timezone:    timezone,
@@ -84,7 +90,6 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 		return nil, fmt.Errorf("failed to create job: %w", err)
 	}
 
-	// Load tags
 	tags, _ := s.repo.GetJobTags(ctx, job.ID)
 	job.Tags = tags
 

@@ -73,11 +73,16 @@
     </n-form>
 
     <template #footer>
-      <n-space justify="end">
+      <n-space justify="space-between">
         <n-button @click="visible = false">Cancel</n-button>
-        <n-button type="primary" :loading="loading" @click="handleSubmit">
-          Create Job
-        </n-button>
+        <n-space>
+          <n-button :loading="loading" @click="handleSubmit">
+            Schedule Job
+          </n-button>
+          <n-button type="primary" :loading="loading" @click="handleExecuteNow">
+            Execute Now
+          </n-button>
+        </n-space>
       </n-space>
     </template>
   </n-modal>
@@ -163,21 +168,45 @@ const handleSubmit = async () => {
     await formRef.value?.validate();
 
     const config = JSON.stringify(jobConfig.value);
-    const scheduled_at = new Date(scheduledTimestamp.value).toISOString();
 
     const payload = {
       ...formValue.value,
       config,
-      scheduled_at,
+      immediate: false,
+      scheduled_at: new Date(scheduledTimestamp.value).toISOString(),
     };
 
     loading.value = true;
     await jobsStore.createJob(payload);
-    message.success("Job created successfully");
+    message.success("Job scheduled successfully");
     visible.value = false;
     resetForm();
   } catch (error) {
     message.error(error.message || "Failed to create job");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleExecuteNow = async () => {
+  try {
+    await formRef.value?.validate();
+
+    const config = JSON.stringify(jobConfig.value);
+
+    const payload = {
+      ...formValue.value,
+      config,
+      immediate: true,
+    };
+
+    loading.value = true;
+    await jobsStore.createJob(payload);
+    message.success("Job executed successfully");
+    visible.value = false;
+    resetForm();
+  } catch (error) {
+    message.error(error.message || "Failed to execute job");
   } finally {
     loading.value = false;
   }

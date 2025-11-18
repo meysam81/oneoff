@@ -89,17 +89,26 @@
           <n-progress
             type="line"
             :percentage="workerUsagePercent"
-            :status="workerUsagePercent > 80 ? 'error' : workerUsagePercent > 50 ? 'warning' : 'success'"
+            :status="
+              workerUsagePercent > 80
+                ? 'error'
+                : workerUsagePercent > 50
+                  ? 'warning'
+                  : 'success'
+            "
           >
-            Workers: {{ workerStatus?.active_workers || 0 }} / {{ workerStatus?.total_workers || 0 }}
+            Workers: {{ workerStatus?.active_workers || 0 }} /
+            {{ workerStatus?.total_workers || 0 }}
           </n-progress>
 
           <n-text v-if="workerStatus?.running_jobs?.length">
-            <strong>Running:</strong> {{ workerStatus.running_jobs.length }} jobs
+            <strong>Running:</strong>
+            {{ workerStatus.running_jobs.length }} jobs
           </n-text>
 
           <n-text>
-            <strong>Queue:</strong> {{ workerStatus?.queued_jobs || 0 }} jobs waiting
+            <strong>Queue:</strong> {{ workerStatus?.queued_jobs || 0 }} jobs
+            waiting
           </n-text>
         </n-space>
       </n-card>
@@ -111,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from "vue";
 import {
   TimeOutline,
   PlayCircleOutline,
@@ -120,32 +129,32 @@ import {
   AddOutline,
   ListOutline,
   BarChartOutline,
-} from '@vicons/ionicons5'
-import { useSystemStore } from '../stores/system'
-import { useJobsStore } from '../stores/jobs'
-import JobsTable from '../components/JobsTable.vue'
-import CreateJobModal from '../components/CreateJobModal.vue'
+} from "@vicons/ionicons5";
+import { useSystemStore } from "../stores/system";
+import { useJobsStore } from "../stores/jobs";
+import JobsTable from "../components/JobsTable.vue";
+import CreateJobModal from "../components/CreateJobModal.vue";
 
-const systemStore = useSystemStore()
-const jobsStore = useJobsStore()
+const systemStore = useSystemStore();
+const jobsStore = useJobsStore();
 
-const showCreateJobModal = ref(false)
+const showCreateJobModal = ref(false);
 
-const stats = computed(() => systemStore.stats)
-const workerStatus = computed(() => systemStore.workerStatus)
-const scheduledJobs = computed(() => jobsStore.scheduledJobs.slice(0, 10))
-const loading = computed(() => jobsStore.loading)
+const stats = computed(() => systemStore.stats);
+const workerStatus = computed(() => systemStore.workerStatus);
+const scheduledJobs = computed(() => jobsStore.scheduledJobs.slice(0, 10));
+const loading = computed(() => jobsStore.loading);
 
 const workerUsagePercent = computed(() => {
-  const active = workerStatus.value?.active_workers || 0
-  const total = workerStatus.value?.total_workers || 1
-  return Math.round((active / total) * 100)
-})
+  const active = workerStatus.value?.active_workers || 0;
+  const total = workerStatus.value?.total_workers || 1;
+  return Math.round((active / total) * 100);
+});
 
 onMounted(async () => {
-  await systemStore.initializeApp()
-  await jobsStore.fetchJobs({ limit: 20, status: 'scheduled' })
-})
+  await systemStore.initializeApp();
+  await jobsStore.fetchJobs({ limit: 20, status: "scheduled" });
+});
 </script>
 
 <style scoped>

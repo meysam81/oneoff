@@ -17,61 +17,61 @@
 </template>
 
 <script setup>
-import { computed, h } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { NIcon } from 'naive-ui'
+import { computed, h } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { NIcon } from "naive-ui";
 import {
   HomeOutline,
   TimeOutline,
   ListOutline,
   FolderOutline,
   SettingsOutline,
-} from '@vicons/ionicons5'
+} from "@vicons/ionicons5";
 
 const props = defineProps({
   collapsed: Boolean,
-})
+});
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
-const currentRoute = computed(() => route.name)
+const currentRoute = computed(() => route.name);
 
 const renderIcon = (icon) => {
-  return () => h(NIcon, null, { default: () => h(icon) })
-}
+  return () => h(NIcon, null, { default: () => h(icon) });
+};
 
 const menuOptions = [
   {
-    label: 'Dashboard',
-    key: 'Dashboard',
+    label: "Dashboard",
+    key: "Dashboard",
     icon: renderIcon(HomeOutline),
   },
   {
-    label: 'Jobs',
-    key: 'Jobs',
+    label: "Jobs",
+    key: "Jobs",
     icon: renderIcon(TimeOutline),
   },
   {
-    label: 'Executions',
-    key: 'Executions',
+    label: "Executions",
+    key: "Executions",
     icon: renderIcon(ListOutline),
   },
   {
-    label: 'Projects',
-    key: 'Projects',
+    label: "Projects",
+    key: "Projects",
     icon: renderIcon(FolderOutline),
   },
   {
-    label: 'Settings',
-    key: 'Settings',
+    label: "Settings",
+    key: "Settings",
     icon: renderIcon(SettingsOutline),
   },
-]
+];
 
 const handleMenuSelect = (key) => {
-  router.push({ name: key })
-}
+  router.push({ name: key });
+};
 </script>
 
 <style scoped>

@@ -52,15 +52,15 @@ func (h *Handler) GetJob(w http.ResponseWriter, r *http.Request) {
 // ListJobs handles GET /api/jobs
 func (h *Handler) ListJobs(w http.ResponseWriter, r *http.Request) {
 	filter := domain.JobFilter{
-		ProjectID:  getQueryString(r, "project_id"),
-		Status:     domain.JobStatus(getQueryString(r, "status")),
-		JobType:    getQueryString(r, "type"),
-		Search:     getQueryString(r, "search"),
-		TagIDs:     getQueryStrings(r, "tag_id"),
-		Limit:      getQueryInt(r, "limit", 50),
-		Offset:     getQueryInt(r, "offset", 0),
-		SortBy:     getQueryString(r, "sort_by"),
-		SortOrder:  getQueryString(r, "sort_order"),
+		ProjectID: getQueryString(r, "project_id"),
+		Status:    domain.JobStatus(getQueryString(r, "status")),
+		JobType:   getQueryString(r, "type"),
+		Search:    getQueryString(r, "search"),
+		TagIDs:    getQueryStrings(r, "tag_id"),
+		Limit:     getQueryInt(r, "limit", 50),
+		Offset:    getQueryInt(r, "offset", 0),
+		SortBy:    getQueryString(r, "sort_by"),
+		SortOrder: getQueryString(r, "sort_order"),
 	}
 
 	// Parse time filters

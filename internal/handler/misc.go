@@ -30,14 +30,14 @@ func (h *Handler) GetExecution(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ListExecutions(w http.ResponseWriter, r *http.Request) {
 	filter := domain.ExecutionFilter{
-		JobID:      getQueryString(r, "job_id"),
-		Status:     domain.ExecutionStatus(getQueryString(r, "status")),
-		ProjectID:  getQueryString(r, "project_id"),
-		TagIDs:     getQueryStrings(r, "tag_id"),
-		Limit:      getQueryInt(r, "limit", 50),
-		Offset:     getQueryInt(r, "offset", 0),
-		SortBy:     getQueryString(r, "sort_by"),
-		SortOrder:  getQueryString(r, "sort_order"),
+		JobID:     getQueryString(r, "job_id"),
+		Status:    domain.ExecutionStatus(getQueryString(r, "status")),
+		ProjectID: getQueryString(r, "project_id"),
+		TagIDs:    getQueryStrings(r, "tag_id"),
+		Limit:     getQueryInt(r, "limit", 50),
+		Offset:    getQueryInt(r, "offset", 0),
+		SortBy:    getQueryString(r, "sort_by"),
+		SortOrder: getQueryString(r, "sort_order"),
 	}
 
 	if dateFrom := getQueryString(r, "date_from"); dateFrom != "" {

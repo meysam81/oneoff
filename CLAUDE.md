@@ -28,6 +28,7 @@ This document provides comprehensive guidance for AI assistants working on the O
 **OneOff** is a self-hosted, developer-focused job scheduler for executing one-time tasks at specific future times. Think "Linux `at` command meets modern web UI" with a plugin-based architecture.
 
 ### Core Features
+
 - Single binary deployment with embedded Vue 3 frontend
 - SQLite database with automatic migrations
 - Multiple job types: HTTP requests, shell scripts, Docker containers
@@ -37,6 +38,7 @@ This document provides comprehensive guidance for AI assistants working on the O
 - Job chaining for sequential execution
 
 ### Key Design Goals
+
 1. **Zero Dependencies**: Everything bundled into one executable
 2. **Easy Deployment**: No external database or complex setup
 3. **Developer-Friendly**: Clean API, modern UI, extensible architecture
@@ -49,6 +51,7 @@ This document provides comprehensive guidance for AI assistants working on the O
 ### Backend Architecture (Go)
 
 #### 1. Layered Architecture
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  HTTP Handlers (internal/handler/)              │
@@ -77,12 +80,14 @@ This document provides comprehensive guidance for AI assistants working on the O
 ```
 
 #### 2. Domain-Driven Design
+
 - **Domain Models** (`internal/domain/models.go`): Core business entities
 - **Domain Interfaces** (`internal/domain/job.go`): Contracts for job executors
 - **Domain Errors** (`internal/domain/errors.go`): Business rule violations
 - **Repository Interface** (`internal/domain/repository.go`): Data access contract
 
 #### 3. Plugin Architecture (Job Registry)
+
 ```go
 // Job types are registered via factory pattern
 type JobExecutor interface {
@@ -98,6 +103,7 @@ registry.Register("docker", jobs.NewDockerJobFactory())
 ```
 
 #### 4. Worker Pool Pattern
+
 - Configurable number of workers (default: CPU cores / 2)
 - Job scheduler polls database every 5 seconds
 - Jobs dispatched to workers via buffered channel
@@ -105,6 +111,7 @@ registry.Register("docker", jobs.NewDockerJobFactory())
 - Graceful shutdown with context cancellation
 
 #### 5. Embedded Frontend
+
 ```go
 //go:embed dist/*
 var staticFiles embed.FS
@@ -116,6 +123,7 @@ http.FileServer(http.FS(distFS))
 ### Frontend Architecture (Vue 3)
 
 #### 1. Component Hierarchy
+
 ```
 App.vue (root layout)
 ├── Sidebar.vue (navigation)
@@ -133,10 +141,12 @@ App.vue (root layout)
 ```
 
 #### 2. State Management (Pinia)
+
 - **jobs.js**: Job list, current job, filters, CRUD operations
 - **system.js**: System stats, worker status, configuration
 
 #### 3. API Client Architecture
+
 ```javascript
 // Centralized API client with retry logic
 const api = ky.create({
@@ -244,14 +254,14 @@ src/
 
 ### Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `go.mod` | Go module dependencies |
-| `package.json` | Node.js dependencies and scripts |
+| File             | Purpose                                             |
+| ---------------- | --------------------------------------------------- |
+| `go.mod`         | Go module dependencies                              |
+| `package.json`   | Node.js dependencies and scripts                    |
 | `vite.config.js` | Vite build config (output: `internal/server/dist/`) |
-| `.env.example` | Environment variable template |
-| `Makefile` | Build automation and dev commands |
-| `migrations/` | Database schema migrations |
+| `.env.example`   | Environment variable template                       |
+| `Makefile`       | Build automation and dev commands                   |
+| `migrations/`    | Database schema migrations                          |
 
 ---
 
@@ -259,28 +269,28 @@ src/
 
 ### Backend (Go 1.23+)
 
-| Package | Purpose | Notes |
-|---------|---------|-------|
-| `urfave/cli/v3` | CLI framework | Command-line interface and flags |
-| `caarlos0/env/v11` | Config parsing | 12-factor app pattern, env vars |
-| `mattn/go-sqlite3` | SQLite driver | CGO required for compilation |
-| `golang-migrate/migrate/v4` | Schema migrations | Automatic migration on startup |
-| `rs/zerolog` | Structured logging | JSON logging, leveled output |
-| `imroc/req/v3` | HTTP client | Retry logic for HTTP jobs |
-| Standard library | HTTP server, context, sync | No external web framework |
+| Package                     | Purpose                    | Notes                            |
+| --------------------------- | -------------------------- | -------------------------------- |
+| `urfave/cli/v3`             | CLI framework              | Command-line interface and flags |
+| `caarlos0/env/v11`          | Config parsing             | 12-factor app pattern, env vars  |
+| `mattn/go-sqlite3`          | SQLite driver              | CGO required for compilation     |
+| `golang-migrate/migrate/v4` | Schema migrations          | Automatic migration on startup   |
+| `rs/zerolog`                | Structured logging         | JSON logging, leveled output     |
+| `imroc/req/v3`              | HTTP client                | Retry logic for HTTP jobs        |
+| Standard library            | HTTP server, context, sync | No external web framework        |
 
 ### Frontend (Vue 3 + Vite)
 
-| Package | Purpose | Notes |
-|---------|---------|-------|
-| `vue@^3.5` | Framework | Composition API, SFCs |
-| `vue-router@^4.5` | Routing | SPA navigation |
-| `pinia@^2.3` | State management | Vue store |
-| `naive-ui@^2.40` | UI components | Tree-shakable, dark theme |
-| `ky@^1.7` | HTTP client | Lightweight, retry logic |
-| `date-fns@^4.1` | Date utilities | Date formatting and manipulation |
-| `@vicons/ionicons5` | Icons | Icon components |
-| `vite@^6.0` | Build tool | Fast HMR, optimized bundling |
+| Package             | Purpose          | Notes                            |
+| ------------------- | ---------------- | -------------------------------- |
+| `vue@^3.5`          | Framework        | Composition API, SFCs            |
+| `vue-router@^4.5`   | Routing          | SPA navigation                   |
+| `pinia@^2.3`        | State management | Vue store                        |
+| `naive-ui@^2.40`    | UI components    | Tree-shakable, dark theme        |
+| `ky@^1.7`           | HTTP client      | Lightweight, retry logic         |
+| `date-fns@^4.1`     | Date utilities   | Date formatting and manipulation |
+| `@vicons/ionicons5` | Icons            | Icon components                  |
+| `vite@^6.0`         | Build tool       | Fast HMR, optimized bundling     |
 
 ---
 
@@ -321,7 +331,7 @@ go build -o oneoff ./cmd/oneoff
 make dev
 
 # Run frontend with hot reload (separate terminal)
-npm run dev
+bun run dev
 # Access Vite dev server at http://localhost:5173
 # API calls proxy to http://localhost:8080
 
@@ -381,6 +391,7 @@ ENVIRONMENT=production       # Environment name
 ### Go Conventions
 
 #### 1. Error Handling
+
 ```go
 // Always wrap errors with context
 if err != nil {
@@ -400,6 +411,7 @@ var (
 ```
 
 #### 2. Context Propagation
+
 ```go
 // Always accept context as first parameter
 func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest) (*domain.Job, error) {
@@ -411,6 +423,7 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 ```
 
 #### 3. Struct Initialization
+
 ```go
 // Use designated initializers for clarity
 job := &domain.Job{
@@ -424,6 +437,7 @@ job := &domain.Job{
 ```
 
 #### 4. JSON Handling
+
 ```go
 // Use struct tags for JSON marshaling
 type Job struct {
@@ -441,6 +455,7 @@ type JobExecution struct {
 ```
 
 #### 5. Repository Pattern
+
 ```go
 // Define interfaces in domain package
 type Repository interface {
@@ -460,6 +475,7 @@ func (r *SQLiteRepository) CreateJob(ctx context.Context, job *Job, tagIDs []str
 ```
 
 #### 6. Service Layer Pattern
+
 ```go
 // Services orchestrate business logic
 type JobService struct {
@@ -489,29 +505,31 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 ### Vue 3 Conventions
 
 #### 1. Composition API
+
 ```vue
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useJobsStore } from '@/stores/jobs'
+import { ref, computed, onMounted } from "vue";
+import { useJobsStore } from "@/stores/jobs";
 
 // Use stores
-const jobsStore = useJobsStore()
+const jobsStore = useJobsStore();
 
 // Reactive state
-const loading = ref(false)
-const selectedJob = ref(null)
+const loading = ref(false);
+const selectedJob = ref(null);
 
 // Computed properties
-const hasJobs = computed(() => jobsStore.jobs.length > 0)
+const hasJobs = computed(() => jobsStore.jobs.length > 0);
 
 // Lifecycle
 onMounted(async () => {
-  await jobsStore.fetchJobs()
-})
+  await jobsStore.fetchJobs();
+});
 </script>
 ```
 
 #### 2. Component Structure
+
 ```vue
 <!-- Template -->
 <template>
@@ -541,70 +559,75 @@ onMounted(async () => {
 ```
 
 #### 3. Pinia Store Pattern
-```javascript
-import { defineStore } from 'pinia'
-import { jobsAPI } from '@/utils/api'
 
-export const useJobsStore = defineStore('jobs', {
+```javascript
+import { defineStore } from "pinia";
+import { jobsAPI } from "@/utils/api";
+
+export const useJobsStore = defineStore("jobs", {
   state: () => ({
     jobs: [],
     currentJob: null,
     loading: false,
-    error: null
+    error: null,
   }),
 
   getters: {
-    scheduledJobs: (state) => state.jobs.filter(j => j.status === 'scheduled')
+    scheduledJobs: (state) =>
+      state.jobs.filter((j) => j.status === "scheduled"),
   },
 
   actions: {
     async fetchJobs() {
-      this.loading = true
+      this.loading = true;
       try {
-        this.jobs = await jobsAPI.list()
+        this.jobs = await jobsAPI.list();
       } catch (error) {
-        this.error = error.message
+        this.error = error.message;
       } finally {
-        this.loading = false
+        this.loading = false;
       }
-    }
-  }
-})
+    },
+  },
+});
 ```
 
 #### 4. API Client Pattern
+
 ```javascript
-import ky from 'ky'
+import ky from "ky";
 
 const api = ky.create({
-  prefixUrl: '/api',
+  prefixUrl: "/api",
   timeout: 30000,
-  retry: { limit: 2 }
-})
+  retry: { limit: 2 },
+});
 
 export const jobsAPI = {
-  list: async (params) => await api.get('jobs', { searchParams: params }).json(),
+  list: async (params) =>
+    await api.get("jobs", { searchParams: params }).json(),
   get: async (id) => await api.get(`jobs/${id}`).json(),
-  create: async (data) => await api.post('jobs', { json: data }).json(),
-  update: async (id, data) => await api.patch(`jobs/${id}`, { json: data }).json(),
-  delete: async (id) => await api.delete(`jobs/${id}`)
-}
+  create: async (data) => await api.post("jobs", { json: data }).json(),
+  update: async (id, data) =>
+    await api.patch(`jobs/${id}`, { json: data }).json(),
+  delete: async (id) => await api.delete(`jobs/${id}`),
+};
 ```
 
 ### Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Go packages | lowercase, single word | `handler`, `service`, `repository` |
-| Go types | PascalCase | `JobService`, `JobExecutor` |
-| Go interfaces | PascalCase, often ends in -er | `Repository`, `JobExecutor` |
-| Go functions | PascalCase (exported), camelCase (private) | `CreateJob()`, `validateInput()` |
-| Go constants | PascalCase or SCREAMING_SNAKE_CASE | `JobStatusScheduled`, `DEFAULT_PRIORITY` |
-| Vue components | PascalCase | `CreateJobModal.vue`, `JobsTable.vue` |
-| Vue files | PascalCase for components, lowercase for utils | `Dashboard.vue`, `api.js` |
-| Pinia stores | camelCase with "use" prefix | `useJobsStore`, `useSystemStore` |
-| JavaScript functions | camelCase | `fetchJobs()`, `formatDate()` |
-| CSS classes | kebab-case | `.job-container`, `.status-badge` |
+| Type                 | Convention                                     | Example                                  |
+| -------------------- | ---------------------------------------------- | ---------------------------------------- |
+| Go packages          | lowercase, single word                         | `handler`, `service`, `repository`       |
+| Go types             | PascalCase                                     | `JobService`, `JobExecutor`              |
+| Go interfaces        | PascalCase, often ends in -er                  | `Repository`, `JobExecutor`              |
+| Go functions         | PascalCase (exported), camelCase (private)     | `CreateJob()`, `validateInput()`         |
+| Go constants         | PascalCase or SCREAMING_SNAKE_CASE             | `JobStatusScheduled`, `DEFAULT_PRIORITY` |
+| Vue components       | PascalCase                                     | `CreateJobModal.vue`, `JobsTable.vue`    |
+| Vue files            | PascalCase for components, lowercase for utils | `Dashboard.vue`, `api.js`                |
+| Pinia stores         | camelCase with "use" prefix                    | `useJobsStore`, `useSystemStore`         |
+| JavaScript functions | camelCase                                      | `fetchJobs()`, `formatDate()`            |
+| CSS classes          | kebab-case                                     | `.job-container`, `.status-badge`        |
 
 ---
 
@@ -613,6 +636,7 @@ export const jobsAPI = {
 ### Adding a New Job Type
 
 1. **Create job executor** (`internal/jobs/newtype.go`):
+
 ```go
 package jobs
 
@@ -659,6 +683,7 @@ func NewNewTypeJobFactory() domain.JobFactory {
 ```
 
 2. **Register in server** (`internal/server/server.go`):
+
 ```go
 registry := domain.NewJobRegistry()
 registry.Register("http", jobs.NewHTTPJobFactory())
@@ -668,6 +693,7 @@ registry.Register("newtype", jobs.NewNewTypeJobFactory())  // Add here
 ```
 
 3. **Create Vue config component** (`src/components/job-configs/NewTypeConfig.vue`):
+
 ```vue
 <template>
   <n-form-item label="Field 1" required>
@@ -679,19 +705,23 @@ registry.Register("newtype", jobs.NewNewTypeJobFactory())  // Add here
 </template>
 
 <script setup>
-import { defineProps, defineEmits, watch } from 'vue'
+import { defineProps, defineEmits, watch } from "vue";
 
 const props = defineProps({
-  modelValue: Object
-})
+  modelValue: Object,
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const config = props.modelValue || { field1: '', field2: 0 }
+const config = props.modelValue || { field1: "", field2: 0 };
 
-watch(config, (newVal) => {
-  emit('update:modelValue', newVal)
-}, { deep: true })
+watch(
+  config,
+  (newVal) => {
+    emit("update:modelValue", newVal);
+  },
+  { deep: true },
+);
 </script>
 ```
 
@@ -700,6 +730,7 @@ watch(config, (newVal) => {
 ### Adding a New API Endpoint
 
 1. **Add handler method** (`internal/handler/job.go` or new file):
+
 ```go
 func (h *Handler) HandleNewEndpoint(w http.ResponseWriter, r *http.Request) {
     ctx := r.Context()
@@ -724,16 +755,18 @@ func (h *Handler) HandleNewEndpoint(w http.ResponseWriter, r *http.Request) {
 ```
 
 2. **Register route** (`internal/server/server.go`):
+
 ```go
 router.HandleFunc("POST /api/something", handler.HandleNewEndpoint)
 ```
 
 3. **Add API client function** (`src/utils/api.js`):
+
 ```javascript
 export const someAPI = {
   doSomething: async (data) =>
-    await api.post('something', { json: data }).json()
-}
+    await api.post("something", { json: data }).json(),
+};
 ```
 
 4. **Use in Vue component/store**
@@ -741,6 +774,7 @@ export const someAPI = {
 ### Adding a Database Migration
 
 1. **Create migration files**:
+
 ```bash
 # Up migration
 cat > migrations/000002_add_new_table.up.sql << 'EOF'
@@ -758,6 +792,7 @@ EOF
 ```
 
 2. **Run migration**:
+
 ```bash
 ./oneoff migrate --direction up
 ```
@@ -769,6 +804,7 @@ EOF
 ## Testing Strategy
 
 ### Current State
+
 - **No tests implemented yet** (test infrastructure needs to be added)
 - Go testing framework is standard `testing` package
 - Consider using `testify` for assertions and mocking
@@ -778,6 +814,7 @@ EOF
 #### Backend Testing
 
 1. **Unit Tests**
+
 ```go
 // internal/service/job_service_test.go
 package service_test
@@ -815,6 +852,7 @@ func TestJobService_CreateJob(t *testing.T) {
 ```
 
 2. **Integration Tests**
+
 ```go
 // internal/repository/sqlite_test.go
 func TestSQLiteRepository_CreateAndGetJob(t *testing.T) {
@@ -829,6 +867,7 @@ func TestSQLiteRepository_CreateAndGetJob(t *testing.T) {
 ```
 
 3. **Handler Tests**
+
 ```go
 // internal/handler/job_test.go
 func TestHandler_CreateJob(t *testing.T) {
@@ -840,38 +879,44 @@ func TestHandler_CreateJob(t *testing.T) {
 #### Frontend Testing
 
 1. **Component Tests** (with Vitest)
+
 ```javascript
 // src/components/__tests__/JobsTable.spec.js
-import { mount } from '@vue/test-utils'
-import JobsTable from '../JobsTable.vue'
+import { mount } from "@vue/test-utils";
+import JobsTable from "../JobsTable.vue";
 
-describe('JobsTable', () => {
-  it('renders job rows', () => {
+describe("JobsTable", () => {
+  it("renders job rows", () => {
     const wrapper = mount(JobsTable, {
-      props: { jobs: [/* test data */] }
-    })
-    expect(wrapper.findAll('.job-row')).toHaveLength(1)
-  })
-})
+      props: {
+        jobs: [
+          /* test data */
+        ],
+      },
+    });
+    expect(wrapper.findAll(".job-row")).toHaveLength(1);
+  });
+});
 ```
 
 2. **Store Tests**
+
 ```javascript
 // src/stores/__tests__/jobs.spec.js
-import { setActivePinia, createPinia } from 'pinia'
-import { useJobsStore } from '../jobs'
+import { setActivePinia, createPinia } from "pinia";
+import { useJobsStore } from "../jobs";
 
-describe('Jobs Store', () => {
+describe("Jobs Store", () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
-  })
+    setActivePinia(createPinia());
+  });
 
-  it('fetches jobs', async () => {
-    const store = useJobsStore()
-    await store.fetchJobs()
-    expect(store.jobs).toBeDefined()
-  })
-})
+  it("fetches jobs", async () => {
+    const store = useJobsStore();
+    await store.fetchJobs();
+    expect(store.jobs).toBeDefined();
+  });
+});
 ```
 
 ---
@@ -883,6 +928,7 @@ describe('Jobs Store', () => {
 1. **SQL Injection Prevention**
    - Always use parameterized queries
    - Never concatenate user input into SQL strings
+
    ```go
    // GOOD
    db.QueryContext(ctx, "SELECT * FROM jobs WHERE id = ?", jobID)
@@ -970,12 +1016,14 @@ describe('Jobs Store', () => {
 #### 1. Build Failures
 
 **Problem**: `go build` fails with SQLite errors
+
 ```
 # github.com/mattn/go-sqlite3
 cgo: C compiler not found
 ```
 
 **Solution**: Install GCC/build tools
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install build-essential
@@ -989,25 +1037,29 @@ apk add gcc musl-dev
 
 #### 2. Frontend Build Issues
 
-**Problem**: `npm run build` fails
+**Problem**: `bun run build` fails
+
 ```
 ENOENT: no such file or directory, mkdir 'internal/server/dist'
 ```
 
 **Solution**: Ensure parent directories exist
+
 ```bash
 mkdir -p internal/server/dist
-npm run build
+bun run build
 ```
 
 #### 3. Migration Failures
 
 **Problem**: Migrations fail on startup
+
 ```
 migration failed: table already exists
 ```
 
 **Solution**: Check database schema version
+
 ```bash
 # Remove database and start fresh (dev only!)
 rm oneoff.db oneoff.db-shm oneoff.db-wal
@@ -1019,6 +1071,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 **Problem**: Jobs stay in "scheduled" status
 
 **Checklist**:
+
 - Check worker pool is running: `GET /api/workers/status`
 - Verify scheduled time is in the past
 - Check worker logs for errors
@@ -1029,6 +1082,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 **Problem**: API calls fail with 404
 
 **Solutions**:
+
 - Check server is running on correct port
 - Verify Vite proxy configuration in `vite.config.js`
 - Check CORS settings in `internal/server/server.go`
@@ -1037,20 +1091,23 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 ### Development Tips
 
 1. **Use Development Mode**
+
    ```bash
    # Terminal 1: Backend with hot reload
    make dev
 
    # Terminal 2: Frontend with hot reload
-   npm run dev
+   bun run dev
    ```
 
 2. **Enable Debug Logging**
+
    ```bash
    LOG_LEVEL=debug ./oneoff
    ```
 
 3. **Inspect Database**
+
    ```bash
    sqlite3 oneoff.db
    .schema  # Show schema
@@ -1059,6 +1116,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
    ```
 
 4. **Test API Endpoints**
+
    ```bash
    # List jobs
    curl http://localhost:8080/api/jobs
@@ -1098,21 +1156,21 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 ### File Locations
 
-| What | Where |
-|------|-------|
-| Entry point | `cmd/oneoff/main.go` (needs to be created) |
-| Server setup | `internal/server/server.go` |
-| HTTP handlers | `internal/handler/*.go` |
-| Business logic | `internal/service/*.go` |
-| Database | `internal/repository/*.go` |
-| Job executors | `internal/jobs/*.go` |
-| Domain models | `internal/domain/*.go` |
-| Migrations | `migrations/*.sql` |
-| Frontend entry | `src/main.js` |
-| Vue components | `src/components/*.vue` |
-| Vue pages | `src/views/*.vue` |
-| API client | `src/utils/api.js` |
-| Stores | `src/stores/*.js` |
+| What           | Where                                      |
+| -------------- | ------------------------------------------ |
+| Entry point    | `cmd/oneoff/main.go` (needs to be created) |
+| Server setup   | `internal/server/server.go`                |
+| HTTP handlers  | `internal/handler/*.go`                    |
+| Business logic | `internal/service/*.go`                    |
+| Database       | `internal/repository/*.go`                 |
+| Job executors  | `internal/jobs/*.go`                       |
+| Domain models  | `internal/domain/*.go`                     |
+| Migrations     | `migrations/*.sql`                         |
+| Frontend entry | `src/main.js`                              |
+| Vue components | `src/components/*.vue`                     |
+| Vue pages      | `src/views/*.vue`                          |
+| API client     | `src/utils/api.js`                         |
+| Stores         | `src/stores/*.js`                          |
 
 ### Key Commands
 
@@ -1120,7 +1178,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 make setup      # First-time setup
 make build      # Production build
 make dev        # Development mode (backend)
-npm run dev     # Development mode (frontend)
+bun run dev     # Development mode (frontend)
 make test       # Run tests
 make clean      # Clean artifacts
 ./oneoff        # Run application

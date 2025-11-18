@@ -18,7 +18,11 @@
             </n-layout-sider>
 
             <n-layout>
-              <n-layout-header v-if="!isLoginPage" bordered style="height: 64px; padding: 0 24px">
+              <n-layout-header
+                v-if="!isLoginPage"
+                bordered
+                style="height: 64px; padding: 0 24px"
+              >
                 <Header />
               </n-layout-header>
 
@@ -34,16 +38,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { darkTheme } from 'naive-ui'
-import { useRoute } from 'vue-router'
-import Sidebar from './components/Sidebar.vue'
-import Header from './components/Header.vue'
+import { ref, computed } from "vue";
+import { darkTheme } from "naive-ui";
+import { useRoute } from "vue-router";
+import Sidebar from "./components/Sidebar.vue";
+import Header from "./components/Header.vue";
 
-const collapsed = ref(false)
-const route = useRoute()
+const collapsed = ref(false);
+const route = useRoute();
 
-const isLoginPage = computed(() => route.path === '/login')
+const isLoginPage = computed(() => route.path === "/login");
 </script>
 
 <style>
@@ -54,7 +58,9 @@ const isLoginPage = computed(() => route.path === '/login')
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -65,6 +71,6 @@ body {
 }
 
 code {
-  font-family: 'SF Mono', Monaco, Consolas, 'Courier New', monospace;
+  font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
 }
 </style>

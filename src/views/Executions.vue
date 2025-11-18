@@ -7,5 +7,5 @@
 </template>
 
 <script setup>
-import ExecutionsList from '../components/ExecutionsList.vue'
+import ExecutionsList from "../components/ExecutionsList.vue";
 </script>

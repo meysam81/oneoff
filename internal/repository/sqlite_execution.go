@@ -143,7 +143,7 @@ func (r *SQLiteRepository) ListExecutions(ctx context.Context, filter domain.Exe
 	if err != nil {
 		return nil, fmt.Errorf("failed to list executions: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var executions []*domain.JobExecution
 	for rows.Next() {

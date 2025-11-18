@@ -85,12 +85,12 @@ func ParseHTTPJobConfig(config string) (*HTTPJobConfig, error) {
 
 // ShellJobConfig represents configuration for shell script jobs
 type ShellJobConfig struct {
-	Script  string   `json:"script"`      // Script content or path
-	Args    []string `json:"args,omitempty"`
+	Script  string            `json:"script"` // Script content or path
+	Args    []string          `json:"args,omitempty"`
 	Env     map[string]string `json:"env,omitempty"`
-	WorkDir string   `json:"workdir,omitempty"`
-	Timeout int      `json:"timeout,omitempty"` // seconds
-	IsPath  bool     `json:"is_path,omitempty"` // true if script is a file path
+	WorkDir string            `json:"workdir,omitempty"`
+	Timeout int               `json:"timeout,omitempty"` // seconds
+	IsPath  bool              `json:"is_path,omitempty"` // true if script is a file path
 }
 
 // ParseShellJobConfig parses shell job configuration from JSON

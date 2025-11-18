@@ -310,14 +310,14 @@ func spaHandler(fsys fs.FS) http.Handler {
 				http.Error(w, "index.html not found", http.StatusNotFound)
 				return
 			}
-			defer indexFile.Close()
+			defer func() { _ = indexFile.Close() }()
 
 			// Read and serve index.html
 			stat, _ := indexFile.Stat()
 			http.ServeContent(w, r, "index.html", stat.ModTime(), indexFile.(io.ReadSeeker))
 			return
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 
 		// Check if it's a directory
 		stat, err := file.Stat()
@@ -333,7 +333,7 @@ func spaHandler(fsys fs.FS) http.Handler {
 				http.Error(w, "index.html not found", http.StatusNotFound)
 				return
 			}
-			defer indexFile.Close()
+			defer func() { _ = indexFile.Close() }()
 
 			indexStat, _ := indexFile.Stat()
 			http.ServeContent(w, r, "index.html", indexStat.ModTime(), indexFile.(io.ReadSeeker))
@@ -406,5 +406,5 @@ func servePlaceholder(w http.ResponseWriter, r *http.Request) {
 </html>
 	`
 	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(html))
+	_, _ = w.Write([]byte(html))
 }

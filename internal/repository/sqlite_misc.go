@@ -58,7 +58,7 @@ func (r *SQLiteRepository) ListProjects(ctx context.Context, includeArchived boo
 	if err != nil {
 		return nil, fmt.Errorf("failed to list projects: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var projects []*domain.Project
 	for rows.Next() {
@@ -200,7 +200,7 @@ func (r *SQLiteRepository) ListTags(ctx context.Context) ([]*domain.Tag, error) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to list tags: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var tags []*domain.Tag
 	for rows.Next() {
@@ -312,7 +312,7 @@ func (r *SQLiteRepository) GetJobTags(ctx context.Context, jobID string) ([]doma
 	if err != nil {
 		return nil, fmt.Errorf("failed to get job tags: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var tags []domain.Tag
 	for rows.Next() {
@@ -338,7 +338,7 @@ func (r *SQLiteRepository) CreateChain(ctx context.Context, chain *domain.JobCha
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	// Create chain
 	err = tx.QueryRow(`
@@ -388,7 +388,7 @@ func (r *SQLiteRepository) GetChain(ctx context.Context, id string) (*domain.Job
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chain links: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		link := domain.JobChainLink{ChainID: id}
@@ -413,7 +413,7 @@ func (r *SQLiteRepository) ListChains(ctx context.Context, projectID string) ([]
 	if err != nil {
 		return nil, fmt.Errorf("failed to list chains: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var chains []*domain.JobChain
 	for rows.Next() {
@@ -482,7 +482,7 @@ func (r *SQLiteRepository) ListConfig(ctx context.Context) ([]*domain.SystemConf
 	if err != nil {
 		return nil, fmt.Errorf("failed to list config: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var configs []*domain.SystemConfig
 	for rows.Next() {
@@ -507,31 +507,31 @@ func (r *SQLiteRepository) GetSystemStats(ctx context.Context) (*domain.SystemSt
 	stats := &domain.SystemStats{}
 
 	// Total scheduled
-	r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE status = 'scheduled'").Scan(&stats.TotalScheduled)
+	_ = r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE status = 'scheduled'").Scan(&stats.TotalScheduled)
 
 	// Currently running
-	r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE status = 'running'").Scan(&stats.CurrentlyRunning)
+	_ = r.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM jobs WHERE status = 'running'").Scan(&stats.CurrentlyRunning)
 
 	// Completed today
-	r.db.QueryRowContext(ctx, `
+	_ = r.db.QueryRowContext(ctx, `
 		SELECT COUNT(*) FROM job_executions
 		WHERE status = 'completed' AND DATE(started_at) = DATE('now', 'utc')
 	`).Scan(&stats.CompletedToday)
 
 	// Failed recent (last 24 hours)
-	r.db.QueryRowContext(ctx, `
+	_ = r.db.QueryRowContext(ctx, `
 		SELECT COUNT(*) FROM job_executions
 		WHERE status = 'failed' AND started_at >= datetime('now', '-1 day', 'utc')
 	`).Scan(&stats.FailedRecent)
 
 	// Average duration
-	r.db.QueryRowContext(ctx, `
+	_ = r.db.QueryRowContext(ctx, `
 		SELECT COALESCE(AVG(duration_ms), 0) FROM job_executions
 		WHERE status = 'completed' AND duration_ms IS NOT NULL
 	`).Scan(&stats.AvgDurationMs)
 
 	// Queue depth (scheduled jobs in the past that haven't run yet)
-	r.db.QueryRowContext(ctx, `
+	_ = r.db.QueryRowContext(ctx, `
 		SELECT COUNT(*) FROM jobs
 		WHERE status = 'scheduled' AND scheduled_at <= datetime('now', 'utc')
 	`).Scan(&stats.QueueDepth)
@@ -554,7 +554,7 @@ func (r *SQLiteRepository) GetScheduledJobs(ctx context.Context, before time.Tim
 	if err != nil {
 		return nil, fmt.Errorf("failed to get scheduled jobs: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var jobs []*domain.Job
 	for rows.Next() {
@@ -601,7 +601,7 @@ func (r *SQLiteRepository) WithTransaction(ctx context.Context, fn func(Reposito
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	txRepo := &SQLiteRepository{db: r.db} // In a real implementation, you'd wrap the tx
 	if err := fn(txRepo); err != nil {

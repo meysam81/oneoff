@@ -1,7 +1,10 @@
 <template>
   <n-space vertical>
     <n-form-item label="URL">
-      <n-input v-model:value="config.url" placeholder="https://api.example.com/endpoint" />
+      <n-input
+        v-model:value="config.url"
+        placeholder="https://api.example.com/endpoint"
+      />
     </n-form-item>
 
     <n-form-item label="Method">
@@ -33,41 +36,45 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
 const props = defineProps({
   modelValue: Object,
-})
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
 const config = ref({
-  url: '',
-  method: 'GET',
+  url: "",
+  method: "GET",
   headers: {},
-  body: '',
+  body: "",
   timeout: 30,
-})
+});
 
-const headersJson = ref('{}')
+const headersJson = ref("{}");
 
 const methodOptions = [
-  { label: 'GET', value: 'GET' },
-  { label: 'POST', value: 'POST' },
-  { label: 'PUT', value: 'PUT' },
-  { label: 'PATCH', value: 'PATCH' },
-  { label: 'DELETE', value: 'DELETE' },
-]
+  { label: "GET", value: "GET" },
+  { label: "POST", value: "POST" },
+  { label: "PUT", value: "PUT" },
+  { label: "PATCH", value: "PATCH" },
+  { label: "DELETE", value: "DELETE" },
+];
 
 watch(headersJson, (val) => {
   try {
-    config.value.headers = JSON.parse(val)
+    config.value.headers = JSON.parse(val);
   } catch (e) {
     // Invalid JSON, ignore
   }
-})
+});
 
-watch(config, (val) => {
-  emit('update:modelValue', val)
-}, { deep: true })
+watch(
+  config,
+  (val) => {
+    emit("update:modelValue", val);
+  },
+  { deep: true },
+);
 </script>

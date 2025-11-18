@@ -8,8 +8,12 @@ build: frontend
 run: build
 	./oneoff
 
+dev-frontend:
+	@echo "Starting frontend in development mode..."
+	bun start
+
 dev:
-	go run ./cmd/oneoff
+	air
 
 clean:
 	rm -f oneoff

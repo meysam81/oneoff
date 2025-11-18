@@ -1,7 +1,8 @@
 import ky from "ky";
+import { API_BASE_URL } from "@/config.js";
 
 const api = ky.create({
-  prefixUrl: "/api",
+  prefixUrl: API_BASE_URL,
   timeout: 30000,
   retry: {
     limit: 2,

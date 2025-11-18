@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { RefreshOutline, ServerOutline } from "@vicons/ionicons5";
 import { useSystemStore } from "../stores/system";

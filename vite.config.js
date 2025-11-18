@@ -10,6 +10,11 @@ export default defineConfig({
       threshold: 1024,
     }),
   ],
+  resolve: {
+    alias: {
+      "@/": "/src/",
+    },
+  },
   build: {
     outDir: "internal/server/dist",
     emptyOutDir: true,
@@ -26,6 +31,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
   },
   server: {
+    port: 3000,
+    host: true,
     proxy: {
       "/api": {
         target: "http://localhost:8080",

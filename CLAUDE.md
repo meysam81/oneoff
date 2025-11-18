@@ -727,6 +727,36 @@ watch(
 
 4. **Update CreateJobModal** to include new config component
 
+### Special Scheduled Time Value: "now"
+
+The job scheduler supports a special value `"now"` for the `scheduled_at` field, which allows immediate execution of jobs without requiring a future timestamp.
+
+**Backend Handling**:
+
+- In `CreateJob` and `UpdateJob` service methods, check if `scheduled_at == "now"`
+- If "now", set `scheduledAt = time.Now().UTC()`
+- Skip the future time validation for "now" value
+- Otherwise, parse as RFC3339 and validate as usual
+
+**Frontend Implementation**:
+
+- Add "Execute immediately" checkbox in CreateJobModal
+- When checked, send `scheduled_at: "now"` instead of timestamp
+- Hide date picker when immediate execution is selected
+
+**Example API Request**:
+
+```json
+{
+  "name": "Immediate Job",
+  "type": "http",
+  "config": "{...}",
+  "scheduled_at": "now",
+  "priority": 5,
+  "project_id": "default"
+}
+```
+
 ### Adding a New API Endpoint
 
 1. **Add handler method** (`internal/handler/job.go` or new file):

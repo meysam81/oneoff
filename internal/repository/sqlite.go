@@ -47,7 +47,7 @@ func (r *SQLiteRepository) CreateJob(ctx context.Context, job *domain.Job, tagID
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	query := `
 		INSERT INTO jobs (name, type, config, scheduled_at, priority, project_id, timezone, status)
@@ -186,7 +186,7 @@ func (r *SQLiteRepository) ListJobs(ctx context.Context, filter domain.JobFilter
 	if err != nil {
 		return nil, fmt.Errorf("failed to list jobs: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var jobs []*domain.Job
 	for rows.Next() {
@@ -265,7 +265,7 @@ func (r *SQLiteRepository) UpdateJob(ctx context.Context, id string, updates dom
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	if len(sets) > 0 {
 		query := fmt.Sprintf("UPDATE jobs SET %s WHERE id = ?", strings.Join(sets, ", "))

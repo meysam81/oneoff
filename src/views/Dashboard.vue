@@ -152,7 +152,6 @@ const workerUsagePercent = computed(() => {
 });
 
 onMounted(async () => {
-  await systemStore.initializeApp();
   await jobsStore.fetchJobs({ limit: 20, status: "scheduled" });
 });
 </script>

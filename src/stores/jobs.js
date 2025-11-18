@@ -1,9 +1,13 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, shallowRef } from "vue";
 import { jobsAPI } from "../utils/api";
+import { Cache, dedupe } from "../utils/cache";
+
+const CACHE_KEY_PREFIX = "jobs_";
+const JOB_CACHE_TTL = 30 * 1000; // 30 seconds
 
 export const useJobsStore = defineStore("jobs", () => {
-  const jobs = ref([]);
+  const jobs = shallowRef([]);
   const currentJob = ref(null);
   const loading = ref(false);
   const filter = ref({
@@ -19,12 +23,29 @@ export const useJobsStore = defineStore("jobs", () => {
   });
   const total = ref(0);
 
-  const fetchJobs = async (params = {}) => {
+  const getCacheKey = (params) => {
+    return CACHE_KEY_PREFIX + JSON.stringify(params);
+  };
+
+  const fetchJobs = async (params = {}, useCache = true) => {
+    const queryParams = { ...filter.value, ...params };
+    const cacheKey = getCacheKey(queryParams);
+
+    if (useCache) {
+      const cached = Cache.get(cacheKey);
+      if (cached) {
+        jobs.value = cached.data;
+        total.value = cached.total || 0;
+        return;
+      }
+    }
+
     loading.value = true;
     try {
-      const response = await jobsAPI.list({ ...filter.value, ...params });
+      const response = await dedupe(cacheKey, () => jobsAPI.list(queryParams));
       jobs.value = response.data;
       total.value = response.total || 0;
+      Cache.set(cacheKey, response, JOB_CACHE_TTL);
     } catch (error) {
       console.error("Failed to fetch jobs:", error);
       throw error;
@@ -47,11 +68,18 @@ export const useJobsStore = defineStore("jobs", () => {
     }
   };
 
+  const invalidateJobsCache = () => {
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith("oneoff_cache_" + CACHE_KEY_PREFIX))
+      .forEach((key) => localStorage.removeItem(key));
+  };
+
   const createJob = async (data) => {
     loading.value = true;
     try {
       const response = await jobsAPI.create(data);
-      await fetchJobs();
+      invalidateJobsCache();
+      await fetchJobs({}, false);
       return response.data;
     } catch (error) {
       console.error("Failed to create job:", error);
@@ -65,7 +93,8 @@ export const useJobsStore = defineStore("jobs", () => {
     loading.value = true;
     try {
       const response = await jobsAPI.update(id, data);
-      await fetchJobs();
+      invalidateJobsCache();
+      await fetchJobs({}, false);
       return response.data;
     } catch (error) {
       console.error("Failed to update job:", error);
@@ -79,7 +108,8 @@ export const useJobsStore = defineStore("jobs", () => {
     loading.value = true;
     try {
       await jobsAPI.delete(id);
-      await fetchJobs();
+      invalidateJobsCache();
+      await fetchJobs({}, false);
     } catch (error) {
       console.error("Failed to delete job:", error);
       throw error;
@@ -92,7 +122,8 @@ export const useJobsStore = defineStore("jobs", () => {
     loading.value = true;
     try {
       await jobsAPI.execute(id);
-      await fetchJobs();
+      invalidateJobsCache();
+      await fetchJobs({}, false);
     } catch (error) {
       console.error("Failed to execute job:", error);
       throw error;
@@ -105,7 +136,8 @@ export const useJobsStore = defineStore("jobs", () => {
     loading.value = true;
     try {
       await jobsAPI.cancel(id);
-      await fetchJobs();
+      invalidateJobsCache();
+      await fetchJobs({}, false);
     } catch (error) {
       console.error("Failed to cancel job:", error);
       throw error;

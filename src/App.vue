@@ -27,7 +27,16 @@
               </n-layout-header>
 
               <n-layout-content :content-style="{ padding: '24px' }">
-                <router-view />
+                <router-view v-slot="{ Component, route }">
+                  <transition name="fade" mode="out-in">
+                    <keep-alive :max="10">
+                      <component
+                        :is="Component"
+                        :key="route.meta.keepAlive ? undefined : route.fullPath"
+                      />
+                    </keep-alive>
+                  </transition>
+                </router-view>
               </n-layout-content>
             </n-layout>
           </n-layout>
@@ -38,16 +47,23 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { darkTheme } from "naive-ui";
 import { useRoute } from "vue-router";
+import { useSystemStore } from "./stores/system";
 import Sidebar from "./components/Sidebar.vue";
 import Header from "./components/Header.vue";
 
 const collapsed = ref(false);
 const route = useRoute();
+const systemStore = useSystemStore();
 
 const isLoginPage = computed(() => route.path === "/login");
+
+// Initialize app data once on mount
+onMounted(async () => {
+  await systemStore.initializeApp();
+});
 </script>
 
 <style>
@@ -72,5 +88,16 @@ body {
 
 code {
   font-family: "SF Mono", Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Page transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

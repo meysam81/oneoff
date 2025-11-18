@@ -66,6 +66,7 @@ import { ref, computed, onMounted } from "vue";
 import { AddOutline, RefreshOutline, SearchOutline } from "@vicons/ionicons5";
 import { useJobsStore } from "../stores/jobs";
 import { useSystemStore } from "../stores/system";
+import { debounce } from "../utils/debounce";
 import JobsTable from "../components/JobsTable.vue";
 import CreateJobModal from "../components/CreateJobModal.vue";
 
@@ -100,16 +101,16 @@ const fetchJobs = async () => {
   });
 };
 
-const handleSearch = () => {
+// Debounce search to avoid excessive API calls
+const handleSearch = debounce(() => {
   fetchJobs();
-};
+}, 400);
 
 const handleFilterChange = () => {
   fetchJobs();
 };
 
 onMounted(async () => {
-  await systemStore.initializeApp();
   await fetchJobs();
 });
 </script>

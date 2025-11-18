@@ -57,3 +57,7 @@ logs/
 Thumbs.db
 .goreleaser-dist
 tmp
+
+# Auto-generated files from unplugin
+src/auto-imports.d.ts
+src/components.d.ts

@@ -24,6 +24,7 @@ const props = defineProps({
 
 const router = useRouter();
 
+// Moved outside to prevent recreation on every render
 const statusColors = {
   scheduled: "info",
   running: "warning",
@@ -32,7 +33,8 @@ const statusColors = {
   cancelled: "default",
 };
 
-const columns = [
+// Static column configuration - created once
+const createColumns = (router) => [
   {
     title: "Name",
     key: "name",
@@ -66,27 +68,24 @@ const columns = [
   {
     title: "Actions",
     key: "actions",
+    width: 100,
     render: (row) =>
       h(
-        NSpace,
-        {},
+        NButton,
         {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: "small",
-                onClick: () => router.push(`/jobs/${row.id}`),
-              },
-              { default: () => "View" },
-            ),
-          ],
+          size: "small",
+          onClick: () => router.push(`/jobs/${row.id}`),
         },
+        { default: () => "View" },
       ),
   },
 ];
 
+const columns = createColumns(router);
+
 const pagination = {
   pageSize: 20,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50, 100],
 };
 </script>

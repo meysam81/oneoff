@@ -43,9 +43,7 @@ jobs:
         run: bun run build
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
-        with:
-          version: v2.5
+        uses: golangci/golangci-lint-action@v9
 
   test:
     runs-on: ubuntu-latest

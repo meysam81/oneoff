@@ -101,10 +101,9 @@ func (r *SQLiteRepository) GetJob(ctx context.Context, id string) (*domain.Job, 
 		return nil, fmt.Errorf("failed to get job: %w", err)
 	}
 
-	// Parse timestamps
-	job.ScheduledAt, _ = time.Parse("2006-01-02 15:04:05", scheduledAt)
-	job.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
-	job.UpdatedAt, _ = time.Parse("2006-01-02 15:04:05", updatedAt)
+	job.ScheduledAt = parseSQLiteTime(scheduledAt)
+	job.CreatedAt = parseSQLiteTime(createdAt)
+	job.UpdatedAt = parseSQLiteTime(updatedAt)
 
 	// Load tags
 	tags, err := r.GetJobTags(ctx, id)
@@ -202,9 +201,9 @@ func (r *SQLiteRepository) ListJobs(ctx context.Context, filter domain.JobFilter
 			return nil, fmt.Errorf("failed to scan job: %w", err)
 		}
 
-		job.ScheduledAt, _ = time.Parse("2006-01-02 15:04:05", scheduledAt)
-		job.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
-		job.UpdatedAt, _ = time.Parse("2006-01-02 15:04:05", updatedAt)
+		job.ScheduledAt = parseSQLiteTime(scheduledAt)
+		job.CreatedAt = parseSQLiteTime(createdAt)
+		job.UpdatedAt = parseSQLiteTime(updatedAt)
 
 		// Load tags
 		tags, err := r.GetJobTags(ctx, job.ID)
@@ -337,4 +336,21 @@ func (r *SQLiteRepository) CountJobs(ctx context.Context, filter domain.JobFilte
 	return count, err
 }
 
-// Continue with execution methods...
+func parseSQLiteTime(timeStr string) time.Time {
+	var formats = []string{
+		time.RFC3339,
+		time.RFC3339Nano,
+		"2006-01-02 15:04:05.999999999-07:00",
+		"2006-01-02 15:04:05",
+		"2006-01-02T15:04:05.999999999-07:00",
+		"2006-01-02T15:04:05",
+	}
+
+	for _, format := range formats {
+		if t, err := time.Parse(format, timeStr); err == nil {
+			return t.UTC()
+		}
+	}
+
+	return time.Time{}
+}

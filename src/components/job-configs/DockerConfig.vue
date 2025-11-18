@@ -47,44 +47,48 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
 const props = defineProps({
   modelValue: Object,
-})
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
 const config = ref({
-  image: '',
+  image: "",
   command: [],
   env: {},
   volumes: {},
-  workdir: '',
+  workdir: "",
   auto_remove: true,
   timeout: 300,
-})
+});
 
-const envJson = ref('{}')
-const volumesJson = ref('{}')
+const envJson = ref("{}");
+const volumesJson = ref("{}");
 
 watch(envJson, (val) => {
   try {
-    config.value.env = JSON.parse(val)
+    config.value.env = JSON.parse(val);
   } catch (e) {
     // Invalid JSON
   }
-})
+});
 
 watch(volumesJson, (val) => {
   try {
-    config.value.volumes = JSON.parse(val)
+    config.value.volumes = JSON.parse(val);
   } catch (e) {
     // Invalid JSON
   }
-})
+});
 
-watch(config, (val) => {
-  emit('update:modelValue', val)
-}, { deep: true })
+watch(
+  config,
+  (val) => {
+    emit("update:modelValue", val);
+  },
+  { deep: true },
+);
 </script>

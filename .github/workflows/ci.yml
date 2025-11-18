@@ -8,10 +8,6 @@ on:
     branches:
       - main
 
-env:
-  GO_VERSION: "1.23"
-  NODE_VERSION: "20"
-
 jobs:
   checks:
     permissions:
@@ -25,13 +21,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "${{ env.GO_VERSION }}"
+          go-version-file: go.mod
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "${{ env.NODE_VERSION }}"
-          cache: npm
+          cache: bun
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -44,15 +39,15 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Install frontend dependencies
-        run: npm install --frozen-lockfile
+        run: bun install
 
       - name: Build frontend
-        run: npm run build
+        run: bun run build
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v2.4
+          version: v2.5
 
   test:
     runs-on: ubuntu-latest
@@ -63,13 +58,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "${{ env.GO_VERSION }}"
+          go-version-file: go.mod
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "${{ env.NODE_VERSION }}"
-          cache: npm
+          cache: bun
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -84,10 +78,10 @@ jobs:
       - name: Install dependencies
         run: |
           go mod download
-          npm install --frozen-lockfile
+          bun install
 
       - name: Build frontend
-        run: npm run build
+        run: bun run build
 
       - name: Run tests
         run: go test -v -race -coverprofile=coverage.out ./...
@@ -95,7 +89,8 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.out
+          files: |
+            ./coverage.out
           flags: unittests
           fail_ci_if_error: false
 
@@ -109,13 +104,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "${{ env.GO_VERSION }}"
+          go-version-file: go.mod
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "${{ env.NODE_VERSION }}"
-          cache: npm
+          cache: bun
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -130,10 +124,10 @@ jobs:
       - name: Install dependencies
         run: |
           go mod download
-          npm install --frozen-lockfile
+          bun install
 
       - name: Build frontend
-        run: npm run build
+        run: bun run build
 
       - name: Build backend
         run: |
@@ -189,13 +183,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: "${{ env.GO_VERSION }}"
+          go-version-file: go.mod
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "${{ env.NODE_VERSION }}"
-          cache: npm
+          cache: bun
 
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -217,14 +210,14 @@ jobs:
           goreleaser --version
 
       - name: Import GPG key
-        if: ${{ secrets.GPG_PRIVATE_KEY }} != ''
+        if: ${{ env.GPG_PRIVATE_KEY != '' }}
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --batch --import
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --quick-add-uid "$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')" || true
           GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')
-          echo "GPG_FINGERPRINT=$GPG_FINGERPRINT" >> $GITHUB_ENV
+          echo "GPG_FINGERPRINT=$GPG_FINGERPRINT" >> "$GITHUB_ENV"
 
       - name: Run goreleaser
         env:

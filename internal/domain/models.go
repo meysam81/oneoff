@@ -76,10 +76,10 @@ type Tag struct {
 
 // JobChain represents a sequence of jobs to execute
 type JobChain struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	ProjectID string    `json:"project_id"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        string         `json:"id"`
+	Name      string         `json:"name"`
+	ProjectID string         `json:"project_id"`
+	CreatedAt time.Time      `json:"created_at"`
 	Links     []JobChainLink `json:"links,omitempty"`
 }
 
@@ -126,41 +126,41 @@ type UpdateJobRequest struct {
 
 // JobFilter represents filters for querying jobs
 type JobFilter struct {
-	ProjectID  string
-	Status     JobStatus
-	TagIDs     []string
-	JobType    string
-	Search     string
-	TimeFrom   *time.Time
-	TimeTo     *time.Time
-	Limit      int
-	Offset     int
-	SortBy     string // "scheduled_at", "priority", "created_at"
-	SortOrder  string // "asc", "desc"
+	ProjectID string
+	Status    JobStatus
+	TagIDs    []string
+	JobType   string
+	Search    string
+	TimeFrom  *time.Time
+	TimeTo    *time.Time
+	Limit     int
+	Offset    int
+	SortBy    string // "scheduled_at", "priority", "created_at"
+	SortOrder string // "asc", "desc"
 }
 
 // ExecutionFilter represents filters for querying executions
 type ExecutionFilter struct {
-	JobID      string
-	Status     ExecutionStatus
-	ProjectID  string
-	TagIDs     []string
-	DateFrom   *time.Time
-	DateTo     *time.Time
-	Limit      int
-	Offset     int
-	SortBy     string // "started_at", "duration_ms"
-	SortOrder  string // "asc", "desc"
+	JobID     string
+	Status    ExecutionStatus
+	ProjectID string
+	TagIDs    []string
+	DateFrom  *time.Time
+	DateTo    *time.Time
+	Limit     int
+	Offset    int
+	SortBy    string // "started_at", "duration_ms"
+	SortOrder string // "asc", "desc"
 }
 
 // SystemStats represents system-wide statistics
 type SystemStats struct {
-	TotalScheduled  int64   `json:"total_scheduled"`
+	TotalScheduled   int64   `json:"total_scheduled"`
 	CurrentlyRunning int64   `json:"currently_running"`
-	CompletedToday  int64   `json:"completed_today"`
-	FailedRecent    int64   `json:"failed_recent"`
-	AvgDurationMs   float64 `json:"avg_duration_ms"`
-	QueueDepth      int64   `json:"queue_depth"`
+	CompletedToday   int64   `json:"completed_today"`
+	FailedRecent     int64   `json:"failed_recent"`
+	AvgDurationMs    float64 `json:"avg_duration_ms"`
+	QueueDepth       int64   `json:"queue_depth"`
 }
 
 // WorkerStatus represents the status of workers

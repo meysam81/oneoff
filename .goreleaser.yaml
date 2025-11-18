@@ -6,8 +6,8 @@ version: 2
 before:
   hooks:
     - go mod download
-    - npm install --frozen-lockfile
-    - npm run build
+    - bun install --frozen-lockfile
+    - bun run build
 
 builds:
   - main: ./cmd/oneoff

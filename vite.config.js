@@ -1,20 +1,20 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import compression from 'vite-plugin-compression'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import compression from "vite-plugin-compression";
 
 export default defineConfig({
   plugins: [
     vue(),
     compression({
-      algorithm: 'gzip',
-      ext: '.gz',
+      algorithm: "gzip",
+      ext: ".gz",
       threshold: 1024,
     }),
   ],
   build: {
-    outDir: 'internal/server/dist',
+    outDir: "internal/server/dist",
     emptyOutDir: true,
-    minify: 'terser',
+    minify: "terser",
     terserOptions: {
       compress: {
         drop_console: true,
@@ -24,8 +24,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vue-vendor': ['vue', 'vue-router', 'pinia'],
-          'ui-vendor': ['naive-ui'],
+          "vue-vendor": ["vue", "vue-router", "pinia"],
+          "ui-vendor": ["naive-ui"],
         },
       },
     },
@@ -33,10 +33,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      "/api": {
+        target: "http://localhost:8080",
         changeOrigin: true,
       },
     },
   },
-})
+});

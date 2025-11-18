@@ -1,13 +1,4 @@
 {
-  "name": "oneoff",
-  "version": "1.0.0",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
   "dependencies": {
     "@vicons/ionicons5": "^0.12.0",
     "date-fns": "^4.1.0",
@@ -22,5 +13,13 @@
     "terser": "^5.44.1",
     "vite": "^6.0.5",
     "vite-plugin-compression": "^0.5.1"
-  }
+  },
+  "name": "oneoff",
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "start": "vite"
+  },
+  "type": "module",
+  "version": "1.0.0"
 }

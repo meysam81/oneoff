@@ -26,18 +26,21 @@ OneOff is a self-hosted, developer-focused job scheduler for executing one-time 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/meysam81/oneoff.git
 cd oneoff
 ```
 
 2. Build the application:
+
 ```bash
 make setup  # Install dependencies
 make build  # Build frontend and backend
 ```
 
 3. Run OneOff:
+
 ```bash
 ./oneoff
 ```
@@ -90,7 +93,9 @@ ENVIRONMENT=production
 ### Job Types
 
 #### HTTP Job
+
 Execute HTTP requests at scheduled times:
+
 ```json
 {
   "url": "https://api.example.com/webhook",
@@ -105,7 +110,9 @@ Execute HTTP requests at scheduled times:
 ```
 
 #### Shell Job
+
 Run shell scripts or commands:
+
 ```json
 {
   "script": "#!/bin/bash\\necho 'Hello World'",
@@ -120,7 +127,9 @@ Run shell scripts or commands:
 ```
 
 #### Docker Job
+
 Execute Docker containers:
+
 ```json
 {
   "image": "alpine:latest",
@@ -178,7 +187,7 @@ go build -o oneoff ./cmd/oneoff
 make dev
 
 # Run frontend in dev mode (with hot reload)
-npm run dev
+bun start
 ```
 
 ### Running Migrations
@@ -231,6 +240,7 @@ npm run dev
 ## Architecture
 
 ### Backend (Go)
+
 - **CLI**: urfave/cli/v3
 - **Config**: caarlos0/env/v11
 - **HTTP Client**: imroc/req/v3
@@ -238,6 +248,7 @@ npm run dev
 - **Logging**: zerolog
 
 ### Frontend (Vue 3)
+
 - **Framework**: Vue 3 with Composition API
 - **Build Tool**: Vite (optimized bundling)
 - **UI Components**: Naive UI (tree-shakable)
@@ -265,4 +276,5 @@ Contributions are welcome! Please open an issue or submit a pull request.
 ## Support
 
 For issues and questions:
+
 - GitHub Issues: https://github.com/meysam81/oneoff/issues

@@ -25,8 +25,14 @@
             </n-button>
           </template>
           <div>
-            <p><strong>Workers:</strong> {{ workerStatus?.active_workers || 0 }} / {{ workerStatus?.total_workers || 0 }}</p>
-            <p><strong>Queued Jobs:</strong> {{ workerStatus?.queued_jobs || 0 }}</p>
+            <p>
+              <strong>Workers:</strong>
+              {{ workerStatus?.active_workers || 0 }} /
+              {{ workerStatus?.total_workers || 0 }}
+            </p>
+            <p>
+              <strong>Queued Jobs:</strong> {{ workerStatus?.queued_jobs || 0 }}
+            </p>
           </div>
         </n-popover>
       </n-space>
@@ -35,44 +41,44 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { RefreshOutline, ServerOutline } from '@vicons/ionicons5'
-import { useSystemStore } from '../stores/system'
-import { useJobsStore } from '../stores/jobs'
+import { computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { RefreshOutline, ServerOutline } from "@vicons/ionicons5";
+import { useSystemStore } from "../stores/system";
+import { useJobsStore } from "../stores/jobs";
 
-const route = useRoute()
-const systemStore = useSystemStore()
-const jobsStore = useJobsStore()
+const route = useRoute();
+const systemStore = useSystemStore();
+const jobsStore = useJobsStore();
 
-const title = computed(() => route.name || 'OneOff')
-const stats = computed(() => systemStore.stats)
-const workerStatus = computed(() => systemStore.workerStatus)
+const title = computed(() => route.name || "OneOff");
+const stats = computed(() => systemStore.stats);
+const workerStatus = computed(() => systemStore.workerStatus);
 
 const workerStatusColor = computed(() => {
-  const active = workerStatus.value?.active_workers || 0
-  const total = workerStatus.value?.total_workers || 1
-  const ratio = active / total
-  if (ratio > 0.8) return '#ef4444'
-  if (ratio > 0.5) return '#f59e0b'
-  return '#10b981'
-})
+  const active = workerStatus.value?.active_workers || 0;
+  const total = workerStatus.value?.total_workers || 1;
+  const ratio = active / total;
+  if (ratio > 0.8) return "#ef4444";
+  if (ratio > 0.5) return "#f59e0b";
+  return "#10b981";
+});
 
 const refreshData = async () => {
   await Promise.all([
     systemStore.fetchStats(),
     systemStore.fetchWorkerStatus(),
     jobsStore.fetchJobs(),
-  ])
-}
+  ]);
+};
 
 onMounted(() => {
-  const interval = setInterval(refreshData, 5000)
-})
+  const interval = setInterval(refreshData, 5000);
+});
 
 onUnmounted(() => {
-  clearInterval(interval)
-})
+  clearInterval(interval);
+});
 </script>
 
 <style scoped>

@@ -46,10 +46,10 @@ type successResponse struct {
 }
 
 type listResponse struct {
-	Data  interface{} `json:"data"`
-	Total int64       `json:"total,omitempty"`
-	Limit int         `json:"limit,omitempty"`
-	Offset int        `json:"offset,omitempty"`
+	Data   interface{} `json:"data"`
+	Total  int64       `json:"total,omitempty"`
+	Limit  int         `json:"limit,omitempty"`
+	Offset int         `json:"offset,omitempty"`
 }
 
 func (h *Handler) respondJSON(w http.ResponseWriter, status int, data interface{}) {

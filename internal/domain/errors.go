@@ -11,9 +11,9 @@ var (
 	ErrJobNotScheduled  = errors.New("job is not in scheduled status")
 
 	// Execution errors
-	ErrExecutionNotFound = errors.New("execution not found")
-	ErrExecutionFailed   = errors.New("execution failed")
-	ErrExecutionTimeout  = errors.New("execution timeout")
+	ErrExecutionNotFound  = errors.New("execution not found")
+	ErrExecutionFailed    = errors.New("execution failed")
+	ErrExecutionTimeout   = errors.New("execution timeout")
 	ErrExecutionCancelled = errors.New("execution cancelled")
 
 	// Project errors
@@ -30,9 +30,9 @@ var (
 	ErrInvalidChain  = errors.New("invalid job chain")
 
 	// Validation errors
-	ErrInvalidPriority     = errors.New("priority must be between 1 and 10")
-	ErrInvalidScheduleTime = errors.New("schedule time must be in the future")
-	ErrInvalidStatus       = errors.New("invalid status")
+	ErrInvalidPriority      = errors.New("priority must be between 1 and 10")
+	ErrInvalidScheduleTime  = errors.New("schedule time must be in the future")
+	ErrInvalidStatus        = errors.New("invalid status")
 	ErrMissingRequiredField = errors.New("missing required field")
 
 	// System errors

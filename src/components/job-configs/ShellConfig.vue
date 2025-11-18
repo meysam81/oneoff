@@ -11,7 +11,9 @@
       <n-input
         v-model:value="config.script"
         type="textarea"
-        :placeholder="config.is_path ? '/path/to/script.sh' : 'echo &quot;Hello World&quot;'"
+        :placeholder="
+          config.is_path ? '/path/to/script.sh' : 'echo &quot;Hello World&quot;'
+        "
         :rows="config.is_path ? 1 : 6"
       />
     </n-form-item>
@@ -46,34 +48,38 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue";
 
 const props = defineProps({
   modelValue: Object,
-})
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
 const config = ref({
-  script: '',
+  script: "",
   is_path: false,
   args: [],
   env: {},
-  workdir: '',
+  workdir: "",
   timeout: 60,
-})
+});
 
-const envJson = ref('{}')
+const envJson = ref("{}");
 
 watch(envJson, (val) => {
   try {
-    config.value.env = JSON.parse(val)
+    config.value.env = JSON.parse(val);
   } catch (e) {
     // Invalid JSON
   }
-})
+});
 
-watch(config, (val) => {
-  emit('update:modelValue', val)
-}, { deep: true })
+watch(
+  config,
+  (val) => {
+    emit("update:modelValue", val);
+  },
+  { deep: true },
+);
 </script>

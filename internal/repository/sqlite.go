@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/meysam81/oneoff/internal/domain"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/meysam81/oneoff/internal/domain"
 )
 
 // SQLiteRepository implements Repository using SQLite

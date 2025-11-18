@@ -159,8 +159,8 @@ func setupLogging(level string) {
 	}
 	zerolog.SetGlobalLevel(logLevel)
 
+	noColor := level != "debug"
+
 	// Pretty logging for development
-	if level == "debug" {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
-	}
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339, NoColor: noColor})
 }

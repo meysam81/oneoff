@@ -217,7 +217,7 @@ jobs:
           goreleaser --version
 
       - name: Import GPG key
-        if: env.GPG_PRIVATE_KEY != ''
+        if: secrets.GPG_PRIVATE_KEY != ''
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |

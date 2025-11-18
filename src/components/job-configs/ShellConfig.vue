@@ -11,7 +11,7 @@
       <n-input
         v-model:value="config.script"
         type="textarea"
-        :placeholder="config.is_path ? '/path/to/script.sh' : 'echo \"Hello World\"'"
+        :placeholder="config.is_path ? '/path/to/script.sh' : 'echo &quot;Hello World&quot;'"
         :rows="config.is_path ? 1 : 6"
       />
     </n-form-item>

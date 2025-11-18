@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"io"
 	"io/fs"
 	"net/http"
 	"path/filepath"
@@ -279,14 +280,69 @@ func setupRoutes(mux *http.ServeMux, h *handler.Handler) {
 		}
 	})
 
-	// Serve frontend
+	// Serve frontend with SPA fallback
 	distFS, err := fs.Sub(distFS, "dist")
 	if err != nil {
 		log.Warn().Err(err).Msg("Frontend dist not found, will serve placeholder")
 		mux.HandleFunc("/", servePlaceholder)
 	} else {
-		mux.Handle("/", http.FileServer(http.FS(distFS)))
+		mux.Handle("/", spaHandler(distFS))
 	}
+}
+
+// spaHandler serves the SPA frontend with fallback to index.html for client-side routing
+func spaHandler(fsys fs.FS) http.Handler {
+	fileServer := http.FileServer(http.FS(fsys))
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Clean the path
+		path := strings.TrimPrefix(r.URL.Path, "/")
+		if path == "" {
+			path = "index.html"
+		}
+
+		// Try to open the file
+		file, err := fsys.Open(path)
+		if err != nil {
+			// File doesn't exist, serve index.html for SPA routing
+			indexFile, indexErr := fsys.Open("index.html")
+			if indexErr != nil {
+				http.Error(w, "index.html not found", http.StatusNotFound)
+				return
+			}
+			defer indexFile.Close()
+
+			// Read and serve index.html
+			stat, _ := indexFile.Stat()
+			http.ServeContent(w, r, "index.html", stat.ModTime(), indexFile.(io.ReadSeeker))
+			return
+		}
+		defer file.Close()
+
+		// Check if it's a directory
+		stat, err := file.Stat()
+		if err != nil {
+			http.Error(w, "Failed to stat file", http.StatusInternalServerError)
+			return
+		}
+
+		if stat.IsDir() {
+			// For directories, serve index.html (SPA routing)
+			indexFile, indexErr := fsys.Open("index.html")
+			if indexErr != nil {
+				http.Error(w, "index.html not found", http.StatusNotFound)
+				return
+			}
+			defer indexFile.Close()
+
+			indexStat, _ := indexFile.Stat()
+			http.ServeContent(w, r, "index.html", indexStat.ModTime(), indexFile.(io.ReadSeeker))
+			return
+		}
+
+		// File exists and is not a directory, serve it normally
+		fileServer.ServeHTTP(w, r)
+	})
 }
 
 // Middleware

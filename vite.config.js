@@ -1,13 +1,12 @@
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import compression from "vite-plugin-compression";
+import { defineConfig } from "vite";
+import compression from "vite-plugin-compression2";
 
 export default defineConfig({
   plugins: [
     vue(),
     compression({
       algorithm: "gzip",
-      ext: ".gz",
       threshold: 1024,
     }),
   ],
@@ -22,14 +21,9 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      output: {
-        manualChunks: {
-          "vue-vendor": ["vue", "vue-router", "pinia"],
-          "ui-vendor": ["naive-ui"],
-        },
-      },
+      output: {},
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1500,
   },
   server: {
     proxy: {

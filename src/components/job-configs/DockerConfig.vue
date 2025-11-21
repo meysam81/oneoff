@@ -14,11 +14,13 @@
       </n-dynamic-input>
     </n-form-item>
 
-    <n-form-item label="Environment Variables (JSON)">
+    <n-form-item label="Environment Variables">
       <n-input
-        v-model:value="envJson"
+        v-model:value="envText"
         type="textarea"
-        placeholder='{"KEY": "value"}'
+        placeholder="KEY1=value1
+KEY2=value2
+KEY3=value3"
         :rows="3"
       />
     </n-form-item>
@@ -65,15 +67,39 @@ const config = ref({
   timeout: 300,
 });
 
-const envJson = ref("{}");
+const envText = ref("");
 const volumesJson = ref("{}");
 
-watch(envJson, (val) => {
-  try {
-    config.value.env = JSON.parse(val);
-  } catch (e) {
-    // Invalid JSON
+// Parse .env format (KEY=value) to map
+const parseEnvFormat = (text) => {
+  const env = {};
+  if (!text || text.trim() === "") {
+    return env;
   }
+
+  const lines = text.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Skip empty lines and comments
+    if (trimmed === "" || trimmed.startsWith("#")) {
+      continue;
+    }
+
+    const equalIndex = trimmed.indexOf("=");
+    if (equalIndex > 0) {
+      const key = trimmed.substring(0, equalIndex).trim();
+      const value = trimmed.substring(equalIndex + 1).trim();
+      if (key) {
+        env[key] = value;
+      }
+    }
+  }
+
+  return env;
+};
+
+watch(envText, (val) => {
+  config.value.env = parseEnvFormat(val);
 });
 
 watch(volumesJson, (val) => {

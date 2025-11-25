@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/meysam81/oneoff/compare/v1.0.0...v1.0.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* add syft ([a1ba8be](https://github.com/meysam81/oneoff/commit/a1ba8be9a26047254efa4930109420a6587d8431))
+
 ## 1.0.0 (2025-11-25)
 
 

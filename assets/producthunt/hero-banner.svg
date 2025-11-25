@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ProductHunt Hero Banner - 1270x760 -->
+<svg width="1270" height="760" viewBox="0 0 1270 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#334155" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1270" height="760" fill="url(#bgGrad)"/>
+  <rect width="1270" height="760" fill="url(#grid)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="300" fill="#6366F1" opacity="0.05"/>
+  <circle cx="1170" cy="660" r="250" fill="#10B981" opacity="0.05"/>
+
+  <!-- Left side - Logo and Text -->
+  <g transform="translate(100, 200)">
+    <!-- Logo -->
+    <g transform="translate(0, 0)">
+      <circle cx="70" cy="70" r="65" fill="url(#accentGrad)"/>
+      <line x1="70" y1="70" x2="90" y2="35" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="70" cy="70" r="6" fill="#FFFFFF"/>
+      <g transform="translate(105, 105)">
+        <circle cx="0" cy="0" r="20" fill="url(#greenGrad)"/>
+        <polyline points="-8,0 -2,6 10,-6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </g>
+    </g>
+
+    <!-- Main Title -->
+    <text x="160" y="55" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="56" font-weight="800" fill="#FFFFFF">
+      OneOff
+    </text>
+    <text x="160" y="105" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22" fill="#94A3B8">
+      One-time job scheduler
+    </text>
+
+    <!-- Tagline -->
+    <text x="0" y="200" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="600" fill="#E2E8F0">
+      Schedule once. Execute perfectly.
+    </text>
+    <text x="0" y="245" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="20" fill="#94A3B8">
+      No Redis. No Postgres. No complexity.
+    </text>
+
+    <!-- Feature pills -->
+    <g transform="translate(0, 290)">
+      <!-- Single Binary -->
+      <g>
+        <rect x="0" y="0" width="160" height="40" rx="20" fill="#6366F1" opacity="0.2"/>
+        <rect x="0" y="0" width="160" height="40" rx="20" fill="none" stroke="#6366F1" stroke-width="1"/>
+        <text x="80" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#A5B4FC" text-anchor="middle">Single Binary</text>
+      </g>
+      <!-- SQLite -->
+      <g transform="translate(175, 0)">
+        <rect x="0" y="0" width="120" height="40" rx="20" fill="#10B981" opacity="0.2"/>
+        <rect x="0" y="0" width="120" height="40" rx="20" fill="none" stroke="#10B981" stroke-width="1"/>
+        <text x="60" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#6EE7B7" text-anchor="middle">SQLite</text>
+      </g>
+      <!-- Open Source -->
+      <g transform="translate(310, 0)">
+        <rect x="0" y="0" width="140" height="40" rx="20" fill="#F59E0B" opacity="0.2"/>
+        <rect x="0" y="0" width="140" height="40" rx="20" fill="none" stroke="#F59E0B" stroke-width="1"/>
+        <text x="70" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#FCD34D" text-anchor="middle">Open Source</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Right side - Mock UI -->
+  <g transform="translate(650, 120)">
+    <!-- Browser window -->
+    <rect x="0" y="0" width="520" height="520" rx="12" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="520" height="40" rx="12" fill="#0F172A"/>
+    <rect x="0" y="28" width="520" height="12" fill="#0F172A"/>
+    <!-- Window controls -->
+    <circle cx="20" cy="20" r="6" fill="#EF4444"/>
+    <circle cx="42" cy="20" r="6" fill="#F59E0B"/>
+    <circle cx="64" cy="20" r="6" fill="#10B981"/>
+    <!-- URL bar -->
+    <rect x="90" y="10" width="340" height="20" rx="4" fill="#1E293B"/>
+    <text x="105" y="24" font-family="monospace" font-size="11" fill="#64748B">localhost:8080</text>
+
+    <!-- Sidebar -->
+    <rect x="0" y="40" width="140" height="480" fill="#0F172A"/>
+    <g transform="translate(16, 60)">
+      <text x="0" y="0" font-family="system-ui, sans-serif" font-size="10" fill="#64748B" font-weight="600">MENU</text>
+      <!-- Dashboard -->
+      <g transform="translate(0, 20)">
+        <rect x="-8" y="-12" width="124" height="28" rx="4" fill="#6366F1" opacity="0.2"/>
+        <text x="20" y="4" font-family="system-ui, sans-serif" font-size="12" fill="#A5B4FC">Dashboard</text>
+      </g>
+      <!-- Jobs -->
+      <g transform="translate(0, 56)">
+        <text x="20" y="4" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">Jobs</text>
+      </g>
+      <!-- Executions -->
+      <g transform="translate(0, 84)">
+        <text x="20" y="4" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">Executions</text>
+      </g>
+      <!-- Projects -->
+      <g transform="translate(0, 112)">
+        <text x="20" y="4" font-family="system-ui, sans-serif" font-size="12" fill="#94A3B8">Projects</text>
+      </g>
+    </g>
+
+    <!-- Main content area -->
+    <g transform="translate(156, 56)">
+      <!-- Header -->
+      <text x="0" y="0" font-family="system-ui, sans-serif" font-size="18" font-weight="600" fill="#F1F5F9">Dashboard</text>
+
+      <!-- Stats cards -->
+      <g transform="translate(0, 30)">
+        <!-- Scheduled -->
+        <rect x="0" y="0" width="105" height="70" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+        <text x="12" y="24" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">SCHEDULED</text>
+        <text x="12" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#6366F1">12</text>
+
+        <!-- Running -->
+        <rect x="115" y="0" width="105" height="70" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+        <text x="127" y="24" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">RUNNING</text>
+        <text x="127" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#F59E0B">3</text>
+
+        <!-- Completed -->
+        <rect x="230" y="0" width="105" height="70" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+        <text x="242" y="24" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">COMPLETED</text>
+        <text x="242" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#10B981">847</text>
+      </g>
+
+      <!-- Recent Jobs -->
+      <text x="0" y="130" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#E2E8F0">Recent Jobs</text>
+
+      <!-- Job items -->
+      <g transform="translate(0, 145)">
+        <!-- Job 1 -->
+        <rect x="0" y="0" width="340" height="50" rx="6" fill="#0F172A"/>
+        <circle cx="20" cy="25" r="8" fill="#10B981"/>
+        <text x="40" y="20" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#F1F5F9">Send weekly report</text>
+        <text x="40" y="36" font-family="system-ui, sans-serif" font-size="10" fill="#64748B">HTTP • Completed 2m ago</text>
+        <rect x="280" y="15" width="50" height="20" rx="4" fill="#10B981" opacity="0.2"/>
+        <text x="305" y="29" font-family="system-ui, sans-serif" font-size="10" fill="#10B981" text-anchor="middle">done</text>
+
+        <!-- Job 2 -->
+        <rect x="0" y="58" width="340" height="50" rx="6" fill="#0F172A"/>
+        <circle cx="20" cy="83" r="8" fill="#F59E0B"/>
+        <text x="40" y="78" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#F1F5F9">Database backup</text>
+        <text x="40" y="94" font-family="system-ui, sans-serif" font-size="10" fill="#64748B">Shell • Running...</text>
+        <rect x="280" y="73" width="50" height="20" rx="4" fill="#F59E0B" opacity="0.2"/>
+        <text x="305" y="87" font-family="system-ui, sans-serif" font-size="10" fill="#F59E0B" text-anchor="middle">running</text>
+
+        <!-- Job 3 -->
+        <rect x="0" y="116" width="340" height="50" rx="6" fill="#0F172A"/>
+        <circle cx="20" cy="141" r="8" fill="#6366F1"/>
+        <text x="40" y="136" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#F1F5F9">Deploy to staging</text>
+        <text x="40" y="152" font-family="system-ui, sans-serif" font-size="10" fill="#64748B">Docker • Scheduled for 3:00 PM</text>
+        <rect x="280" y="131" width="50" height="20" rx="4" fill="#6366F1" opacity="0.2"/>
+        <text x="305" y="145" font-family="system-ui, sans-serif" font-size="10" fill="#6366F1" text-anchor="middle">queued</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom text -->
+  <text x="635" y="700" font-family="system-ui, sans-serif" font-size="16" fill="#64748B" text-anchor="middle">
+    github.com/meysam81/oneoff
+  </text>
+</svg>

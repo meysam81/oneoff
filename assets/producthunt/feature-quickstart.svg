@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Feature: Quick Start - 1270x760 -->
+<svg width="1270" height="760" viewBox="0 0 1270 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#4F46E5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1270" height="760" fill="url(#bgGrad)"/>
+
+  <!-- Header -->
+  <text x="635" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+    From Zero to Scheduling in 60 Seconds
+  </text>
+  <text x="635" y="125" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#94A3B8" text-anchor="middle">
+    No configuration files. No environment setup. Just download and run.
+  </text>
+
+  <!-- Terminal window -->
+  <g transform="translate(185, 170)">
+    <rect x="0" y="0" width="900" height="420" rx="12" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+
+    <!-- Title bar -->
+    <rect x="0" y="0" width="900" height="36" rx="12" fill="#1E293B"/>
+    <rect x="0" y="24" width="900" height="12" fill="#1E293B"/>
+    <circle cx="20" cy="18" r="6" fill="#EF4444"/>
+    <circle cx="42" cy="18" r="6" fill="#F59E0B"/>
+    <circle cx="64" cy="18" r="6" fill="#10B981"/>
+    <text x="450" y="23" font-family="system-ui, sans-serif" font-size="13" fill="#64748B" text-anchor="middle">Terminal — oneoff</text>
+
+    <!-- Terminal content -->
+    <g transform="translate(24, 56)">
+      <!-- Step 1: Download -->
+      <g transform="translate(0, 0)">
+        <text font-family="monospace" font-size="13">
+          <tspan fill="#64748B"># Step 1: Download the binary (Linux/macOS/Windows)</tspan>
+        </text>
+        <text y="24" font-family="monospace" font-size="14">
+          <tspan fill="#10B981">$</tspan>
+          <tspan fill="#F1F5F9"> curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff</tspan>
+        </text>
+        <text y="48" font-family="monospace" font-size="14">
+          <tspan fill="#10B981">$</tspan>
+          <tspan fill="#F1F5F9"> chmod +x oneoff</tspan>
+        </text>
+      </g>
+
+      <!-- Step 2: Run -->
+      <g transform="translate(0, 96)">
+        <text font-family="monospace" font-size="13">
+          <tspan fill="#64748B"># Step 2: Run it</tspan>
+        </text>
+        <text y="24" font-family="monospace" font-size="14">
+          <tspan fill="#10B981">$</tspan>
+          <tspan fill="#F1F5F9"> ./oneoff</tspan>
+        </text>
+      </g>
+
+      <!-- Output -->
+      <g transform="translate(0, 156)">
+        <text font-family="monospace" font-size="13">
+          <tspan x="0" dy="0" fill="#6366F1">INFO</tspan><tspan fill="#64748B">  Starting OneOff server...</tspan>
+        </text>
+        <text font-family="monospace" font-size="13">
+          <tspan x="0" dy="20" fill="#6366F1">INFO</tspan><tspan fill="#64748B">  Database initialized: oneoff.db</tspan>
+        </text>
+        <text font-family="monospace" font-size="13">
+          <tspan x="0" dy="40" fill="#6366F1">INFO</tspan><tspan fill="#64748B">  Migrations applied successfully</tspan>
+        </text>
+        <text font-family="monospace" font-size="13">
+          <tspan x="0" dy="60" fill="#6366F1">INFO</tspan><tspan fill="#64748B">  Worker pool started: 4 workers</tspan>
+        </text>
+        <text font-family="monospace" font-size="13">
+          <tspan x="0" dy="80" fill="#10B981">INFO</tspan><tspan fill="#64748B">  Server listening on </tspan><tspan fill="#10B981">http://localhost:8080</tspan>
+        </text>
+      </g>
+
+      <!-- Step 3 -->
+      <g transform="translate(0, 296)">
+        <text font-family="monospace" font-size="13">
+          <tspan fill="#64748B"># Step 3: Open browser → localhost:8080</tspan>
+        </text>
+        <text y="24" font-family="monospace" font-size="13">
+          <tspan fill="#F59E0B"># That's it! Start scheduling jobs.</tspan>
+        </text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom highlights -->
+  <g transform="translate(185, 620)">
+    <!-- Highlight 1 -->
+    <g transform="translate(0, 0)">
+      <circle cx="20" cy="20" r="20" fill="#10B981" opacity="0.2"/>
+      <text x="20" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#10B981" text-anchor="middle">✓</text>
+      <text x="55" y="26" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8">No Docker required</text>
+    </g>
+
+    <!-- Highlight 2 -->
+    <g transform="translate(240, 0)">
+      <circle cx="20" cy="20" r="20" fill="#10B981" opacity="0.2"/>
+      <text x="20" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#10B981" text-anchor="middle">✓</text>
+      <text x="55" y="26" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8">No database setup</text>
+    </g>
+
+    <!-- Highlight 3 -->
+    <g transform="translate(480, 0)">
+      <circle cx="20" cy="20" r="20" fill="#10B981" opacity="0.2"/>
+      <text x="20" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#10B981" text-anchor="middle">✓</text>
+      <text x="55" y="26" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8">No config files</text>
+    </g>
+
+    <!-- Highlight 4 -->
+    <g transform="translate(700, 0)">
+      <circle cx="20" cy="20" r="20" fill="#10B981" opacity="0.2"/>
+      <text x="20" y="26" font-family="system-ui, sans-serif" font-size="16" fill="#10B981" text-anchor="middle">✓</text>
+      <text x="55" y="26" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8">Works offline</text>
+    </g>
+  </g>
+
+  <!-- GitHub link -->
+  <text x="635" y="710" font-family="system-ui, sans-serif" font-size="16" fill="#6366F1" text-anchor="middle">
+    github.com/meysam81/oneoff
+  </text>
+</svg>

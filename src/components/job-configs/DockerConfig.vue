@@ -10,7 +10,7 @@
         placeholder="Add command argument"
       >
         <template #default="{ value, index }">
-          <n-input v-model:value="config.command[index]" placeholder="Argument" />
+          <n-input v-model:value="value" placeholder="Argument" />
         </template>
       </n-dynamic-input>
     </n-form-item>

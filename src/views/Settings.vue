@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, h } from "vue";
+import { ref, onMounted } from "vue";
 import { useMessage } from "naive-ui";
 import { NTag } from "naive-ui";
 import { systemAPI } from "../utils/api";
@@ -170,7 +170,11 @@ const configColumns = [
   {
     title: "Last Updated",
     key: "updated_at",
-    render: (row) => new Date(row.updated_at).toLocaleString(),
+    render: (row) => {
+      if (!row.updated_at) return "-";
+      const date = new Date(row.updated_at);
+      return isNaN(date.getTime()) ? "-" : date.toLocaleString();
+    },
   },
 ];
 
@@ -192,7 +196,8 @@ const fetchData = async () => {
     configList.value.forEach((item) => {
       try {
         configMap[item.key] = JSON.parse(item.value);
-      } catch {
+      } catch (e) {
+        console.warn(`Failed to parse config value for key "${item.key}":`, e);
         configMap[item.key] = item.value;
       }
     });

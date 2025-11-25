@@ -179,7 +179,7 @@ const cloneJob = () => {
 const handleJobCloned = async () => {
   // Refresh job list
   await jobsStore.fetchJobs({}, false);
-  message.success("Job cloned successfully");
+
 };
 
 const deleteJob = async () => {

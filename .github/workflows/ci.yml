@@ -189,6 +189,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Install syft
+        uses: anchore/sbom-action/download-syft@v0
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
 

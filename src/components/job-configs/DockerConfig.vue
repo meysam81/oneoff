@@ -8,9 +8,10 @@
       <n-dynamic-input
         v-model:value="config.command"
         placeholder="Add command argument"
-        #="{ value }"
       >
-        <n-input v-model:value="value.value" placeholder="Argument" />
+        <template #default="{ value, index }">
+          <n-input v-model:value="value" placeholder="Argument" />
+        </template>
       </n-dynamic-input>
     </n-form-item>
 

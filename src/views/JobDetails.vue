@@ -93,6 +93,12 @@
   </div>
 
   <n-spin v-else :show="loading" />
+
+  <CloneJobModal
+    v-model:show="showCloneModal"
+    :job="job"
+    @cloned="handleJobCloned"
+  />
 </template>
 
 <script setup>
@@ -103,6 +109,7 @@ import { ArrowBackOutline } from "@vicons/ionicons5";
 import { useJobsStore } from "../stores/jobs";
 import { useSystemStore } from "../stores/system";
 import ExecutionsList from "../components/ExecutionsList.vue";
+import CloneJobModal from "../components/CloneJobModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -163,9 +170,16 @@ const cancelJob = async () => {
   });
 };
 
+const showCloneModal = ref(false);
+
 const cloneJob = () => {
-  // TODO: Implement clone modal
-  message.info("Clone feature coming soon");
+  showCloneModal.value = true;
+};
+
+const handleJobCloned = async () => {
+  // Refresh job list
+  await jobsStore.fetchJobs({}, false);
+
 };
 
 const deleteJob = async () => {

@@ -28,11 +28,13 @@
       </n-dynamic-input>
     </n-form-item>
 
-    <n-form-item label="Environment Variables (JSON)">
+    <n-form-item label="Environment Variables">
       <n-input
-        v-model:value="envJson"
+        v-model:value="envText"
         type="textarea"
-        placeholder='{"KEY": "value"}'
+        placeholder="KEY1=value1
+KEY2=value2
+KEY3=value3"
         :rows="3"
       />
     </n-form-item>
@@ -50,34 +52,98 @@
 <script setup>
 import { ref, watch } from "vue";
 
-const props = defineProps({
+var props = defineProps({
   modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+var emit = defineEmits(["update:modelValue"]);
 
-const config = ref({
-  script: "",
-  is_path: false,
-  args: [],
-  env: {},
-  workdir: "",
-  timeout: 60,
-});
+function getDefaultConfig() {
+  return {
+    script: "",
+    is_path: false,
+    args: [],
+    env: {},
+    workdir: "",
+    timeout: 60,
+  };
+}
 
-const envJson = ref("{}");
-
-watch(envJson, (val) => {
-  try {
-    config.value.env = JSON.parse(val);
-  } catch (e) {
-    // Invalid JSON
+function envToText(envObj) {
+  if (!envObj || typeof envObj !== "object") {
+    return "";
   }
+  var lines = [];
+  var keys = Object.keys(envObj);
+  for (var i = 0; i < keys.length; i++) {
+    lines.push(keys[i] + "=" + envObj[keys[i]]);
+  }
+  return lines.join("\n");
+}
+
+function parseEnvFormat(text) {
+  var env = {};
+  if (!text || text.trim() === "") {
+    return env;
+  }
+
+  var lines = text.split("\n");
+  for (var i = 0; i < lines.length; i++) {
+    var trimmed = lines[i].trim();
+    if (trimmed === "" || trimmed.startsWith("#")) {
+      continue;
+    }
+
+    var equalIndex = trimmed.indexOf("=");
+    if (equalIndex > 0) {
+      var key = trimmed.substring(0, equalIndex).trim();
+      var value = trimmed.substring(equalIndex + 1).trim();
+      if (key) {
+        env[key] = value;
+      }
+    }
+  }
+
+  return env;
+}
+
+function initializeFromProps() {
+  var initial = props.modelValue || {};
+  config.value = {
+    script: initial.script || "",
+    is_path: initial.is_path !== undefined ? initial.is_path : false,
+    args: initial.args || [],
+    env: initial.env || {},
+    workdir: initial.workdir || "",
+    timeout: initial.timeout || 60,
+  };
+  envText.value = envToText(config.value.env);
+}
+
+var config = ref(getDefaultConfig());
+var envText = ref("");
+
+initializeFromProps();
+
+watch(
+  function watchModelValue() {
+    return props.modelValue;
+  },
+  function onModelValueChange(newVal) {
+    if (newVal) {
+      initializeFromProps();
+    }
+  },
+  { deep: true },
+);
+
+watch(envText, function onEnvTextChange(val) {
+  config.value.env = parseEnvFormat(val);
 });
 
 watch(
   config,
-  (val) => {
+  function onConfigChange(val) {
     emit("update:modelValue", val);
   },
   { deep: true },

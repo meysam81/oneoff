@@ -3,160 +3,256 @@
     :columns="columns"
     :data="executions"
     :loading="loading"
-    :row-key="(row) => row.id"
-  >
-    <template #expand="{ row }">
-      <div style="padding: 16px">
-        <n-space vertical :size="12">
-          <!-- Error Section -->
-          <n-alert
-            v-if="row.error"
-            title="Error"
-            type="error"
-            :bordered="false"
-          >
-            <n-code :code="row.error" language="text" />
-          </n-alert>
-
-          <!-- Output Section -->
-          <n-card
-            v-if="row.output"
-            title="Output"
-            size="small"
-            :segmented="{ content: true }"
-          >
-            <template #header-extra>
-              <n-button
-                size="small"
-                @click="downloadLogs(row, 'output')"
-              >
-                Download
-              </n-button>
-            </template>
-            <n-scrollbar style="max-height: 400px">
-              <n-code
-                :code="row.output"
-                language="bash"
-                word-wrap
-              />
-            </n-scrollbar>
-          </n-card>
-
-          <!-- Metadata Section -->
-          <n-descriptions :column="3" size="small" bordered>
-            <n-descriptions-item label="Exit Code">
-              <n-tag
-                v-if="row.exit_code !== null"
-                :type="row.exit_code === 0 ? 'success' : 'error'"
-                size="small"
-              >
-                {{ row.exit_code }}
-              </n-tag>
-              <span v-else>-</span>
-            </n-descriptions-item>
-            <n-descriptions-item label="Duration">
-              {{ row.duration_ms ? `${(row.duration_ms / 1000).toFixed(2)}s` : "-" }}
-            </n-descriptions-item>
-            <n-descriptions-item label="Completed At">
-              <n-time
-                v-if="row.completed_at"
-                :time="new Date(row.completed_at)"
-              />
-              <span v-else>-</span>
-            </n-descriptions-item>
-          </n-descriptions>
-        </n-space>
-      </div>
-    </template>
-  </n-data-table>
+    :row-key="rowKey"
+  />
 </template>
 
 <script setup>
 import { ref, h, onMounted } from "vue";
-import { NButton, NTag, NTime, NSpace, NAlert, NCard, NCode, NScrollbar, NDescriptions, NDescriptionsItem } from "naive-ui";
+import {
+  NButton,
+  NTag,
+  NTime,
+  NSpace,
+  NAlert,
+  NCard,
+  NCode,
+  NScrollbar,
+  NDescriptions,
+  NDescriptionsItem,
+} from "naive-ui";
 import { executionsAPI } from "../utils/api";
 
-const props = defineProps({
+var props = defineProps({
   jobId: String,
 });
 
-const executions = ref([]);
-const loading = ref(false);
+var executions = ref([]);
+var loading = ref(false);
 
-const statusColors = {
+var statusColors = {
   running: "warning",
   completed: "success",
   failed: "error",
   cancelled: "default",
 };
 
-const columns = [
+function rowKey(row) {
+  return row.id;
+}
+
+function downloadLogs(execution, type) {
+  var content = type === "output" ? execution.output : execution.error;
+  var blob = new Blob([content], { type: "text/plain" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "execution-" + execution.id + "-" + type + ".log";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function renderExpand(row) {
+  var children = [];
+
+  if (row.error) {
+    children.push(
+      h(
+        NAlert,
+        { title: "Error", type: "error", bordered: false },
+        {
+          default: function () {
+            return h(NCode, { code: row.error, language: "text" });
+          },
+        },
+      ),
+    );
+  }
+
+  if (row.output) {
+    children.push(
+      h(
+        NCard,
+        { title: "Output", size: "small", segmented: { content: true } },
+        {
+          "header-extra": function () {
+            return h(
+              NButton,
+              {
+                size: "small",
+                onClick: function () {
+                  downloadLogs(row, "output");
+                },
+              },
+              {
+                default: function () {
+                  return "Download";
+                },
+              },
+            );
+          },
+          default: function () {
+            return h(
+              NScrollbar,
+              { style: "max-height: 400px" },
+              {
+                default: function () {
+                  return h(NCode, {
+                    code: row.output,
+                    language: "bash",
+                    wordWrap: true,
+                  });
+                },
+              },
+            );
+          },
+        },
+      ),
+    );
+  }
+
+  var descriptionItems = [
+    h(
+      NDescriptionsItem,
+      { label: "Exit Code" },
+      {
+        default: function () {
+          if (row.exit_code !== null) {
+            return h(
+              NTag,
+              {
+                type: row.exit_code === 0 ? "success" : "error",
+                size: "small",
+              },
+              {
+                default: function () {
+                  return row.exit_code;
+                },
+              },
+            );
+          }
+          return "-";
+        },
+      },
+    ),
+    h(
+      NDescriptionsItem,
+      { label: "Duration" },
+      {
+        default: function () {
+          return row.duration_ms
+            ? (row.duration_ms / 1000).toFixed(2) + "s"
+            : "-";
+        },
+      },
+    ),
+    h(
+      NDescriptionsItem,
+      { label: "Completed At" },
+      {
+        default: function () {
+          if (row.completed_at) {
+            return h(NTime, { time: new Date(row.completed_at) });
+          }
+          return "-";
+        },
+      },
+    ),
+  ];
+
+  children.push(
+    h(
+      NDescriptions,
+      { column: 3, size: "small", bordered: true },
+      {
+        default: function () {
+          return descriptionItems;
+        },
+      },
+    ),
+  );
+
+  return h("div", { style: "padding: 16px" }, [
+    h(
+      NSpace,
+      { vertical: true, size: 12 },
+      {
+        default: function () {
+          return children;
+        },
+      },
+    ),
+  ]);
+}
+
+var columns = [
   {
     type: "expand",
-    expandable: (row) => !!(row.output || row.error),
+    expandable: function (row) {
+      return !!(row.output || row.error);
+    },
+    renderExpand: renderExpand,
   },
   {
     title: "Started",
     key: "started_at",
-    render: (row) => h(NTime, { time: new Date(row.started_at) }),
+    render: function (row) {
+      return h(NTime, { time: new Date(row.started_at) });
+    },
   },
   {
     title: "Status",
     key: "status",
-    render: (row) =>
-      h(
+    render: function (row) {
+      return h(
         NTag,
         { type: statusColors[row.status], size: "small" },
-        { default: () => row.status },
-      ),
+        {
+          default: function () {
+            return row.status;
+          },
+        },
+      );
+    },
   },
   {
     title: "Duration",
     key: "duration_ms",
-    render: (row) =>
-      row.duration_ms ? `${(row.duration_ms / 1000).toFixed(2)}s` : "-",
+    render: function (row) {
+      return row.duration_ms ? (row.duration_ms / 1000).toFixed(2) + "s" : "-";
+    },
   },
   {
     title: "Exit Code",
     key: "exit_code",
-    render: (row) => {
+    render: function (row) {
       if (row.exit_code === null) return "-";
       return h(
         NTag,
+        { type: row.exit_code === 0 ? "success" : "error", size: "small" },
         {
-          type: row.exit_code === 0 ? "success" : "error",
-          size: "small",
+          default: function () {
+            return row.exit_code;
+          },
         },
-        { default: () => row.exit_code }
       );
     },
   },
 ];
 
-const downloadLogs = (execution, type) => {
-  const content = type === "output" ? execution.output : execution.error;
-  const blob = new Blob([content], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `execution-${execution.id}-${type}.log`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-const fetchExecutions = async () => {
+async function fetchExecutions() {
   loading.value = true;
   try {
-    const response = await executionsAPI.list({ job_id: props.jobId });
+    var response = await executionsAPI.list({ job_id: props.jobId });
     executions.value = response.data || [];
   } catch (error) {
     console.error("Failed to fetch executions:", error);
   } finally {
     loading.value = false;
   }
-};
+}
 
 onMounted(fetchExecutions);
 </script>

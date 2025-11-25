@@ -3,34 +3,89 @@
     v-model:show="visible"
     preset="card"
     title="Clone Job"
-    style="width: 500px"
+    style="width: 700px; max-height: 90vh"
     :mask-closable="false"
   >
-    <n-form ref="formRef" :model="formValue" :rules="rules">
-      <n-form-item label="New Job Name" path="name">
-        <n-input v-model:value="formValue.name" placeholder="Enter new job name" />
-      </n-form-item>
+    <n-scrollbar style="max-height: 70vh">
+      <n-form ref="formRef" :model="formValue" :rules="rules">
+        <n-form-item label="New Job Name" path="name">
+          <n-input
+            v-model:value="formValue.name"
+            placeholder="Enter new job name"
+          />
+        </n-form-item>
 
-      <n-form-item label="Scheduled Time" path="scheduled_at">
-        <n-date-picker
-          v-model:value="scheduledTimestamp"
-          type="datetime"
-          clearable
-          style="width: 100%"
-          :is-date-disabled="isDateDisabled"
+        <n-form-item label="When to Execute">
+          <n-space vertical style="width: 100%">
+            <n-radio-group v-model:value="executeMode">
+              <n-space>
+                <n-radio value="immediate">
+                  <n-space align="center" :size="4">
+                    <span>Execute Immediately</span>
+                  </n-space>
+                </n-radio>
+                <n-radio value="scheduled">
+                  <span>Schedule for Later</span>
+                </n-radio>
+              </n-space>
+            </n-radio-group>
+
+            <n-collapse-transition :show="executeMode === 'scheduled'">
+              <n-date-picker
+                v-model:value="scheduledTimestamp"
+                type="datetime"
+                clearable
+                style="width: 100%; margin-top: 8px"
+                :is-date-disabled="isDateDisabled"
+                placeholder="Select date and time"
+              />
+            </n-collapse-transition>
+
+            <n-text
+              v-if="executeMode === 'immediate'"
+              depth="3"
+              style="font-size: 12px"
+            >
+              The cloned job will start executing as soon as a worker is
+              available.
+            </n-text>
+          </n-space>
+        </n-form-item>
+
+        <n-divider title-placement="left">
+          <n-text depth="3" style="font-size: 13px">Job Configuration</n-text>
+        </n-divider>
+
+        <n-form-item label="Job Type">
+          <n-tag :bordered="false" type="info">{{ props.job?.type }}</n-tag>
+        </n-form-item>
+
+        <component
+          :is="configComponent"
+          v-if="configComponent"
+          v-model="jobConfig"
         />
-      </n-form-item>
 
-      <n-alert type="info" :bordered="false" style="margin-bottom: 12px">
-        The cloned job will preserve the original job's configuration, project, and tags.
-      </n-alert>
-    </n-form>
+        <n-alert type="info" :bordered="false" style="margin-top: 16px">
+          <template #icon>
+            <n-icon><InformationCircleOutline /></n-icon>
+          </template>
+          The cloned job will inherit the original job's project, tags, and
+          priority settings.
+        </n-alert>
+      </n-form>
+    </n-scrollbar>
 
     <template #footer>
-      <n-space justify="space-between">
+      <n-space justify="space-between" align="center">
         <n-button @click="visible = false">Cancel</n-button>
         <n-button type="primary" :loading="loading" @click="handleClone">
-          Clone Job
+          <template #icon v-if="executeMode === 'immediate'">
+            <n-icon><PlayOutline /></n-icon>
+          </template>
+          {{
+            executeMode === "immediate" ? "Clone & Execute Now" : "Clone Job"
+          }}
         </n-button>
       </n-space>
     </template>
@@ -40,51 +95,101 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useMessage } from "naive-ui";
+import { InformationCircleOutline, PlayOutline } from "@vicons/ionicons5";
 import { useJobsStore } from "../stores/jobs";
+import HTTPConfig from "./job-configs/HTTPConfig.vue";
+import ShellConfig from "./job-configs/ShellConfig.vue";
+import DockerConfig from "./job-configs/DockerConfig.vue";
 
-const props = defineProps({
+var props = defineProps({
   show: Boolean,
   job: Object,
 });
 
-const emit = defineEmits(["update:show", "cloned"]);
+var emit = defineEmits(["update:show", "cloned"]);
 
-const message = useMessage();
-const jobsStore = useJobsStore();
+var message = useMessage();
+var jobsStore = useJobsStore();
 
-const visible = computed({
-  get: () => props.show,
-  set: (val) => emit("update:show", val),
+var visible = computed({
+  get: function getVisible() {
+    return props.show;
+  },
+  set: function setVisible(val) {
+    emit("update:show", val);
+  },
 });
 
-const formRef = ref(null);
-const loading = ref(false);
-const scheduledTimestamp = ref(Date.now() + 3600000); // Default 1 hour from now
+var formRef = ref(null);
+var loading = ref(false);
+var executeMode = ref("immediate");
+var scheduledTimestamp = ref(Date.now() + 3600000);
+var jobConfig = ref({});
 
-const formValue = ref({
+var formValue = ref({
   name: "",
 });
 
-const rules = {
+var rules = {
   name: { required: true, message: "Job name is required" },
 };
 
-const isDateDisabled = (ts) => {
-  return ts < Date.now();
+var configComponents = {
+  http: HTTPConfig,
+  shell: ShellConfig,
+  docker: DockerConfig,
 };
 
-// Watch for job prop changes to update the form
+var configComponent = computed(function getConfigComponent() {
+  if (!props.job?.type) return null;
+  return configComponents[props.job.type] || null;
+});
+
+function isDateDisabled(ts) {
+  return ts < Date.now();
+}
+
+function parseJobConfig(configStr) {
+  try {
+    return JSON.parse(configStr);
+  } catch (e) {
+    return {};
+  }
+}
+
+function resetForm() {
+  if (props.job) {
+    formValue.value.name = props.job.name + " (Copy)";
+    jobConfig.value = parseJobConfig(props.job.config);
+  }
+  executeMode.value = "immediate";
+  scheduledTimestamp.value = Date.now() + 3600000;
+}
+
 watch(
-  () => props.job,
-  (newJob) => {
+  function watchJob() {
+    return props.job;
+  },
+  function onJobChange(newJob) {
     if (newJob) {
-      formValue.value.name = `${newJob.name} (Copy)`;
+      resetForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
-const handleClone = async () => {
+watch(
+  function watchShow() {
+    return props.show;
+  },
+  function onShowChange(newShow) {
+    if (newShow && props.job) {
+      resetForm();
+    }
+  },
+);
+
+async function handleClone() {
   try {
     await formRef.value?.validate();
 
@@ -93,37 +198,40 @@ const handleClone = async () => {
       return;
     }
 
-    const scheduledAt = new Date(scheduledTimestamp.value).toISOString();
+    var scheduledAt;
+    if (executeMode.value === "immediate") {
+      scheduledAt = "now";
+    } else {
+      scheduledAt = new Date(scheduledTimestamp.value).toISOString();
+    }
 
     loading.value = true;
 
-    // Clone the job
     await jobsStore.createJob({
       name: formValue.value.name,
       type: props.job.type,
-      config: props.job.config,
+      config: JSON.stringify(jobConfig.value),
       scheduled_at: scheduledAt,
       priority: props.job.priority,
       project_id: props.job.project_id,
       timezone: props.job.timezone,
-      tag_ids: props.job.tags?.map(t => t.id) || [],
+      tag_ids:
+        props.job.tags?.map(function getTagId(t) {
+          return t.id;
+        }) || [],
     });
 
-    message.success("Job cloned successfully");
+    var successMessage =
+      executeMode.value === "immediate"
+        ? "Job cloned and queued for immediate execution"
+        : "Job cloned successfully";
+    message.success(successMessage);
     visible.value = false;
     emit("cloned");
-    resetForm();
   } catch (error) {
     message.error(error.message || "Failed to clone job");
   } finally {
     loading.value = false;
   }
-};
-
-const resetForm = () => {
-  formValue.value = {
-    name: props.job ? `${props.job.name} (Copy)` : "",
-  };
-  scheduledTimestamp.value = Date.now() + 3600000;
-};
+}
 </script>

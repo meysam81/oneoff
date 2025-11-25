@@ -175,10 +175,17 @@ func (h *Handler) CloneJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scheduledAt, err := time.Parse(time.RFC3339, req.ScheduledAt)
-	if err != nil {
-		h.respondError(w, http.StatusBadRequest, "Invalid scheduled_at format")
-		return
+	var scheduledAt time.Time
+	var err error
+
+	if req.ScheduledAt == "now" {
+		scheduledAt = time.Now()
+	} else {
+		scheduledAt, err = time.Parse(time.RFC3339, req.ScheduledAt)
+		if err != nil {
+			h.respondError(w, http.StatusBadRequest, "Invalid scheduled_at format")
+			return
+		}
 	}
 
 	job, err := h.jobService.CloneJob(r.Context(), id, scheduledAt)

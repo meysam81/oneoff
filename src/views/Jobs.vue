@@ -78,7 +78,11 @@ const searchQuery = ref("");
 const statusFilter = ref(null);
 const projectFilter = ref(null);
 
-const jobs = computed(() => jobsStore.jobs);
+var jobs = computed(function () {
+  return jobsStore.jobs.slice().sort(function (a, b) {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+});
 const loading = computed(() => jobsStore.loading);
 
 const statusOptions = [

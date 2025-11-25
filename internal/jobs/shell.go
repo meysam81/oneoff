@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -49,14 +50,19 @@ func (j *ShellJob) Validate() error {
 	if j.config.Script == "" {
 		return fmt.Errorf("script is required")
 	}
-
 	if j.config.IsPath {
+		// Expand path to handle ~ as home directory
+		expandedPath, err := filepath.Abs(os.ExpandEnv(strings.Replace(j.config.Script, "~", "$HOME", 1)))
+		if err != nil {
+			return fmt.Errorf("failed to expand path: %w", err)
+		}
+		j.config.Script = expandedPath
+
 		// Check if file exists
 		if _, err := os.Stat(j.config.Script); os.IsNotExist(err) {
 			return fmt.Errorf("script file not found: %s", j.config.Script)
 		}
 	}
-
 	return nil
 }
 

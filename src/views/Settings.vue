@@ -90,11 +90,7 @@
 
           <n-space justify="end">
             <n-button @click="resetForm">Reset</n-button>
-            <n-button
-              type="primary"
-              :loading="saving"
-              @click="saveSettings"
-            >
+            <n-button type="primary" :loading="saving" @click="saveSettings">
               Save Changes
             </n-button>
           </n-space>
@@ -224,9 +220,7 @@ const saveSettings = async () => {
 
     for (const [key, value] of Object.entries(configForm.value)) {
       if (value !== originalConfig.value[key]) {
-        updates.push(
-          systemAPI.updateConfig(key, JSON.stringify(value))
-        );
+        updates.push(systemAPI.updateConfig(key, JSON.stringify(value)));
       }
     }
 

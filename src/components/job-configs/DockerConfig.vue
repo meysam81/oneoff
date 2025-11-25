@@ -10,7 +10,10 @@
         placeholder="Add command argument"
       >
         <template #default="{ value, index }">
-          <n-input v-model:value="value" placeholder="Argument" />
+          <n-input
+            v-model:value="config.command[index]"
+            placeholder="Argument"
+          />
         </template>
       </n-dynamic-input>
     </n-form-item>
@@ -52,44 +55,53 @@ KEY3=value3"
 <script setup>
 import { ref, watch } from "vue";
 
-const props = defineProps({
+var props = defineProps({
   modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+var emit = defineEmits(["update:modelValue"]);
 
-const config = ref({
-  image: "",
-  command: [],
-  env: {},
-  volumes: {},
-  workdir: "",
-  auto_remove: true,
-  timeout: 300,
-});
+function getDefaultConfig() {
+  return {
+    image: "",
+    command: [],
+    env: {},
+    volumes: {},
+    workdir: "",
+    auto_remove: true,
+    timeout: 300,
+  };
+}
 
-const envText = ref("");
-const volumesJson = ref("{}");
+function envToText(envObj) {
+  if (!envObj || typeof envObj !== "object") {
+    return "";
+  }
+  var lines = [];
+  var keys = Object.keys(envObj);
+  for (var i = 0; i < keys.length; i++) {
+    lines.push(keys[i] + "=" + envObj[keys[i]]);
+  }
+  return lines.join("\n");
+}
 
-// Parse .env format (KEY=value) to map
-const parseEnvFormat = (text) => {
-  const env = {};
+function parseEnvFormat(text) {
+  var env = {};
   if (!text || text.trim() === "") {
     return env;
   }
 
-  const lines = text.split("\n");
-  for (const line of lines) {
-    const trimmed = line.trim();
-    // Skip empty lines and comments
+  var lines = text.split("\n");
+  for (var i = 0; i < lines.length; i++) {
+    var trimmed = lines[i].trim();
     if (trimmed === "" || trimmed.startsWith("#")) {
       continue;
     }
 
-    const equalIndex = trimmed.indexOf("=");
+    var equalIndex = trimmed.indexOf("=");
     if (equalIndex > 0) {
-      const key = trimmed.substring(0, equalIndex).trim();
-      const value = trimmed.substring(equalIndex + 1).trim();
+      var key = trimmed.substring(0, equalIndex).trim();
+      var value = trimmed.substring(equalIndex + 1).trim();
       if (key) {
         env[key] = value;
       }
@@ -97,23 +109,54 @@ const parseEnvFormat = (text) => {
   }
 
   return env;
-};
+}
 
-watch(envText, (val) => {
+function initializeFromProps() {
+  var initial = props.modelValue || {};
+  config.value = {
+    image: initial.image || "",
+    command: initial.command || [],
+    env: initial.env || {},
+    volumes: initial.volumes || {},
+    workdir: initial.workdir || "",
+    auto_remove: initial.auto_remove !== undefined ? initial.auto_remove : true,
+    timeout: initial.timeout || 300,
+  };
+  envText.value = envToText(config.value.env);
+  volumesJson.value = JSON.stringify(config.value.volumes || {}, null, 2);
+}
+
+var config = ref(getDefaultConfig());
+var envText = ref("");
+var volumesJson = ref("{}");
+
+initializeFromProps();
+
+watch(
+  function watchModelValue() {
+    return props.modelValue;
+  },
+  function onModelValueChange(newVal) {
+    if (newVal) {
+      initializeFromProps();
+    }
+  },
+  { deep: true },
+);
+
+watch(envText, function onEnvTextChange(val) {
   config.value.env = parseEnvFormat(val);
 });
 
-watch(volumesJson, (val) => {
+watch(volumesJson, function onVolumesJsonChange(val) {
   try {
     config.value.volumes = JSON.parse(val);
-  } catch (e) {
-    // Invalid JSON
-  }
+  } catch (e) {}
 });
 
 watch(
   config,
-  (val) => {
+  function onConfigChange(val) {
     emit("update:modelValue", val);
   },
   { deep: true },

@@ -12,16 +12,23 @@ import (
 // CreateExecution creates a new job execution
 func (r *SQLiteRepository) CreateExecution(ctx context.Context, execution *domain.JobExecution) error {
 	query := `
-		INSERT INTO job_executions (job_id, started_at, status)
-		VALUES (?, ?, ?)
-		RETURNING id, created_at
+		INSERT INTO job_executions (job_id, started_at, status, created_at)
+		VALUES (?, ?, ?, ?)
+		RETURNING id
 	`
+
+	now := time.Now().UTC()
+	if execution.StartedAt.IsZero() {
+		execution.StartedAt = now
+	}
+	execution.CreatedAt = now
 
 	return r.db.QueryRowContext(ctx, query,
 		execution.JobID,
 		execution.StartedAt.UTC(),
 		execution.Status,
-	).Scan(&execution.ID, &execution.CreatedAt)
+		execution.CreatedAt,
+	).Scan(&execution.ID)
 }
 
 // GetExecution retrieves an execution by ID
@@ -35,7 +42,7 @@ func (r *SQLiteRepository) GetExecution(ctx context.Context, id string) (*domain
 	execution := &domain.JobExecution{}
 	var startedAt, createdAt string
 	var completedAt sql.NullString
-	var output, error sql.NullString
+	var output, errorStr sql.NullString
 	var exitCode sql.NullInt64
 	var durationMs sql.NullInt64
 
@@ -47,7 +54,7 @@ func (r *SQLiteRepository) GetExecution(ctx context.Context, id string) (*domain
 		&execution.Status,
 		&output,
 		&exitCode,
-		&error,
+		&errorStr,
 		&durationMs,
 		&createdAt,
 	)
@@ -59,18 +66,18 @@ func (r *SQLiteRepository) GetExecution(ctx context.Context, id string) (*domain
 		return nil, fmt.Errorf("failed to get execution: %w", err)
 	}
 
-	execution.StartedAt, _ = time.Parse("2006-01-02 15:04:05", startedAt)
-	execution.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
+	execution.StartedAt = parseSQLiteTime(startedAt)
+	execution.CreatedAt = parseSQLiteTime(createdAt)
 
 	if completedAt.Valid {
-		t, _ := time.Parse("2006-01-02 15:04:05", completedAt.String)
+		t := parseSQLiteTime(completedAt.String)
 		execution.CompletedAt = &t
 	}
 	if output.Valid {
 		execution.Output = output.String
 	}
-	if error.Valid {
-		execution.Error = error.String
+	if errorStr.Valid {
+		execution.Error = errorStr.String
 	}
 	if exitCode.Valid {
 		code := int(exitCode.Int64)
@@ -150,7 +157,7 @@ func (r *SQLiteRepository) ListExecutions(ctx context.Context, filter domain.Exe
 		execution := &domain.JobExecution{}
 		var startedAt, createdAt string
 		var completedAt sql.NullString
-		var output, error sql.NullString
+		var output, errorStr sql.NullString
 		var exitCode sql.NullInt64
 		var durationMs sql.NullInt64
 
@@ -162,7 +169,7 @@ func (r *SQLiteRepository) ListExecutions(ctx context.Context, filter domain.Exe
 			&execution.Status,
 			&output,
 			&exitCode,
-			&error,
+			&errorStr,
 			&durationMs,
 			&createdAt,
 		)
@@ -170,18 +177,18 @@ func (r *SQLiteRepository) ListExecutions(ctx context.Context, filter domain.Exe
 			return nil, fmt.Errorf("failed to scan execution: %w", err)
 		}
 
-		execution.StartedAt, _ = time.Parse("2006-01-02 15:04:05", startedAt)
-		execution.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
+		execution.StartedAt = parseSQLiteTime(startedAt)
+		execution.CreatedAt = parseSQLiteTime(createdAt)
 
 		if completedAt.Valid {
-			t, _ := time.Parse("2006-01-02 15:04:05", completedAt.String)
+			t := parseSQLiteTime(completedAt.String)
 			execution.CompletedAt = &t
 		}
 		if output.Valid {
 			execution.Output = output.String
 		}
-		if error.Valid {
-			execution.Error = error.String
+		if errorStr.Valid {
+			execution.Error = errorStr.String
 		}
 		if exitCode.Valid {
 			code := int(exitCode.Int64)

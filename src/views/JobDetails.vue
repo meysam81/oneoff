@@ -1,104 +1,106 @@
 <template>
-  <div v-if="job" class="job-details">
-    <n-space vertical :size="16">
-      <n-card>
-        <template #header>
-          <n-space justify="space-between" align="center">
-            <n-space align="center">
-              <n-button text @click="$router.back()">
-                <n-icon size="20"><ArrowBackOutline /></n-icon>
-              </n-button>
-              <h2>{{ job.name }}</h2>
-              <n-tag :type="statusColors[job.status]">{{ job.status }}</n-tag>
+  <div class="job-details-container">
+    <div v-if="job" class="job-details">
+      <n-space vertical :size="16">
+        <n-card>
+          <template #header>
+            <n-space justify="space-between" align="center">
+              <n-space align="center">
+                <n-button text @click="$router.back()">
+                  <n-icon size="20"><ArrowBackOutline /></n-icon>
+                </n-button>
+                <h2>{{ job.name }}</h2>
+                <n-tag :type="statusColors[job.status]">{{ job.status }}</n-tag>
+              </n-space>
+
+              <n-space>
+                <n-button
+                  v-if="job.status === 'scheduled'"
+                  type="primary"
+                  @click="executeNow"
+                >
+                  Execute Now
+                </n-button>
+
+                <n-button
+                  v-if="job.status === 'scheduled' || job.status === 'running'"
+                  type="error"
+                  @click="cancelJob"
+                >
+                  Cancel
+                </n-button>
+
+                <n-button @click="cloneJob">Clone</n-button>
+
+                <n-button
+                  v-if="job.status !== 'running'"
+                  type="error"
+                  @click="deleteJob"
+                >
+                  Delete
+                </n-button>
+              </n-space>
             </n-space>
+          </template>
 
-            <n-space>
-              <n-button
-                v-if="job.status === 'scheduled'"
-                type="primary"
-                @click="executeNow"
-              >
-                Execute Now
-              </n-button>
+          <n-descriptions :column="2" bordered>
+            <n-descriptions-item label="Type">
+              <n-tag size="small">{{ job.type }}</n-tag>
+            </n-descriptions-item>
 
-              <n-button
-                v-if="job.status === 'scheduled' || job.status === 'running'"
-                type="error"
-                @click="cancelJob"
-              >
-                Cancel
-              </n-button>
+            <n-descriptions-item label="Priority">
+              {{ job.priority }}
+            </n-descriptions-item>
 
-              <n-button @click="cloneJob">Clone</n-button>
+            <n-descriptions-item label="Scheduled At">
+              <n-time :time="new Date(job.scheduled_at)" />
+            </n-descriptions-item>
 
-              <n-button
-                v-if="job.status !== 'running'"
-                type="error"
-                @click="deleteJob"
-              >
-                Delete
-              </n-button>
-            </n-space>
-          </n-space>
-        </template>
+            <n-descriptions-item label="Created At">
+              <n-time :time="new Date(job.created_at)" />
+            </n-descriptions-item>
 
-        <n-descriptions :column="2" bordered>
-          <n-descriptions-item label="Type">
-            <n-tag size="small">{{ job.type }}</n-tag>
-          </n-descriptions-item>
+            <n-descriptions-item label="Project">
+              {{ getProjectName(job.project_id) }}
+            </n-descriptions-item>
 
-          <n-descriptions-item label="Priority">
-            {{ job.priority }}
-          </n-descriptions-item>
+            <n-descriptions-item label="Timezone">
+              {{ job.timezone }}
+            </n-descriptions-item>
 
-          <n-descriptions-item label="Scheduled At">
-            <n-time :time="new Date(job.scheduled_at)" />
-          </n-descriptions-item>
+            <n-descriptions-item label="Tags" :span="2">
+              <n-space>
+                <n-tag
+                  v-for="tag in job.tags"
+                  :key="tag.id"
+                  size="small"
+                  :color="{ color: tag.color }"
+                >
+                  {{ tag.name }}
+                </n-tag>
+              </n-space>
+            </n-descriptions-item>
 
-          <n-descriptions-item label="Created At">
-            <n-time :time="new Date(job.created_at)" />
-          </n-descriptions-item>
+            <n-descriptions-item label="Configuration" :span="2">
+              <n-code :code="formatConfig(job.config)" language="json" />
+            </n-descriptions-item>
+          </n-descriptions>
+        </n-card>
 
-          <n-descriptions-item label="Project">
-            {{ getProjectName(job.project_id) }}
-          </n-descriptions-item>
+        <n-card title="Execution History">
+          <ExecutionsList :job-id="job.id" />
+        </n-card>
+      </n-space>
+    </div>
 
-          <n-descriptions-item label="Timezone">
-            {{ job.timezone }}
-          </n-descriptions-item>
+    <n-spin v-else :show="loading" />
 
-          <n-descriptions-item label="Tags" :span="2">
-            <n-space>
-              <n-tag
-                v-for="tag in job.tags"
-                :key="tag.id"
-                size="small"
-                :color="{ color: tag.color }"
-              >
-                {{ tag.name }}
-              </n-tag>
-            </n-space>
-          </n-descriptions-item>
-
-          <n-descriptions-item label="Configuration" :span="2">
-            <n-code :code="formatConfig(job.config)" language="json" />
-          </n-descriptions-item>
-        </n-descriptions>
-      </n-card>
-
-      <n-card title="Execution History">
-        <ExecutionsList :job-id="job.id" />
-      </n-card>
-    </n-space>
+    <CloneJobModal
+      v-model:show="showCloneModal"
+      :job="job"
+      @cloned="handleJobCloned"
+    />
   </div>
-
-  <n-spin v-else :show="loading" />
-
-  <CloneJobModal
-    v-model:show="showCloneModal"
-    :job="job"
-    @cloned="handleJobCloned"
-  />
 </template>
 
 <script setup>
@@ -179,7 +181,6 @@ const cloneJob = () => {
 const handleJobCloned = async () => {
   // Refresh job list
   await jobsStore.fetchJobs({}, false);
-
 };
 
 const deleteJob = async () => {

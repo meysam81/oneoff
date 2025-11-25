@@ -34,7 +34,7 @@ func (s *JobService) CreateJob(ctx context.Context, req domain.CreateJobRequest)
 
 	var scheduledAt time.Time
 
-	if req.Immediate {
+	if req.Immediate || req.ScheduledAt == "now" {
 		scheduledAt = time.Now().UTC()
 	} else {
 		if req.ScheduledAt == "" {

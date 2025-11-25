@@ -61,8 +61,8 @@ export default defineConfig({
         manualChunks: {
           "vue-vendor": ["vue", "vue-router", "pinia"],
           "naive-ui": ["naive-ui"],
-          "icons": ["@vicons/ionicons5"],
-          "utils": ["ky", "date-fns"],
+          icons: ["@vicons/ionicons5"],
+          utils: ["ky", "date-fns"],
         },
         chunkFileNames: "assets/[name]-[hash].js",
         entryFileNames: "assets/[name]-[hash].js",

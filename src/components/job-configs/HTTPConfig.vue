@@ -1,6 +1,6 @@
 <template>
   <n-space vertical>
-    <n-form-item label="URL">
+    <n-form-item label="URL" required>
       <n-input
         v-model:value="config.url"
         placeholder="https://api.example.com/endpoint"
@@ -24,7 +24,7 @@
       <n-input
         v-model:value="config.body"
         type="textarea"
-        placeholder="Request body"
+        placeholder="Request body (for POST/PUT/PATCH)"
         :rows="4"
       />
     </n-form-item>
@@ -32,29 +32,31 @@
     <n-form-item label="Timeout (seconds)">
       <n-input-number v-model:value="config.timeout" :min="1" :max="300" />
     </n-form-item>
+
+    <n-form-item label="Retry Count">
+      <n-input-number v-model:value="config.retry_count" :min="0" :max="10" />
+    </n-form-item>
+
+    <n-form-item label="Expected Status Code">
+      <n-input-number
+        v-model:value="config.expected_status"
+        :min="100"
+        :max="599"
+      />
+    </n-form-item>
   </n-space>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
 
-const props = defineProps({
+var props = defineProps({
   modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+var emit = defineEmits(["update:modelValue"]);
 
-const config = ref({
-  url: "",
-  method: "GET",
-  headers: {},
-  body: "",
-  timeout: 30,
-});
-
-const headersJson = ref("{}");
-
-const methodOptions = [
+var methodOptions = [
   { label: "GET", value: "GET" },
   { label: "POST", value: "POST" },
   { label: "PUT", value: "PUT" },
@@ -62,17 +64,58 @@ const methodOptions = [
   { label: "DELETE", value: "DELETE" },
 ];
 
-watch(headersJson, (val) => {
+function getDefaultConfig() {
+  return {
+    url: "",
+    method: "GET",
+    headers: {},
+    body: "",
+    timeout: 30,
+    retry_count: 0,
+    expected_status: 200,
+  };
+}
+
+function initializeFromProps() {
+  var initial = props.modelValue || {};
+  config.value = {
+    url: initial.url || "",
+    method: initial.method || "GET",
+    headers: initial.headers || {},
+    body: initial.body || "",
+    timeout: initial.timeout || 30,
+    retry_count: initial.retry_count || 0,
+    expected_status: initial.expected_status || 200,
+  };
+  headersJson.value = JSON.stringify(config.value.headers || {}, null, 2);
+}
+
+var config = ref(getDefaultConfig());
+var headersJson = ref("{}");
+
+initializeFromProps();
+
+watch(
+  function watchModelValue() {
+    return props.modelValue;
+  },
+  function onModelValueChange(newVal) {
+    if (newVal) {
+      initializeFromProps();
+    }
+  },
+  { deep: true },
+);
+
+watch(headersJson, function onHeadersJsonChange(val) {
   try {
     config.value.headers = JSON.parse(val);
-  } catch (e) {
-    // Invalid JSON, ignore
-  }
+  } catch (e) {}
 });
 
 watch(
   config,
-  (val) => {
+  function onConfigChange(val) {
     emit("update:modelValue", val);
   },
   { deep: true },

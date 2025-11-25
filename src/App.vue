@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :theme="darkTheme">
+  <n-config-provider :theme="darkTheme" :hljs="hljs">
     <n-message-provider>
       <n-notification-provider>
         <n-dialog-provider>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, inject } from "vue";
 import { darkTheme } from "naive-ui";
 import { useRoute } from "vue-router";
 import { useSystemStore } from "./stores/system";
@@ -57,6 +57,7 @@ import Header from "./components/Header.vue";
 const collapsed = ref(false);
 const route = useRoute();
 const systemStore = useSystemStore();
+var hljs = inject("hljs");
 
 const isLoginPage = computed(() => route.path === "/login");
 

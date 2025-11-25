@@ -3,7 +3,7 @@ default:
 
 build: frontend
 	@echo "Building OneOff..."
-	go build -o oneoff ./cmd/oneoff
+	go build -o oneoff .
 
 run: build
 	./oneoff
@@ -25,7 +25,7 @@ test:
 	go test -v ./...
 
 migrate:
-	go run ./cmd/oneoff migrate
+	go run . migrate
 
 frontend:
 	@echo "Building frontend..."

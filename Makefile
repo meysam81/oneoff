@@ -3,7 +3,7 @@
 # Build binary
 build: frontend
 	@echo "Building OneOff..."
-	go build -o oneoff ./cmd/oneoff
+	go build -o oneoff .
 
 # Run the application
 run: build
@@ -11,7 +11,7 @@ run: build
 
 # Development mode (no frontend build)
 dev:
-	go run ./cmd/oneoff
+	go run .
 
 # Clean build artifacts
 clean:
@@ -26,7 +26,7 @@ test:
 
 # Run database migrations
 migrate:
-	go run ./cmd/oneoff migrate
+	go run . migrate
 
 # Build frontend
 frontend:

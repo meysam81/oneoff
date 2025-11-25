@@ -10,7 +10,7 @@ before:
     - bun run build
 
 builds:
-  - main: ./cmd/oneoff
+  - main: .
     binary: oneoff
     env:
       - CGO_ENABLED=1

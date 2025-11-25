@@ -325,7 +325,7 @@ make build
 make frontend
 
 # Build backend only (requires frontend to be built first)
-go build -o oneoff ./cmd/oneoff
+go build -o oneoff .
 
 # Run in development mode (no frontend build, Go only)
 make dev
@@ -1166,7 +1166,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 1. **Backend Issues**
    - Add debug logs with `log.Debug().Msgf("...")`
-   - Use Go debugger (Delve): `dlv debug ./cmd/oneoff`
+   - Use Go debugger (Delve): `dlv debug .`
    - Check error wrapping for context
 
 2. **Frontend Issues**
@@ -1186,21 +1186,21 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 ### File Locations
 
-| What           | Where                                      |
-| -------------- | ------------------------------------------ |
-| Entry point    | `cmd/oneoff/main.go` (needs to be created) |
-| Server setup   | `internal/server/server.go`                |
-| HTTP handlers  | `internal/handler/*.go`                    |
-| Business logic | `internal/service/*.go`                    |
-| Database       | `internal/repository/*.go`                 |
-| Job executors  | `internal/jobs/*.go`                       |
-| Domain models  | `internal/domain/*.go`                     |
-| Migrations     | `migrations/*.sql`                         |
-| Frontend entry | `src/main.js`                              |
-| Vue components | `src/components/*.vue`                     |
-| Vue pages      | `src/views/*.vue`                          |
-| API client     | `src/utils/api.js`                         |
-| Stores         | `src/stores/*.js`                          |
+| What           | Where                           |
+| -------------- | ------------------------------- |
+| Entry point    | `main.go` (needs to be created) |
+| Server setup   | `internal/server/server.go`     |
+| HTTP handlers  | `internal/handler/*.go`         |
+| Business logic | `internal/service/*.go`         |
+| Database       | `internal/repository/*.go`      |
+| Job executors  | `internal/jobs/*.go`            |
+| Domain models  | `internal/domain/*.go`          |
+| Migrations     | `migrations/*.sql`              |
+| Frontend entry | `src/main.js`                   |
+| Vue components | `src/components/*.vue`          |
+| Vue pages      | `src/views/*.vue`               |
+| API client     | `src/utils/api.js`              |
+| Stores         | `src/stores/*.js`               |
 
 ### Key Commands
 

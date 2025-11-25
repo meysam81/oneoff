@@ -151,7 +151,7 @@ Execute Docker containers:
 
 ```
 oneoff/
-├── cmd/oneoff/          # CLI entry point
+├── main.go          # CLI entry point
 ├── internal/
 │   ├── config/          # Configuration
 │   ├── domain/          # Domain models and interfaces
@@ -181,7 +181,7 @@ make build
 make frontend
 
 # Build backend only
-go build -o oneoff ./cmd/oneoff
+go build -o oneoff .
 
 # Run in development mode
 make dev

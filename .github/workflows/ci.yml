@@ -129,7 +129,7 @@ jobs:
             -X main.date=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
             -X main.builtBy=github-actions" \
             -trimpath \
-            -o oneoff ./cmd/oneoff
+            -o oneoff .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5

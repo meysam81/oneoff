@@ -9,11 +9,13 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/meysam81/oneoff/internal/config"
 	"github.com/meysam81/oneoff/internal/domain"
 	"github.com/meysam81/oneoff/internal/handler"
 	"github.com/meysam81/oneoff/internal/jobs"
+	"github.com/meysam81/oneoff/internal/metrics"
 	"github.com/meysam81/oneoff/internal/repository"
 	"github.com/meysam81/oneoff/internal/service"
 	"github.com/meysam81/oneoff/internal/worker"
@@ -25,13 +27,14 @@ var distFS embed.FS
 
 // Server represents the HTTP server
 type Server struct {
-	httpServer     *http.Server
-	config         *config.Config
-	repo           repository.Repository
-	pool           *worker.Pool
-	apiKeyService  *service.APIKeyService
-	webhookService *service.WebhookService
-	authMiddleware *AuthMiddleware
+	httpServer       *http.Server
+	config           *config.Config
+	repo             repository.Repository
+	pool             *worker.Pool
+	apiKeyService    *service.APIKeyService
+	webhookService   *service.WebhookService
+	authMiddleware   *AuthMiddleware
+	metricsCollector metrics.Collector
 }
 
 // New creates a new server instance
@@ -64,6 +67,21 @@ func New(cfg *config.Config) (*Server, error) {
 		webhookService.Dispatch(ctx, event)
 	})
 
+	// Initialize metrics collector (early, needed for pool callback)
+	var metricsCollector metrics.Collector
+	if cfg.MetricsEnabled {
+		metricsCollector = metrics.NewCollector()
+		metricsCollector.SetTotalWorkers(cfg.WorkersCount)
+		// Wire up metrics from worker pool
+		pool.SetMetricsCallback(func(jobType, status string, duration time.Duration) {
+			metricsCollector.IncJobsTotal(jobType, status)
+			metricsCollector.ObserveJobDuration(jobType, duration)
+		})
+		log.Info().Msg("Prometheus metrics enabled at /metrics")
+	} else {
+		metricsCollector = &metrics.NoopCollector{}
+	}
+
 	// Initialize services
 	jobService := service.NewJobService(repo, registry, pool)
 	executionService := service.NewExecutionService(repo)
@@ -85,11 +103,15 @@ func New(cfg *config.Config) (*Server, error) {
 
 	// Setup router
 	mux := http.NewServeMux()
-	setupRoutes(mux, h, apiKeyHandler, webhookHandler)
+	setupRoutes(mux, h, apiKeyHandler, webhookHandler, metricsCollector)
 
-	// Build middleware chain: CORS -> Logging -> Auth -> Handler
+	// Build middleware chain: CORS -> Logging -> Metrics -> Auth -> Handler
 	var finalHandler http.Handler = mux
 	finalHandler = authMiddleware.Middleware(finalHandler)
+	if cfg.MetricsEnabled {
+		metricsMiddleware := NewMetricsMiddleware(metricsCollector)
+		finalHandler = metricsMiddleware.Middleware(finalHandler)
+	}
 	finalHandler = loggingMiddleware(finalHandler)
 	finalHandler = corsMiddleware(finalHandler)
 
@@ -100,13 +122,14 @@ func New(cfg *config.Config) (*Server, error) {
 	}
 
 	server := &Server{
-		httpServer:     httpServer,
-		config:         cfg,
-		repo:           repo,
-		pool:           pool,
-		apiKeyService:  apiKeyService,
-		webhookService: webhookService,
-		authMiddleware: authMiddleware,
+		httpServer:       httpServer,
+		config:           cfg,
+		repo:             repo,
+		pool:             pool,
+		apiKeyService:    apiKeyService,
+		webhookService:   webhookService,
+		authMiddleware:   authMiddleware,
+		metricsCollector: metricsCollector,
 	}
 
 	log.Info().Bool("auth_enabled", cfg.AuthEnabled).Msg("Authentication configuration")
@@ -163,7 +186,16 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 // setupRoutes configures all HTTP routes
-func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.APIKeyHandler, webhookHandler *handler.WebhookHandler) {
+func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.APIKeyHandler, webhookHandler *handler.WebhookHandler, metricsCollector metrics.Collector) {
+	// Metrics endpoint (no auth required for Prometheus scraping)
+	mux.Handle("/metrics", metricsCollector.Handler())
+
+	// Health check endpoint
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
+
 	// Webhook routes
 	mux.HandleFunc("/api/webhooks", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

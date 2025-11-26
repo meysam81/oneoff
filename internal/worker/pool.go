@@ -14,6 +14,9 @@ import (
 // JobEventCallback is called when a job event occurs
 type JobEventCallback func(ctx context.Context, event domain.WebhookEvent)
 
+// MetricsCallback is called to report job metrics
+type MetricsCallback func(jobType, status string, duration time.Duration)
+
 // Pool manages a pool of workers for executing jobs
 type Pool struct {
 	workers          int
@@ -26,9 +29,10 @@ type Pool struct {
 	jobContexts      map[string]context.CancelFunc // Track cancel functions for running jobs
 	runningMutex     sync.RWMutex
 	pollInterval     time.Duration
-	logRetentionDays int           // Days to retain execution logs (0 = no cleanup)
-	cleanupInterval  time.Duration // How often to run cleanup
+	logRetentionDays int              // Days to retain execution logs (0 = no cleanup)
+	cleanupInterval  time.Duration    // How often to run cleanup
 	onJobEvent       JobEventCallback // Callback for job events (webhooks)
+	onMetrics        MetricsCallback  // Callback for metrics
 }
 
 // NewPool creates a new worker pool
@@ -55,6 +59,18 @@ func (p *Pool) SetLogRetention(days int) {
 // SetJobEventCallback sets the callback for job events (used for webhooks)
 func (p *Pool) SetJobEventCallback(callback JobEventCallback) {
 	p.onJobEvent = callback
+}
+
+// SetMetricsCallback sets the callback for job metrics
+func (p *Pool) SetMetricsCallback(callback MetricsCallback) {
+	p.onMetrics = callback
+}
+
+// reportMetrics reports job execution metrics
+func (p *Pool) reportMetrics(jobType, status string, duration time.Duration) {
+	if p.onMetrics != nil {
+		p.onMetrics(jobType, status, duration)
+	}
 }
 
 // emitJobEvent emits a job event via the callback
@@ -278,6 +294,8 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 		p.completeExecution(ctx, execution.ID, job.ID, domain.ExecutionStatusCancelled, "", "Job cancelled by user", nil, time.Since(startTime))
 		// Emit cancelled event
 		p.emitJobEvent(ctx, domain.WebhookEventJobCancelled, job, execution)
+		// Report metrics
+		p.reportMetrics(job.Type, string(domain.ExecutionStatusCancelled), time.Since(startTime))
 		// Note: Job status already updated to cancelled by CancelJob
 		return
 	}
@@ -294,6 +312,8 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 		}
 		// Emit failed event
 		p.emitJobEvent(ctx, domain.WebhookEventJobFailed, job, execution)
+		// Report metrics
+		p.reportMetrics(job.Type, string(domain.ExecutionStatusFailed), time.Since(startTime))
 		return
 	}
 
@@ -322,6 +342,9 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 
 	// Emit completion or failure event
 	p.emitJobEvent(ctx, webhookEventType, job, execution)
+
+	// Report metrics
+	p.reportMetrics(job.Type, string(finalStatus), time.Since(startTime))
 
 	log.Info().
 		Str("job_id", job.ID).

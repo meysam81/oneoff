@@ -36,6 +36,9 @@ type Config struct {
 
 	// Authentication configuration
 	AuthEnabled bool `env:"AUTH_ENABLED" envDefault:"false"` // Disabled by default for easy migration
+
+	// Metrics configuration
+	MetricsEnabled bool `env:"METRICS_ENABLED" envDefault:"true"` // Enabled by default
 }
 
 // Load loads configuration from environment variables

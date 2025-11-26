@@ -117,10 +117,22 @@ func (j *HTTPJob) Execute(ctx context.Context) (*domain.ExecutionResult, error) 
 	}
 
 	if err != nil {
+		exitCode := 1
+		errorMsg := fmt.Sprintf("HTTP request failed: %v", err)
+
+		// Check for context cancellation
+		if ctx.Err() == context.Canceled {
+			exitCode = 130
+			errorMsg = "HTTP request cancelled by user"
+		} else if ctx.Err() == context.DeadlineExceeded {
+			exitCode = 124
+			errorMsg = "HTTP request timeout"
+		}
+
 		return &domain.ExecutionResult{
 			Output:   "",
-			ExitCode: 1,
-			Error:    fmt.Sprintf("HTTP request failed: %v", err),
+			ExitCode: exitCode,
+			Error:    errorMsg,
 		}, nil
 	}
 

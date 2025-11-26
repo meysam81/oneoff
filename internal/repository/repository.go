@@ -63,6 +63,31 @@ type Repository interface {
 	GetScheduledJobs(ctx context.Context, before time.Time, limit int) ([]*domain.Job, error)
 	UpdateJobStatus(ctx context.Context, id string, status domain.JobStatus) error
 
+	// API Key operations
+	CreateAPIKey(ctx context.Context, key *domain.APIKey) error
+	GetAPIKey(ctx context.Context, id string) (*domain.APIKey, error)
+	GetAPIKeyByHash(ctx context.Context, keyHash string) (*domain.APIKey, error)
+	ListAPIKeys(ctx context.Context) ([]*domain.APIKey, error)
+	UpdateAPIKey(ctx context.Context, id string, updates domain.UpdateAPIKeyRequest) error
+	UpdateAPIKeyLastUsed(ctx context.Context, id string) error
+	DeleteAPIKey(ctx context.Context, id string) error
+
+	// Webhook operations
+	CreateWebhook(ctx context.Context, webhook *domain.Webhook) error
+	GetWebhook(ctx context.Context, id string) (*domain.Webhook, error)
+	ListWebhooks(ctx context.Context, filter domain.WebhookFilter) ([]*domain.Webhook, error)
+	GetActiveWebhooksForEvent(ctx context.Context, event domain.WebhookEventType) ([]*domain.Webhook, error)
+	UpdateWebhook(ctx context.Context, id string, updates domain.UpdateWebhookRequest) error
+	DeleteWebhook(ctx context.Context, id string) error
+
+	// Webhook delivery operations
+	CreateWebhookDelivery(ctx context.Context, delivery *domain.WebhookDelivery) error
+	GetWebhookDelivery(ctx context.Context, id string) (*domain.WebhookDelivery, error)
+	ListWebhookDeliveries(ctx context.Context, filter domain.WebhookDeliveryFilter) ([]*domain.WebhookDelivery, error)
+	UpdateWebhookDelivery(ctx context.Context, id string, status domain.WebhookDeliveryStatus, responseCode *int, responseBody, errMsg string, nextRetry *time.Time) error
+	GetPendingWebhookDeliveries(ctx context.Context, limit int) ([]*domain.WebhookDelivery, error)
+	IncrementDeliveryAttempts(ctx context.Context, id string) error
+
 	// Transaction support
 	WithTransaction(ctx context.Context, fn func(Repository) error) error
 

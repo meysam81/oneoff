@@ -33,6 +33,9 @@ type Config struct {
 
 	// Environment
 	Environment string `env:"ENVIRONMENT" envDefault:"production"`
+
+	// Authentication configuration
+	AuthEnabled bool `env:"AUTH_ENABLED" envDefault:"false"` // Disabled by default for easy migration
 }
 
 // Load loads configuration from environment variables

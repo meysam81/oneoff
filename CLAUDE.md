@@ -2,9 +2,9 @@
 
 This document provides comprehensive guidance for AI assistants working on the OneOff codebase. It explains the architecture, conventions, workflows, and important considerations for making changes.
 
-**Last Updated**: 2025-11-17
-**Codebase Size**: ~5,300 lines across 49 source files
-**Version**: Development (pre-1.0)
+**Last Updated**: 2025-11-26
+**Codebase Size**: ~7,300 lines across 49 source files
+**Version**: 1.0.0
 
 ---
 
@@ -132,6 +132,7 @@ App.vue (root layout)
     ├── Dashboard.vue (stats overview)
     ├── Jobs.vue (job list + CRUD)
     │   ├── CreateJobModal.vue
+    │   ├── CloneJobModal.vue
     │   ├── JobsTable.vue
     │   └── job-configs/ (type-specific forms)
     ├── JobDetails.vue (single job view)
@@ -222,6 +223,7 @@ internal/
 ```
 src/
 ├── components/         # Reusable Vue components
+│   ├── CloneJobModal.vue
 │   ├── CreateJobModal.vue
 │   ├── ExecutionsList.vue
 │   ├── Header.vue
@@ -267,7 +269,7 @@ src/
 
 ## Technology Stack
 
-### Backend (Go 1.23+)
+### Backend (Go 1.25+)
 
 | Package                     | Purpose                    | Notes                            |
 | --------------------------- | -------------------------- | -------------------------------- |
@@ -1188,7 +1190,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 | What           | Where                           |
 | -------------- | ------------------------------- |
-| Entry point    | `main.go` (needs to be created) |
+| Entry point    | `main.go`                       |
 | Server setup   | `internal/server/server.go`     |
 | HTTP handlers  | `internal/handler/*.go`         |
 | Business logic | `internal/service/*.go`         |
@@ -1281,6 +1283,6 @@ When making changes to this codebase:
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-17
+**Document Version**: 1.1
+**Last Updated**: 2025-11-26
 **Maintainer**: OneOff Development Team

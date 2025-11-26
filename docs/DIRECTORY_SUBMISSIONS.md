@@ -28,7 +28,7 @@ OneOff
 
 ### Short Description (160 chars)
 ```
-Open-source one-time job scheduler. Single binary, SQLite database, Vue 3 UI. Schedule HTTP requests, shell scripts, and Docker containers. Zero dependencies.
+One-time job scheduler. Single binary, SQLite, Vue 3 UI. Schedule HTTP requests, shell scripts, Docker containers. Zero dependencies.
 ```
 
 ### Full Description

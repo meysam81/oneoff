@@ -21,7 +21,7 @@ Alternative taglines:
 
 ### Description (260 characters for short description)
 ```
-OneOff is a self-hosted job scheduler for one-time tasks. Schedule HTTP webhooks, shell scripts, and Docker containers to run at specific times. Single binary deployment, SQLite database, modern Vue 3 UI. No Redis, no Postgres, no complexity.
+Self-hosted job scheduler for one-time tasks. Schedule HTTP webhooks, shell scripts, and Docker containers. Single binary, SQLite database, Vue 3 UI. No Redis, no Postgres, no complexity.
 ```
 
 ---

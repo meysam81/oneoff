@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Feature: Job Types - 1270x760 -->
+<svg width="1270" height="760" viewBox="0 0 1270 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1270" height="760" fill="url(#bgGrad)"/>
+
+  <!-- Header -->
+  <text x="635" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+    Three Job Types. Endless Possibilities.
+  </text>
+  <text x="635" y="125" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#94A3B8" text-anchor="middle">
+    HTTP requests, shell scripts, and Docker containers - all scheduled with precision.
+  </text>
+
+  <!-- Job Type Cards -->
+  <g transform="translate(85, 180)">
+    <!-- HTTP Job Card -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="360" height="420" rx="16" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+
+      <!-- Icon -->
+      <g transform="translate(140, 40)">
+        <circle cx="40" cy="40" r="40" fill="#3B82F6" opacity="0.2"/>
+        <text x="40" y="52" font-family="system-ui, sans-serif" font-size="36" fill="#3B82F6" text-anchor="middle">⚡</text>
+      </g>
+
+      <!-- Title -->
+      <text x="180" y="150" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+        HTTP Jobs
+      </text>
+
+      <!-- Description -->
+      <text x="180" y="180" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8" text-anchor="middle">
+        Trigger webhooks and APIs
+      </text>
+
+      <!-- Code preview -->
+      <g transform="translate(20, 210)">
+        <rect x="0" y="0" width="320" height="180" rx="8" fill="#0F172A"/>
+        <g transform="translate(16, 20)">
+          <text font-family="monospace" font-size="11" fill="#64748B">
+            <tspan x="0" dy="0">{</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"url"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"https://api.example.com"</tspan><tspan fill="#64748B">,</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"method"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"POST"</tspan><tspan fill="#64748B">,</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"headers"</tspan><tspan fill="#64748B">: {</tspan>
+            <tspan x="24" dy="18" fill="#F59E0B">"Authorization"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"Bearer ..."</tspan>
+            <tspan x="12" dy="18" fill="#64748B">},</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"timeout"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#A78BFA">30</tspan>
+            <tspan x="0" dy="18">}</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Shell Job Card -->
+    <g transform="translate(380, 0)">
+      <rect x="0" y="0" width="360" height="420" rx="16" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+
+      <!-- Icon -->
+      <g transform="translate(140, 40)">
+        <circle cx="40" cy="40" r="40" fill="#10B981" opacity="0.2"/>
+        <text x="40" y="52" font-family="system-ui, sans-serif" font-size="36" fill="#10B981" text-anchor="middle">$_</text>
+      </g>
+
+      <!-- Title -->
+      <text x="180" y="150" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+        Shell Jobs
+      </text>
+
+      <!-- Description -->
+      <text x="180" y="180" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8" text-anchor="middle">
+        Run scripts and commands
+      </text>
+
+      <!-- Code preview -->
+      <g transform="translate(20, 210)">
+        <rect x="0" y="0" width="320" height="180" rx="8" fill="#0F172A"/>
+        <g transform="translate(16, 20)">
+          <text font-family="monospace" font-size="11" fill="#64748B">
+            <tspan x="0" dy="0">{</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"script"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"#!/bin/bash</tspan>
+            <tspan x="12" dy="18" fill="#10B981">pg_dump $DB > backup.sql</tspan>
+            <tspan x="12" dy="18" fill="#10B981">aws s3 cp backup.sql s3://..."</tspan><tspan fill="#64748B">,</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"env"</tspan><tspan fill="#64748B">: {</tspan>
+            <tspan x="24" dy="18" fill="#F59E0B">"DB"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"production"</tspan>
+            <tspan x="12" dy="18" fill="#64748B">},</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"timeout"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#A78BFA">300</tspan>
+            <tspan x="0" dy="18">}</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Docker Job Card -->
+    <g transform="translate(760, 0)">
+      <rect x="0" y="0" width="360" height="420" rx="16" fill="#1E293B" stroke="#8B5CF6" stroke-width="2"/>
+
+      <!-- Icon -->
+      <g transform="translate(140, 40)">
+        <circle cx="40" cy="40" r="40" fill="#8B5CF6" opacity="0.2"/>
+        <text x="40" y="52" font-family="system-ui, sans-serif" font-size="36" fill="#8B5CF6" text-anchor="middle">🐳</text>
+      </g>
+
+      <!-- Title -->
+      <text x="180" y="150" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+        Docker Jobs
+      </text>
+
+      <!-- Description -->
+      <text x="180" y="180" font-family="system-ui, sans-serif" font-size="14" fill="#94A3B8" text-anchor="middle">
+        Execute containers on demand
+      </text>
+
+      <!-- Code preview -->
+      <g transform="translate(20, 210)">
+        <rect x="0" y="0" width="320" height="180" rx="8" fill="#0F172A"/>
+        <g transform="translate(16, 20)">
+          <text font-family="monospace" font-size="11" fill="#64748B">
+            <tspan x="0" dy="0">{</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"image"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#10B981">"node:20-alpine"</tspan><tspan fill="#64748B">,</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"command"</tspan><tspan fill="#64748B">: [</tspan>
+            <tspan x="24" dy="18" fill="#10B981">"npm"</tspan><tspan fill="#64748B">, </tspan><tspan fill="#10B981">"run"</tspan><tspan fill="#64748B">, </tspan><tspan fill="#10B981">"migrate"</tspan>
+            <tspan x="12" dy="18" fill="#64748B">],</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"auto_remove"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#A78BFA">true</tspan><tspan fill="#64748B">,</tspan>
+            <tspan x="12" dy="18" fill="#F59E0B">"timeout"</tspan><tspan fill="#64748B">: </tspan><tspan fill="#A78BFA">600</tspan>
+            <tspan x="0" dy="18">}</tspan>
+          </text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom tagline -->
+  <text x="635" y="680" font-family="system-ui, sans-serif" font-size="18" fill="#64748B" text-anchor="middle">
+    Extensible plugin architecture — add your own job types
+  </text>
+</svg>

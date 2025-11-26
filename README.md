@@ -1,280 +1,356 @@
-# OneOff - Modern One-Time Job Scheduler
+<p align="center">
+  <img src="assets/logo/oneoff-logo.svg" alt="OneOff Logo" width="120" height="120">
+</p>
 
-OneOff is a self-hosted, developer-focused job scheduler for executing one-time tasks at specific future times. Think "Linux `at` command meets modern web UI" with a plugin-based architecture.
+<h1 align="center">OneOff</h1>
 
-## Features
+<p align="center">
+  <strong>One-time job scheduler. Single binary. Zero dependencies.</strong>
+</p>
 
-- **Single Binary Deployment**: Zero external dependencies, everything bundled into one executable
-- **SQLite Database**: Minimal operational complexity with built-in migrations
-- **Modern Vue 3 UI**: Beautiful, dark-mode-first interface built with Naive UI
-- **Multiple Job Types**: HTTP requests, shell scripts, Docker containers
-- **Priority Queue System**: 1-10 priority levels for job execution
-- **Project Organization**: Group and manage jobs by project
-- **Tag System**: Categorize jobs with customizable tags
-- **Real-time Monitoring**: Live worker status and job execution tracking
-- **Full Observability**: Execution logs, duration tracking, error reporting
-- **Job Chaining**: Create sequences of jobs that execute in order
+<p align="center">
+  Schedule HTTP requests, shell scripts, and Docker containers to run at specific times.<br>
+  No Redis. No Postgres. No message queues. Just download and run.
+</p>
+
+<p align="center">
+  <a href="https://github.com/meysam81/oneoff/releases"><img src="https://img.shields.io/github/v/release/meysam81/oneoff?style=flat-square&color=6366F1" alt="Release"></a>
+  <a href="https://github.com/meysam81/oneoff/blob/main/LICENSE"><img src="https://img.shields.io/github/license/meysam81/oneoff?style=flat-square&color=10B981" alt="License"></a>
+  <a href="https://github.com/meysam81/oneoff/stargazers"><img src="https://img.shields.io/github/stars/meysam81/oneoff?style=flat-square&color=F59E0B" alt="Stars"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#quick-start">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#api">API</a>
+</p>
+
+---
+
+## Why OneOff?
+
+Ever needed to schedule a one-time task and found yourself setting up Redis, Postgres, Celery, and a web of services just to send a webhook at 3 PM?
+
+**OneOff is the antidote to over-engineering.**
+
+```bash
+# This is all you need
+./oneoff
+```
+
+That's it. Open `localhost:8080`, schedule your job, done.
+
+---
 
 ## Quick Start
 
-### Prerequisites
+### 30-Second Setup
 
-- Go 1.23+ (for building from source)
-- Node.js 18+ (for building frontend)
-- Docker (optional, for Docker job type)
+```bash
+# Download (Linux)
+curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff_Linux_x86_64.tar.gz | tar xz
 
-### Installation
+# Run
+./oneoff
 
-1. Clone the repository:
+# Open http://localhost:8080
+```
+
+<details>
+<summary><strong>macOS</strong></summary>
+
+```bash
+# Intel Mac
+curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff_Darwin_x86_64.tar.gz | tar xz
+
+# Apple Silicon
+curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff_Darwin_arm64.tar.gz | tar xz
+
+./oneoff
+```
+</details>
+
+<details>
+<summary><strong>Windows</strong></summary>
+
+Download from [Releases](https://github.com/meysam81/oneoff/releases), extract, and run:
+```powershell
+.\oneoff.exe
+```
+</details>
+
+<details>
+<summary><strong>Docker</strong></summary>
+
+```bash
+docker run -p 8080:8080 -v oneoff-data:/data ghcr.io/meysam81/oneoff:latest
+```
+</details>
+
+<details>
+<summary><strong>Build from Source</strong></summary>
+
+Requires Go 1.23+ and Node.js 18+:
 
 ```bash
 git clone https://github.com/meysam81/oneoff.git
 cd oneoff
-```
-
-2. Build the application:
-
-```bash
-make setup  # Install dependencies
-make build  # Build frontend and backend
-```
-
-3. Run OneOff:
-
-```bash
+make setup && make build
 ./oneoff
 ```
+</details>
 
-The application will be available at `http://localhost:8080`
+---
 
-### Configuration
+## Features
 
-OneOff is configured via environment variables (12-factor app compliant):
+| Feature | Description |
+|---------|-------------|
+| **Single Binary** | Everything bundled into one ~15MB executable |
+| **SQLite Database** | No external database to manage |
+| **Modern Web UI** | Dark-mode-first Vue 3 interface |
+| **HTTP Jobs** | Schedule webhooks, API calls, notifications |
+| **Shell Jobs** | Run scripts, backups, maintenance tasks |
+| **Docker Jobs** | Execute containers on demand |
+| **Priority Queue** | 1-10 priority levels for job execution |
+| **Projects & Tags** | Organize jobs your way |
+| **Real-time Monitoring** | Live worker status and execution tracking |
+| **Job Chaining** | Create sequences of dependent jobs |
 
-```bash
-# Server configuration
-PORT=8080
-HOST=localhost
-
-# Database
-DB_PATH=./oneoff.db
-
-# Workers
-WORKERS_COUNT=0  # 0 = auto-detect (N/2 cores)
-
-# Logging
-LOG_LEVEL=info  # debug, info, warn, error
-
-# Defaults
-DEFAULT_TIMEZONE=UTC
-LOG_RETENTION_DAYS=90
-DEFAULT_PRIORITY=5
-
-# Environment
-ENVIRONMENT=production
-```
+---
 
 ## Usage
 
-### Creating a Job
+### Creating Your First Job
 
-1. Navigate to the Dashboard
-2. Click "Create Job"
-3. Fill in the job details:
-   - **Name**: Descriptive name for your job
-   - **Type**: HTTP, Shell, or Docker
-   - **Scheduled Time**: When to execute (datetime picker)
-   - **Priority**: 1-10 (higher = more important)
-   - **Project**: Organize by project
-   - **Tags**: Add categorization tags
-4. Configure job-specific settings
-5. Click "Create Job"
+1. Open `http://localhost:8080`
+2. Click **"Create Job"**
+3. Choose job type, set schedule, configure
+4. Done
 
 ### Job Types
 
 #### HTTP Job
-
-Execute HTTP requests at scheduled times:
-
+Send a webhook when a trial expires:
 ```json
 {
-  "url": "https://api.example.com/webhook",
+  "url": "https://api.yourapp.com/webhooks/trial-expired",
   "method": "POST",
   "headers": {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer token"
+    "Authorization": "Bearer your-token",
+    "Content-Type": "application/json"
   },
-  "body": "{\"event\": \"scheduled\"}",
+  "body": "{\"user_id\": \"12345\"}",
   "timeout": 30
 }
 ```
 
 #### Shell Job
-
-Run shell scripts or commands:
-
+Run a database backup at midnight:
 ```json
 {
-  "script": "#!/bin/bash\\necho 'Hello World'",
-  "is_path": false,
-  "args": [],
+  "script": "#!/bin/bash\npg_dump $DATABASE_URL > /backups/$(date +%Y%m%d).sql",
   "env": {
-    "VAR": "value"
+    "DATABASE_URL": "postgres://..."
   },
-  "workdir": "/tmp",
-  "timeout": 60
-}
-```
-
-#### Docker Job
-
-Execute Docker containers:
-
-```json
-{
-  "image": "alpine:latest",
-  "command": ["echo", "hello"],
-  "env": {
-    "ENV_VAR": "value"
-  },
-  "volumes": {
-    "/host/path": "/container/path"
-  },
-  "auto_remove": true,
   "timeout": 300
 }
 ```
 
-## Development
-
-### Project Structure
-
-```
-oneoff/
-├── main.go          # CLI entry point
-├── internal/
-│   ├── config/          # Configuration
-│   ├── domain/          # Domain models and interfaces
-│   ├── repository/      # Database layer
-│   ├── service/         # Business logic
-│   ├── handler/         # HTTP handlers
-│   ├── worker/          # Worker pool
-│   ├── jobs/            # Job executors
-│   └── server/          # HTTP server
-├── migrations/          # Database migrations
-├── src/                 # Vue 3 frontend
-│   ├── components/      # Vue components
-│   ├── views/           # Page views
-│   ├── stores/          # Pinia stores
-│   ├── utils/           # Utilities
-│   └── assets/          # Static assets
-└── Makefile            # Build commands
+#### Docker Job
+Run a migration container:
+```json
+{
+  "image": "your-app:latest",
+  "command": ["npm", "run", "db:migrate"],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "auto_remove": true,
+  "timeout": 600
+}
 ```
 
-### Building
+---
 
+## Configuration
+
+All configuration via environment variables. Zero config files.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `8080` | HTTP server port |
+| `HOST` | `localhost` | HTTP server host |
+| `DB_PATH` | `./oneoff.db` | SQLite database path |
+| `WORKERS_COUNT` | `0` | Worker count (0 = CPU cores / 2) |
+| `LOG_LEVEL` | `info` | Log level: debug, info, warn, error |
+| `DEFAULT_TIMEZONE` | `UTC` | Default timezone for jobs |
+| `DEFAULT_PRIORITY` | `5` | Default job priority (1-10) |
+
+### Example
 ```bash
-# Build everything
-make build
-
-# Build frontend only
-make frontend
-
-# Build backend only
-go build -o oneoff .
-
-# Run in development mode
-make dev
-
-# Run frontend in dev mode (with hot reload)
-bun start
+PORT=3000 DB_PATH=/var/lib/oneoff/data.db ./oneoff
 ```
 
-### Running Migrations
+---
 
-```bash
-./oneoff migrate --direction up
-./oneoff migrate --direction down
-```
+## API
 
-## API Documentation
+OneOff exposes a REST API for programmatic access.
 
 ### Jobs
+```bash
+# List jobs
+curl http://localhost:8080/api/jobs
 
-- `GET /api/jobs` - List jobs
-- `POST /api/jobs` - Create job
-- `GET /api/jobs/:id` - Get job details
-- `PATCH /api/jobs/:id` - Update job
-- `DELETE /api/jobs/:id` - Delete job
-- `POST /api/jobs/:id/execute` - Execute job immediately
-- `POST /api/jobs/:id/clone` - Clone job
-- `POST /api/jobs/:id/cancel` - Cancel job
+# Create job
+curl -X POST http://localhost:8080/api/jobs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Send reminder",
+    "type": "http",
+    "scheduled_at": "2025-01-15T09:00:00Z",
+    "config": "{\"url\":\"https://...\",\"method\":\"POST\"}"
+  }'
 
-### Executions
+# Execute immediately
+curl -X POST http://localhost:8080/api/jobs/{id}/execute
 
-- `GET /api/executions` - List executions
-- `GET /api/executions/:id` - Get execution details
+# Cancel job
+curl -X POST http://localhost:8080/api/jobs/{id}/cancel
+```
 
-### Projects
+### Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/jobs` | List all jobs |
+| `POST` | `/api/jobs` | Create job |
+| `GET` | `/api/jobs/:id` | Get job details |
+| `PATCH` | `/api/jobs/:id` | Update job |
+| `DELETE` | `/api/jobs/:id` | Delete job |
+| `POST` | `/api/jobs/:id/execute` | Execute now |
+| `POST` | `/api/jobs/:id/clone` | Clone job |
+| `POST` | `/api/jobs/:id/cancel` | Cancel job |
+| `GET` | `/api/executions` | List executions |
+| `GET` | `/api/projects` | List projects |
+| `GET` | `/api/tags` | List tags |
+| `GET` | `/api/system/status` | System stats |
+| `GET` | `/api/workers/status` | Worker status |
 
-- `GET /api/projects` - List projects
-- `POST /api/projects` - Create project
-- `PATCH /api/projects/:id` - Update project
-- `DELETE /api/projects/:id` - Delete project
+---
 
-### Tags
+## Use Cases
 
-- `GET /api/tags` - List tags
-- `POST /api/tags` - Create tag
-- `PATCH /api/tags/:id` - Update tag
-- `DELETE /api/tags/:id` - Delete tag
+**Trial Expirations** — Send emails when trials end
+**Scheduled Reports** — Generate and email weekly reports
+**Database Backups** — Run backups at off-peak hours
+**Deployment Triggers** — Schedule deployments for maintenance windows
+**Webhook Notifications** — Send Slack/Discord alerts at specific times
+**Data Cleanup** — Schedule retention policy enforcement
+**API Polling** — Check external services at specific times
 
-### System
-
-- `GET /api/system/status` - Get system stats
-- `GET /api/system/config` - Get configuration
-- `PATCH /api/system/config` - Update configuration
-- `GET /api/workers/status` - Get worker status
-- `GET /api/job-types` - Get available job types
+---
 
 ## Architecture
 
-### Backend (Go)
+```
+┌─────────────────────────────────────────────────────┐
+│                    OneOff Binary                    │
+├─────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │   Vue 3 UI  │  │  REST API   │  │   Workers   │ │
+│  │  (embedded) │  │  (Go net)   │  │   (pool)    │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘ │
+├─────────────────────────────────────────────────────┤
+│                    SQLite Database                  │
+└─────────────────────────────────────────────────────┘
+```
 
-- **CLI**: urfave/cli/v3
-- **Config**: caarlos0/env/v11
-- **HTTP Client**: imroc/req/v3
-- **Database**: SQLite with golang-migrate
-- **Logging**: zerolog
+- **Frontend**: Vue 3 + Naive UI, embedded in binary
+- **Backend**: Go standard library, no web framework
+- **Database**: SQLite with automatic migrations
+- **Workers**: Configurable worker pool with priority queue
 
-### Frontend (Vue 3)
+---
 
-- **Framework**: Vue 3 with Composition API
-- **Build Tool**: Vite (optimized bundling)
-- **UI Components**: Naive UI (tree-shakable)
-- **HTTP Client**: ky (with retry)
-- **State Management**: Pinia
-- **Routing**: Vue Router
+## Comparison
 
-### Key Design Decisions
+| Feature | OneOff | Celery | Airflow | Rundeck |
+|---------|--------|--------|---------|---------|
+| Setup time | 30 sec | Hours | Hours | Hours |
+| Dependencies | 0 | Redis + DB | DB + Scheduler | Java + DB |
+| Memory | ~20MB | 500MB+ | 1GB+ | 1GB+ |
+| Binary size | ~15MB | N/A | N/A | N/A |
+| Learning curve | Minimal | Steep | Steep | Moderate |
+| Best for | One-time jobs | Recurring tasks | Data pipelines | Runbooks |
 
-1. **Single Binary**: Frontend embedded into Go binary for easy deployment
-2. **SQLite**: No external database required, perfect for single-node deployments
-3. **Worker Pool**: Configurable concurrency with graceful shutdown
-4. **Job Registry**: Plugin-based architecture for extensible job types
-5. **12-Factor App**: All configuration via environment variables
-6. **Fail Fast**: Missing required configuration fails at startup
+---
 
-## License
+## Development
 
-MIT License - see LICENSE file for details
+```bash
+# Clone
+git clone https://github.com/meysam81/oneoff.git
+cd oneoff
+
+# Install dependencies
+make setup
+
+# Run backend (with hot reload)
+make dev
+
+# Run frontend (separate terminal)
+bun run start
+# or: npm run start
+
+# Build production binary
+make build
+```
+
+### Project Structure
+```
+oneoff/
+├── main.go              # CLI entry point
+├── internal/
+│   ├── config/          # Environment configuration
+│   ├── domain/          # Domain models
+│   ├── handler/         # HTTP handlers
+│   ├── jobs/            # Job executors (HTTP, Shell, Docker)
+│   ├── repository/      # SQLite data layer
+│   ├── service/         # Business logic
+│   ├── server/          # HTTP server + embedded frontend
+│   └── worker/          # Worker pool
+├── migrations/          # Database migrations
+└── src/                 # Vue 3 frontend
+```
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
+Contributions welcome! Please read the existing code style and open an issue before major changes.
 
-## Support
+```bash
+# Run tests
+make test
 
-For issues and questions:
+# Format code
+go fmt ./...
+```
 
-- GitHub Issues: https://github.com/meysam81/oneoff/issues
+---
+
+## License
+
+[MIT License](LICENSE) — Use it however you want.
+
+---
+
+<p align="center">
+  <strong>Built for developers who value simplicity.</strong><br>
+  <a href="https://github.com/meysam81/oneoff">Star on GitHub</a> •
+  <a href="https://github.com/meysam81/oneoff/issues">Report Issue</a>
+</p>

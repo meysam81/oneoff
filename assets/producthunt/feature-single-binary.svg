@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Feature: Single Binary - 1270x760 -->
+<svg width="1270" height="760" viewBox="0 0 1270 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#4F46E5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1270" height="760" fill="url(#bgGrad)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="1100" cy="150" r="200" fill="#6366F1" opacity="0.05"/>
+  <circle cx="170" cy="610" r="150" fill="#10B981" opacity="0.05"/>
+
+  <!-- Header -->
+  <text x="635" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+    Single Binary. Zero Dependencies.
+  </text>
+  <text x="635" y="145" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#94A3B8" text-anchor="middle">
+    Download, run, done. No package managers, no containers, no complexity.
+  </text>
+
+  <!-- Center comparison -->
+  <g transform="translate(100, 200)">
+    <!-- The Others - Complex -->
+    <g transform="translate(0, 0)">
+      <text x="250" y="0" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#EF4444" text-anchor="middle">
+        Traditional Schedulers
+      </text>
+
+      <!-- Dependency boxes -->
+      <g transform="translate(50, 40)">
+        <rect x="0" y="0" width="400" height="300" rx="12" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+
+        <!-- Redis -->
+        <g transform="translate(20, 20)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#DC2626" opacity="0.2" stroke="#DC2626" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#FCA5A5" text-anchor="middle">Redis Server</text>
+        </g>
+
+        <!-- PostgreSQL -->
+        <g transform="translate(210, 20)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#3B82F6" opacity="0.2" stroke="#3B82F6" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#93C5FD" text-anchor="middle">PostgreSQL</text>
+        </g>
+
+        <!-- Message Queue -->
+        <g transform="translate(20, 100)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#F59E0B" opacity="0.2" stroke="#F59E0B" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#FCD34D" text-anchor="middle">Message Queue</text>
+        </g>
+
+        <!-- Workers -->
+        <g transform="translate(210, 100)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#8B5CF6" opacity="0.2" stroke="#8B5CF6" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#C4B5FD" text-anchor="middle">Celery Workers</text>
+        </g>
+
+        <!-- Scheduler -->
+        <g transform="translate(20, 180)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#EC4899" opacity="0.2" stroke="#EC4899" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#F9A8D4" text-anchor="middle">Scheduler Service</text>
+        </g>
+
+        <!-- Web UI -->
+        <g transform="translate(210, 180)">
+          <rect x="0" y="0" width="170" height="60" rx="8" fill="#14B8A6" opacity="0.2" stroke="#14B8A6" stroke-width="1"/>
+          <text x="85" y="35" font-family="system-ui, sans-serif" font-size="14" fill="#5EEAD4" text-anchor="middle">Web Interface</text>
+        </g>
+
+        <!-- Connecting lines -->
+        <g stroke="#475569" stroke-width="1" stroke-dasharray="4,4" opacity="0.5">
+          <line x1="200" y1="80" x2="200" y2="100"/>
+          <line x1="105" y1="160" x2="105" y2="180"/>
+          <line x1="295" y1="160" x2="295" y2="180"/>
+          <line x1="190" y1="130" x2="210" y2="130"/>
+        </g>
+      </g>
+
+      <!-- Complexity indicator -->
+      <text x="250" y="380" font-family="system-ui, sans-serif" font-size="16" fill="#EF4444" text-anchor="middle">
+        6 services to manage
+      </text>
+    </g>
+
+    <!-- Arrow -->
+    <g transform="translate(535, 180)">
+      <text x="0" y="0" font-family="system-ui, sans-serif" font-size="64" fill="#64748B">→</text>
+    </g>
+
+    <!-- OneOff - Simple -->
+    <g transform="translate(620, 0)">
+      <text x="250" y="0" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#10B981" text-anchor="middle">
+        OneOff
+      </text>
+
+      <!-- Single box -->
+      <g transform="translate(50, 40)">
+        <rect x="0" y="0" width="400" height="300" rx="12" fill="#1E293B" stroke="#10B981" stroke-width="2"/>
+
+        <!-- Single binary visualization -->
+        <g transform="translate(100, 60)">
+          <rect x="0" y="0" width="200" height="180" rx="12" fill="url(#accentGrad)"/>
+
+          <!-- Binary icon -->
+          <g transform="translate(70, 30)">
+            <rect x="0" y="0" width="60" height="80" rx="4" fill="#FFFFFF" opacity="0.9"/>
+            <text x="30" y="50" font-family="monospace" font-size="28" fill="#4F46E5" text-anchor="middle" font-weight="700">1</text>
+          </g>
+
+          <text x="100" y="140" font-family="system-ui, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">
+            oneoff
+          </text>
+          <text x="100" y="160" font-family="monospace" font-size="11" fill="#E0E7FF" text-anchor="middle">
+            ~15MB binary
+          </text>
+        </g>
+      </g>
+
+      <!-- Simplicity indicator -->
+      <text x="250" y="380" font-family="system-ui, sans-serif" font-size="16" fill="#10B981" text-anchor="middle">
+        1 binary, everything included
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom command -->
+  <g transform="translate(335, 620)">
+    <rect x="0" y="0" width="600" height="60" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <text x="20" y="38" font-family="monospace" font-size="18" fill="#94A3B8">$</text>
+    <text x="45" y="38" font-family="monospace" font-size="18" fill="#10B981">./oneoff</text>
+    <text x="145" y="38" font-family="monospace" font-size="18" fill="#64748B"># That's it. You're done.</text>
+  </g>
+</svg>

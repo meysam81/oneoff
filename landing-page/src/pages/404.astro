@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Button from '../components/ui/Button.astro';
+import Icon from '../components/icons/index.astro';
+---
+
+<BaseLayout title="404 — Page Not Found" noindex>
+  <div class="min-h-screen flex items-center justify-center relative">
+    <!-- Background effects -->
+    <div class="absolute inset-0 grid-bg opacity-30"></div>
+    <div class="absolute inset-0 bg-gradient-radial from-transparent via-bg-primary to-bg-primary"></div>
+
+    <Container size="sm" class="relative z-10 text-center py-20">
+      <!-- Terminal window -->
+      <div class="terminal-window max-w-xl mx-auto text-left mb-10">
+        <div class="terminal-header">
+          <div class="flex items-center gap-2">
+            <span class="terminal-dot terminal-dot-red"></span>
+            <span class="terminal-dot terminal-dot-yellow"></span>
+            <span class="terminal-dot terminal-dot-green"></span>
+          </div>
+          <span class="text-xs text-fg-muted ml-4">bash — 404</span>
+        </div>
+        <div class="terminal-body space-y-3">
+          <div class="code-line">
+            <span class="code-prompt">$</span>
+            <span class="code-command"> cd /requested-page</span>
+          </div>
+          <div class="code-line">
+            <span class="text-error">bash: cd: /requested-page: No such file or directory</span>
+          </div>
+          <div class="code-line mt-4">
+            <span class="code-prompt">$</span>
+            <span class="code-command"> find / -name "requested-page" 2>/dev/null</span>
+          </div>
+          <div class="code-line text-fg-muted italic">
+            [no results]
+          </div>
+          <div class="code-line mt-4">
+            <span class="code-prompt">$</span>
+            <span class="code-command"> echo "Maybe try one of these?"</span>
+          </div>
+          <div class="code-line">
+            <span class="text-fg-secondary">Maybe try one of these?</span>
+          </div>
+          <div class="code-line">
+            <span class="code-prompt">$</span>
+            <span class="cursor-blink"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error info -->
+      <div class="mb-8">
+        <h1 class="text-6xl font-display font-bold text-accent-primary mb-4">404</h1>
+        <p class="text-xl text-fg-secondary">
+          The page you're looking for doesn't exist.
+        </p>
+      </div>
+
+      <!-- Navigation links -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+        <Button href="/">
+          <Icon name="home" size={18} />
+          Return to Home
+        </Button>
+        <Button href="/catalog" variant="secondary">
+          Browse Catalog
+        </Button>
+      </div>
+
+      <!-- Additional links -->
+      <div class="flex items-center justify-center gap-6 text-sm text-fg-muted">
+        <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors flex items-center gap-1">
+          <Icon name="github" size={16} />
+          GitHub
+        </a>
+        <a href="https://github.com/meysam81/oneoff#readme" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors">
+          Documentation
+        </a>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>
+
+<style>
+  .bg-gradient-radial {
+    background: radial-gradient(circle at center, transparent 0%, var(--bg-primary) 70%);
+  }
+</style>

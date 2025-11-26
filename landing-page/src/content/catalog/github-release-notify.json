@@ -1,0 +1,25 @@
+{
+  "id": "github-release-notify",
+  "name": "GitHub Release Notification",
+  "description": "Trigger a webhook when a new release is published. Perfect for CI/CD pipelines, deployment automation, or team notifications.",
+  "category": "cicd",
+  "author": {
+    "name": "Example Contributor",
+    "github": "meysam81"
+  },
+  "job": {
+    "type": "http",
+    "config": {
+      "url": "${WEBHOOK_URL}",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${WEBHOOK_TOKEN}"
+      },
+      "body": "{\"event\": \"release\", \"repository\": \"${REPO_NAME}\", \"version\": \"${VERSION}\", \"timestamp\": \"${TIMESTAMP}\"}",
+      "timeout": 15
+    }
+  },
+  "tags": ["github", "release", "ci-cd", "webhook", "automation"],
+  "created_at": "2025-01-17"
+}

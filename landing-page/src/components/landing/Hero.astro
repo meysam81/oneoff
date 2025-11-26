@@ -1,0 +1,140 @@
+---
+import Container from '../ui/Container.astro';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+import Icon from '../icons/index.astro';
+---
+
+<section class="relative min-h-screen flex items-center py-20 overflow-hidden">
+  <!-- Background effects -->
+  <div class="absolute inset-0 grid-bg opacity-50"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-bg-primary/50 to-bg-primary"></div>
+
+  <!-- Floating terminal windows (decorative) -->
+  <div class="absolute top-1/4 -left-20 w-72 h-48 bg-bg-secondary/20 rounded-lg border border-border-subtle transform -rotate-6 blur-sm opacity-30 hidden lg:block"></div>
+  <div class="absolute bottom-1/4 -right-20 w-80 h-56 bg-bg-secondary/20 rounded-lg border border-border-subtle transform rotate-6 blur-sm opacity-30 hidden lg:block"></div>
+
+  <Container size="xl" class="relative z-10">
+    <div class="max-w-4xl mx-auto text-center">
+      <!-- Badge -->
+      <div class="mb-8 animate-fade-in">
+        <Badge variant="accent">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
+            v1.0 &bull; Open Source
+          </span>
+        </Badge>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-4xl sm:text-5xl md:text-display font-display font-bold text-fg-primary mb-6 animate-fade-in animate-delay-100">
+        One-time jobs.<br />
+        <span class="text-accent-primary text-glow">Zero dependencies.</span>
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="text-lg md:text-xl text-fg-secondary max-w-2xl mx-auto mb-10 animate-fade-in animate-delay-200">
+        The modern <code class="bg-bg-tertiary px-2 py-1 rounded text-accent-primary font-mono">at</code> command.
+        Schedule HTTP webhooks, shell scripts, and Docker containers to run once at a specific time.
+        Single binary. Self-hosted. Done.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in animate-delay-300">
+        <Button href="#installation" size="lg">
+          <Icon name="download" size={20} />
+          Download for Linux
+        </Button>
+        <Button href="https://github.com/meysam81/oneoff" variant="secondary" size="lg" external>
+          <Icon name="github" size={20} />
+          View on GitHub
+          <img
+            src="https://img.shields.io/github/stars/meysam81/oneoff?style=flat&color=22d3ee&labelColor=111113"
+            alt="GitHub stars"
+            class="h-5 ml-1"
+            loading="lazy"
+          />
+        </Button>
+      </div>
+
+      <!-- Terminal Animation -->
+      <div class="animate-fade-in animate-delay-500">
+        <div class="terminal-window max-w-2xl mx-auto text-left shadow-2xl">
+          <div class="terminal-header">
+            <div class="flex items-center gap-2">
+              <span class="terminal-dot terminal-dot-red"></span>
+              <span class="terminal-dot terminal-dot-yellow"></span>
+              <span class="terminal-dot terminal-dot-green"></span>
+            </div>
+            <span class="text-xs text-fg-muted ml-4">Terminal</span>
+          </div>
+          <div class="terminal-body" id="hero-terminal">
+            <div class="code-line">
+              <span class="code-prompt">$</span>
+              <span class="code-command" id="cmd-1"> curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff</span>
+            </div>
+            <div class="code-line opacity-0" id="line-2">
+              <span class="code-prompt">$</span>
+              <span class="code-command"> chmod +x oneoff</span>
+            </div>
+            <div class="code-line opacity-0" id="line-3">
+              <span class="code-prompt">$</span>
+              <span class="code-command"> ./oneoff</span>
+            </div>
+            <div class="code-line opacity-0" id="line-4">
+              <span class="code-output">→ Server running at http://localhost:8080</span>
+            </div>
+            <div class="code-line mt-2 opacity-0" id="line-5">
+              <span class="text-success">✓ Ready to schedule jobs!</span>
+              <span class="cursor-blink"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+    <svg class="w-6 h-6 text-fg-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+    </svg>
+  </div>
+</section>
+
+<script>
+  // Terminal typewriter animation
+  function animateTerminal() {
+    const lines = [
+      { id: 'line-2', delay: 1500 },
+      { id: 'line-3', delay: 2200 },
+      { id: 'line-4', delay: 3000 },
+      { id: 'line-5', delay: 3800 },
+    ];
+
+    lines.forEach(({ id, delay }) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.remove('opacity-0');
+          el.classList.add('animate-fade-in');
+        }
+      }, delay);
+    });
+  }
+
+  // Run animation when element is in view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateTerminal();
+        observer.disconnect();
+      }
+    });
+  });
+
+  const terminal = document.getElementById('hero-terminal');
+  if (terminal) {
+    observer.observe(terminal);
+  }
+</script>

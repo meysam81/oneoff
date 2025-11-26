@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import Icon from '../../components/icons/index.astro';
+import JobPreview from '../../components/catalog/JobPreview.vue';
+
+export async function getStaticPaths() {
+  const templateFiles = import.meta.glob('../../content/catalog/*.json', { eager: true });
+
+  return Object.values(templateFiles).map((mod: any) => {
+    const template = mod.default || mod;
+    return {
+      params: { id: template.id },
+      props: { template },
+    };
+  });
+}
+
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  tags: string[];
+  author: {
+    name: string;
+    github: string;
+  };
+  job: {
+    type: string;
+    config: Record<string, unknown>;
+  };
+  created_at: string;
+}
+
+interface Props {
+  template: Template;
+}
+
+const { template } = Astro.props;
+---
+
+<BaseLayout
+  title={`${template.name} — OneOff Catalog`}
+  description={template.description}
+>
+  <!-- Header -->
+  <header class="border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md sticky top-0 z-50">
+    <Container size="xl">
+      <nav class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2 text-fg-primary hover:text-accent-primary transition-colors">
+          <Icon name="clock" size={24} class="text-accent-primary" />
+          <span class="font-display font-semibold text-lg">OneOff</span>
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="/catalog" class="text-fg-secondary hover:text-fg-primary text-sm transition-colors">
+            Catalog
+          </a>
+          <a
+            href="https://github.com/meysam81/oneoff"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-fg-muted hover:text-fg-primary transition-colors"
+          >
+            <Icon name="github" size={20} />
+          </a>
+        </div>
+      </nav>
+    </Container>
+  </header>
+
+  <main class="py-12 md:py-20">
+    <Container size="xl">
+      <!-- Back link -->
+      <a
+        href="/catalog"
+        class="inline-flex items-center gap-2 text-fg-muted hover:text-fg-primary text-sm mb-8 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Catalog
+      </a>
+
+      <!-- Warning Banner -->
+      <aside class="warning-banner mb-8">
+        <Icon name="alertTriangle" size={24} class="text-warning flex-shrink-0 mt-0.5" />
+        <div>
+          <strong>Community Template — Review Before Use</strong>
+          <p>
+            This template is community-contributed and has NOT been verified by OneOff maintainers.
+            Review the configuration carefully before importing. Scripts may execute arbitrary code on your system.
+          </p>
+        </div>
+      </aside>
+
+      <!-- Template Preview -->
+      <JobPreview client:load template={template} />
+    </Container>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-border-subtle py-8 mt-12">
+    <Container size="xl">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
+        <p>&copy; {new Date().getFullYear()} OneOff Contributors. Open source under MIT License.</p>
+        <div class="flex items-center gap-6">
+          <a href="/terms" class="hover:text-fg-secondary transition-colors">Terms</a>
+          <a href="/privacy" class="hover:text-fg-secondary transition-colors">Privacy</a>
+          <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors">
+            <Icon name="github" size={20} />
+          </a>
+        </div>
+      </div>
+    </Container>
+  </footer>
+</BaseLayout>

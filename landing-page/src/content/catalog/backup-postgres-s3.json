@@ -1,0 +1,25 @@
+{
+  "id": "backup-postgres-s3",
+  "name": "PostgreSQL Backup to S3",
+  "description": "Dump PostgreSQL database and upload to S3 bucket using pg_dump and AWS CLI. Perfect for scheduled database backups with automatic cloud storage.",
+  "category": "backup",
+  "author": {
+    "name": "Example Contributor",
+    "github": "meysam81"
+  },
+  "job": {
+    "type": "shell",
+    "config": {
+      "script": "#!/bin/bash\nset -e\nDUMP_FILE=\"/tmp/backup-$(date +%Y%m%d-%H%M%S).sql\"\necho \"Starting PostgreSQL backup...\"\npg_dump $DATABASE_URL > $DUMP_FILE\necho \"Uploading to S3...\"\naws s3 cp $DUMP_FILE s3://$S3_BUCKET/backups/\nrm $DUMP_FILE\necho \"Backup completed successfully!\"",
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}",
+        "S3_BUCKET": "${S3_BUCKET}",
+        "AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY": "${AWS_SECRET_ACCESS_KEY}"
+      },
+      "timeout": 300
+    }
+  },
+  "tags": ["postgres", "s3", "backup", "aws", "database"],
+  "created_at": "2025-01-15"
+}

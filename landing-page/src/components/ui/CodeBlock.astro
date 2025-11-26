@@ -1,0 +1,39 @@
+---
+interface Props {
+  title?: string;
+  language?: string;
+  showLineNumbers?: boolean;
+  class?: string;
+}
+
+const {
+  title = 'Terminal',
+  language = 'bash',
+  showLineNumbers = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`terminal-window ${className}`}>
+  <div class="terminal-header">
+    <div class="flex items-center gap-2">
+      <span class="terminal-dot terminal-dot-red"></span>
+      <span class="terminal-dot terminal-dot-yellow"></span>
+      <span class="terminal-dot terminal-dot-green"></span>
+    </div>
+    <span class="text-xs text-fg-muted ml-4">{title}</span>
+  </div>
+  <div class="terminal-body overflow-x-auto">
+    <pre class={`language-${language}`}><code><slot /></code></pre>
+  </div>
+</div>
+
+<style>
+  pre {
+    @apply m-0 bg-transparent;
+  }
+
+  code {
+    @apply text-sm leading-relaxed;
+  }
+</style>

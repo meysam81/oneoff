@@ -1,0 +1,24 @@
+{
+  "id": "docker-cleanup",
+  "name": "Docker System Prune",
+  "description": "Clean up unused Docker resources including stopped containers, unused images, and dangling volumes. Helps reclaim disk space on Docker hosts.",
+  "category": "devops",
+  "author": {
+    "name": "Example Contributor",
+    "github": "meysam81"
+  },
+  "job": {
+    "type": "docker",
+    "config": {
+      "image": "docker:cli",
+      "command": ["sh", "-c", "docker system prune -af --volumes && echo 'Cleanup completed!'"],
+      "volumes": {
+        "/var/run/docker.sock": "/var/run/docker.sock"
+      },
+      "auto_remove": true,
+      "timeout": 120
+    }
+  },
+  "tags": ["docker", "cleanup", "maintenance", "disk-space"],
+  "created_at": "2025-01-15"
+}

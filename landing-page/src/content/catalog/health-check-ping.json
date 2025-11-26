@@ -1,0 +1,28 @@
+{
+  "id": "health-check-ping",
+  "name": "HTTP Health Check Ping",
+  "description": "Perform a simple HTTP health check against any endpoint. Useful for monitoring services, triggering keep-alive requests, or validating deployments.",
+  "category": "monitoring",
+  "author": {
+    "name": "Example Contributor",
+    "github": "meysam81"
+  },
+  "job": {
+    "type": "http",
+    "config": {
+      "url": "${HEALTH_CHECK_URL}",
+      "method": "GET",
+      "headers": {
+        "User-Agent": "OneOff-HealthCheck/1.0"
+      },
+      "timeout": 30,
+      "expected_status": [200, 201, 204],
+      "retry": {
+        "attempts": 2,
+        "delay": 5000
+      }
+    }
+  },
+  "tags": ["monitoring", "health-check", "http", "uptime"],
+  "created_at": "2025-01-16"
+}

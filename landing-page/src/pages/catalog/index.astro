@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import Icon from '../../components/icons/index.astro';
+import CatalogSearch from '../../components/catalog/CatalogSearch.vue';
+import CatalogGrid from '../../components/catalog/CatalogGrid.vue';
+
+// Import all template JSON files from content/catalog
+const templateFiles = import.meta.glob('../../content/catalog/*.json', { eager: true });
+
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  tags: string[];
+  author: {
+    name: string;
+    github: string;
+  };
+  job: {
+    type: string;
+    config: Record<string, unknown>;
+  };
+  created_at: string;
+}
+
+const templates: Template[] = Object.values(templateFiles).map((mod: any) => mod.default || mod);
+---
+
+<BaseLayout
+  title="Job Template Catalog — OneOff"
+  description="Community-contributed job templates for OneOff. Import HTTP, Shell, and Docker job configurations directly into your scheduler."
+>
+  <!-- Header -->
+  <header class="border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md sticky top-0 z-50">
+    <Container size="xl">
+      <nav class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2 text-fg-primary hover:text-accent-primary transition-colors">
+          <Icon name="clock" size={24} class="text-accent-primary" />
+          <span class="font-display font-semibold text-lg">OneOff</span>
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="/" class="text-fg-secondary hover:text-fg-primary text-sm transition-colors">
+            Home
+          </a>
+          <a
+            href="https://github.com/meysam81/oneoff"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-fg-muted hover:text-fg-primary transition-colors"
+          >
+            <Icon name="github" size={20} />
+          </a>
+        </div>
+      </nav>
+    </Container>
+  </header>
+
+  <main class="py-12 md:py-20">
+    <Container size="xl">
+      <!-- Hero -->
+      <div class="text-center mb-12">
+        <h1 class="text-headline font-display font-bold text-fg-primary mb-4">
+          Job Template Catalog
+        </h1>
+        <p class="text-lg text-fg-secondary max-w-2xl mx-auto">
+          Community-contributed job templates. Import directly into your OneOff instance with a single API call.
+        </p>
+      </div>
+
+      <!-- Warning Banner -->
+      <aside class="warning-banner mb-8">
+        <Icon name="alertTriangle" size={24} class="text-warning flex-shrink-0 mt-0.5" />
+        <div>
+          <strong>Community Templates — Use at Your Own Risk</strong>
+          <p>
+            These templates are contributed by the community and are NOT verified, reviewed,
+            or endorsed by the OneOff maintainers. Templates may contain scripts that execute
+            arbitrary code on your system. Always review template contents before importing.
+            The OneOff project and its contributors accept no liability for damages caused by
+            community templates.
+          </p>
+        </div>
+      </aside>
+
+      <!-- Search & Filters -->
+      <div class="mb-8">
+        <CatalogSearch client:load templates={templates} />
+      </div>
+
+      <!-- Catalog Grid -->
+      <CatalogGrid client:load templates={templates} />
+
+      <!-- Contribute Section -->
+      <div class="mt-20 pt-12 border-t border-border-subtle">
+        <div class="max-w-3xl mx-auto">
+          <div class="text-center mb-8">
+            <h2 class="text-title font-display font-semibold text-fg-primary mb-2">
+              Contribute a Template
+            </h2>
+            <p class="text-fg-secondary">
+              Share your useful job configurations with the community.
+            </p>
+          </div>
+
+          <div class="bg-bg-secondary rounded-xl border border-border-subtle p-6 md:p-8">
+            <div class="prose prose-invert max-w-none text-sm">
+              <h3 class="text-base font-semibold text-fg-primary mb-4">How to Submit a Template</h3>
+
+              <ol class="space-y-4 text-fg-secondary">
+                <li>
+                  <strong class="text-fg-primary">Fork the repository:</strong>
+                  <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="text-accent-primary hover:underline">
+                    github.com/meysam81/oneoff
+                  </a>
+                </li>
+                <li>
+                  <strong class="text-fg-primary">Create your template file:</strong>
+                  Add a JSON file to <code class="bg-bg-tertiary px-1.5 py-0.5 rounded text-xs">landing-page/src/content/catalog/</code>
+                </li>
+                <li>
+                  <strong class="text-fg-primary">Follow the schema:</strong>
+                  <div class="terminal-window mt-2">
+                    <div class="terminal-header">
+                      <div class="flex items-center gap-2">
+                        <span class="terminal-dot terminal-dot-red"></span>
+                        <span class="terminal-dot terminal-dot-yellow"></span>
+                        <span class="terminal-dot terminal-dot-green"></span>
+                      </div>
+                      <span class="text-xs text-fg-muted ml-4">template-schema.json</span>
+                    </div>
+                    <div class="terminal-body">
+                      <pre class="text-xs"><code>{`{
+  "id": "unique-template-id",
+  "name": "Human Readable Name",
+  "description": "What this template does",
+  "category": "backup|monitoring|cicd|database|api|devops|reporting|misc",
+  "author": {
+    "name": "Your Name",
+    "github": "your-github-username"
+  },
+  "job": {
+    "type": "http|shell|docker",
+    "config": { ... }
+  },
+  "tags": ["tag1", "tag2"],
+  "created_at": "2025-01-15"
+}`}</code></pre>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <strong class="text-fg-primary">Submit a Pull Request:</strong>
+                  Include a description of what your template does and any prerequisites.
+                </li>
+              </ol>
+
+              <div class="mt-6 p-4 bg-bg-tertiary rounded-lg border border-border-subtle">
+                <h4 class="text-sm font-semibold text-fg-primary mb-2">Template Guidelines</h4>
+                <ul class="space-y-1 text-xs text-fg-muted list-disc list-inside">
+                  <li>Never include secrets, API keys, or credentials in templates</li>
+                  <li>Clearly document any required environment variables</li>
+                  <li>Verify your template works before submitting</li>
+                  <li>Use lowercase kebab-case for IDs (e.g., <code>backup-postgres-s3</code>)</li>
+                  <li>One job per template — don't combine unrelated tasks</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-border-subtle py-8">
+    <Container size="xl">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
+        <p>&copy; {new Date().getFullYear()} OneOff Contributors. Open source under MIT License.</p>
+        <div class="flex items-center gap-6">
+          <a href="/terms" class="hover:text-fg-secondary transition-colors">Terms</a>
+          <a href="/privacy" class="hover:text-fg-secondary transition-colors">Privacy</a>
+          <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors">
+            <Icon name="github" size={20} />
+          </a>
+        </div>
+      </div>
+    </Container>
+  </footer>
+</BaseLayout>

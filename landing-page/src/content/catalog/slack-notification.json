@@ -1,0 +1,28 @@
+{
+  "id": "slack-notification",
+  "name": "Slack Webhook Notification",
+  "description": "Send a message to a Slack channel via incoming webhook. Great for deployment notifications, alerts, and scheduled announcements.",
+  "category": "api",
+  "author": {
+    "name": "Example Contributor",
+    "github": "meysam81"
+  },
+  "job": {
+    "type": "http",
+    "config": {
+      "url": "${SLACK_WEBHOOK_URL}",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "{\"text\": \"${MESSAGE}\", \"username\": \"OneOff Bot\", \"icon_emoji\": \":robot_face:\"}",
+      "timeout": 10,
+      "retry": {
+        "attempts": 3,
+        "delay": 1000
+      }
+    }
+  },
+  "tags": ["slack", "notification", "webhook", "alerts"],
+  "created_at": "2025-01-15"
+}

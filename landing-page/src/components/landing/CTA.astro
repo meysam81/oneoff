@@ -2,6 +2,9 @@
 import Container from '../ui/Container.astro';
 import Button from '../ui/Button.astro';
 import Icon from '../icons/index.astro';
+import { getGitHubData } from '../../utils/github';
+
+const { binarySize } = await getGitHubData();
 ---
 
 <section class="section relative overflow-hidden">
@@ -51,7 +54,7 @@ import Icon from '../icons/index.astro';
           <div class="hidden sm:block w-1 h-1 rounded-full bg-fg-muted"></div>
           <div class="flex items-center gap-2">
             <Icon name="package" size={18} />
-            <span>Single Binary • ~15MB</span>
+            <span>Single Binary • {binarySize}</span>
           </div>
         </div>
       </div>

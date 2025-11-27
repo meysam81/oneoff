@@ -2,6 +2,9 @@
 import Container from '../ui/Container.astro';
 import Card from '../ui/Card.astro';
 import Icon from '../icons/index.astro';
+import { getGitHubData } from '../../utils/github';
+
+const { binarySize } = await getGitHubData();
 
 const features = [
   {
@@ -79,7 +82,7 @@ const features = [
               </div>
               <div>
                 <div class="font-mono text-sm text-fg-primary">oneoff</div>
-                <div class="text-xs text-fg-muted">~15MB • Self-contained</div>
+                <div class="text-xs text-fg-muted">{binarySize} • Self-contained</div>
               </div>
             </div>
             <div class="mt-4 flex items-center gap-2 text-xs text-fg-muted">

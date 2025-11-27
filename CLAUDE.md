@@ -2,9 +2,9 @@
 
 This document provides comprehensive guidance for AI assistants working on the OneOff codebase. It explains the architecture, conventions, workflows, and important considerations for making changes.
 
-**Last Updated**: 2025-11-26
-**Codebase Size**: ~7,300 lines across 49 source files
-**Version**: 1.0.0
+**Last Updated**: 2025-11-27
+**Codebase Size**: ~10,300 lines across 77 source files
+**Version**: 1.0.2
 
 ---
 
@@ -36,6 +36,7 @@ This document provides comprehensive guidance for AI assistants working on the O
 - Project organization and tag system
 - Real-time worker monitoring
 - Job chaining for sequential execution
+- Landing page with job template catalog
 
 ### Key Design Goals
 
@@ -84,7 +85,6 @@ This document provides comprehensive guidance for AI assistants working on the O
 - **Domain Models** (`internal/domain/models.go`): Core business entities
 - **Domain Interfaces** (`internal/domain/job.go`): Contracts for job executors
 - **Domain Errors** (`internal/domain/errors.go`): Business rule violations
-- **Repository Interface** (`internal/domain/repository.go`): Data access contract
 
 #### 3. Plugin Architecture (Job Registry)
 
@@ -178,17 +178,13 @@ internal/
 │
 ├── domain/             # Domain models and interfaces
 │   ├── models.go       # Core entities (Job, Execution, Project, etc.)
-│   ├── job.go          # JobExecutor interface
-│   ├── errors.go       # Domain errors (ErrNotFound, ErrInvalidPriority, etc.)
-│   └── registry.go     # Job type registry
+│   ├── job.go          # JobExecutor interface and registry
+│   └── errors.go       # Domain errors (ErrNotFound, ErrInvalidPriority, etc.)
 │
 ├── handler/            # HTTP request handlers
 │   ├── handler.go      # Base handler with common utilities
 │   ├── job.go          # Job endpoints (CRUD, execute, clone, cancel)
-│   ├── execution.go    # Execution endpoints
-│   ├── project.go      # Project endpoints
-│   ├── tag.go          # Tag endpoints
-│   └── misc.go         # System/worker/job-type endpoints
+│   └── misc.go         # System/worker/job-type/project/tag endpoints
 │
 ├── jobs/               # Job executor implementations
 │   ├── http.go         # HTTP request job (with retry)
@@ -247,11 +243,39 @@ src/
 │   └── system.js       # System state and config
 │
 ├── utils/              # Utility functions
-│   └── api.js          # API client factory
+│   ├── api.js          # API client factory
+│   ├── cache.js        # LocalStorage cache with TTL
+│   └── debounce.js     # Debounce and throttle utilities
 │
 ├── App.vue             # Root component
+├── config.js           # API base URL configuration
 ├── main.js             # Application entry point
 └── router.js           # Vue Router configuration
+```
+
+### Landing Page Directory (`landing-page/`)
+
+A separate Astro-based marketing website with job template catalog:
+
+```
+landing-page/
+├── src/
+│   ├── components/
+│   │   ├── ui/           # Reusable UI primitives (Button, Card, etc.)
+│   │   ├── landing/      # Landing page sections (Hero, Features, etc.)
+│   │   ├── catalog/      # Vue components for job catalog
+│   │   │   ├── CatalogGrid.vue
+│   │   │   ├── CatalogSearch.vue
+│   │   │   └── JobPreview.vue
+│   │   └── icons/        # SVG icon components
+│   ├── layouts/          # Page layouts (BaseLayout, LegalLayout)
+│   ├── pages/            # Route pages (index, catalog, privacy, terms)
+│   ├── content/
+│   │   └── catalog/      # Job template JSON files
+│   └── styles/           # Global CSS with Tailwind
+├── public/               # Static assets (favicon, robots.txt)
+├── astro.config.mjs      # Astro configuration
+└── tailwind.config.mjs   # Tailwind CSS configuration
 ```
 
 ### Configuration Files
@@ -269,7 +293,7 @@ src/
 
 ## Technology Stack
 
-### Backend (Go 1.25+)
+### Backend (Go 1.25.4)
 
 | Package                     | Purpose                    | Notes                            |
 | --------------------------- | -------------------------- | -------------------------------- |
@@ -286,13 +310,22 @@ src/
 | Package             | Purpose          | Notes                            |
 | ------------------- | ---------------- | -------------------------------- |
 | `vue@^3.5`          | Framework        | Composition API, SFCs            |
-| `vue-router@^4.5`   | Routing          | SPA navigation                   |
+| `vue-router@^4.6`   | Routing          | SPA navigation                   |
 | `pinia@^2.3`        | State management | Vue store                        |
-| `naive-ui@^2.40`    | UI components    | Tree-shakable, dark theme        |
-| `ky@^1.7`           | HTTP client      | Lightweight, retry logic         |
+| `naive-ui@^2.43`    | UI components    | Tree-shakable, dark theme        |
+| `ky@^1.14`          | HTTP client      | Lightweight, retry logic         |
 | `date-fns@^4.1`     | Date utilities   | Date formatting and manipulation |
+| `highlight.js@^11`  | Syntax highlight | Code highlighting in UI          |
 | `@vicons/ionicons5` | Icons            | Icon components                  |
-| `vite@^6.0`         | Build tool       | Fast HMR, optimized bundling     |
+| `vite@^7.2`         | Build tool       | Fast HMR, optimized bundling     |
+
+### Landing Page (Astro 5)
+
+| Package               | Purpose          | Notes                            |
+| --------------------- | ---------------- | -------------------------------- |
+| `astro@^5`            | Framework        | Static site generator            |
+| `vue@^3`              | Interactive      | Vue islands for interactivity    |
+| `tailwindcss`         | Styling          | Utility-first CSS                |
 
 ---
 
@@ -333,8 +366,8 @@ go build -o oneoff .
 make dev
 
 # Run frontend with hot reload (separate terminal)
-bun run dev
-# Access Vite dev server at http://localhost:5173
+npm run start
+# Access Vite dev server at http://localhost:3000
 # API calls proxy to http://localhost:8080
 
 # Run tests
@@ -345,6 +378,10 @@ make clean
 
 # Run migrations manually
 ./oneoff migrate --direction up
+
+# Landing page development
+cd landing-page && npm run dev
+# Access at http://localhost:4321
 ```
 
 ### Git Workflow
@@ -831,6 +868,39 @@ EOF
 
 3. **Update repository** to add new queries
 
+### Adding a Job Template to the Catalog
+
+The landing page includes a catalog of reusable job templates. To add a new template:
+
+1. **Create a JSON file** in `landing-page/src/content/catalog/`:
+
+```json
+{
+  "id": "my-template-id",
+  "name": "Human Readable Name",
+  "description": "What this template does",
+  "category": "backup|monitoring|cicd|database|api|devops|reporting|misc",
+  "author": {
+    "name": "Your Name",
+    "github": "your-github-username"
+  },
+  "job": {
+    "type": "http|shell|docker",
+    "config": {
+      // Job-specific configuration
+    }
+  },
+  "tags": ["tag1", "tag2"],
+  "created_at": "YYYY-MM-DD"
+}
+```
+
+2. **Guidelines**:
+   - Use lowercase kebab-case for template IDs
+   - Never include secrets, API keys, or credentials
+   - Document required environment variables in description
+   - One job per template file
+
 ---
 
 ## Testing Strategy
@@ -1069,7 +1139,7 @@ apk add gcc musl-dev
 
 #### 2. Frontend Build Issues
 
-**Problem**: `bun run build` fails
+**Problem**: `npm run build` fails
 
 ```
 ENOENT: no such file or directory, mkdir 'internal/server/dist'
@@ -1079,7 +1149,7 @@ ENOENT: no such file or directory, mkdir 'internal/server/dist'
 
 ```bash
 mkdir -p internal/server/dist
-bun run build
+npm run build
 ```
 
 #### 3. Migration Failures
@@ -1129,7 +1199,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
    make dev
 
    # Terminal 2: Frontend with hot reload
-   bun run dev
+   npm run start
    ```
 
 2. **Enable Debug Logging**
@@ -1188,21 +1258,23 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 ### File Locations
 
-| What           | Where                           |
-| -------------- | ------------------------------- |
-| Entry point    | `main.go`                       |
-| Server setup   | `internal/server/server.go`     |
-| HTTP handlers  | `internal/handler/*.go`         |
-| Business logic | `internal/service/*.go`         |
-| Database       | `internal/repository/*.go`      |
-| Job executors  | `internal/jobs/*.go`            |
-| Domain models  | `internal/domain/*.go`          |
-| Migrations     | `migrations/*.sql`              |
-| Frontend entry | `src/main.js`                   |
-| Vue components | `src/components/*.vue`          |
-| Vue pages      | `src/views/*.vue`               |
-| API client     | `src/utils/api.js`              |
-| Stores         | `src/stores/*.js`               |
+| What             | Where                                    |
+| ---------------- | ---------------------------------------- |
+| Entry point      | `main.go`                                |
+| Server setup     | `internal/server/server.go`              |
+| HTTP handlers    | `internal/handler/*.go`                  |
+| Business logic   | `internal/service/*.go`                  |
+| Database         | `internal/repository/*.go`               |
+| Job executors    | `internal/jobs/*.go`                     |
+| Domain models    | `internal/domain/*.go`                   |
+| Migrations       | `migrations/*.sql`                       |
+| Frontend entry   | `src/main.js`                            |
+| Vue components   | `src/components/*.vue`                   |
+| Vue pages        | `src/views/*.vue`                        |
+| API client       | `src/utils/api.js`                       |
+| Stores           | `src/stores/*.js`                        |
+| Landing page     | `landing-page/src/`                      |
+| Job templates    | `landing-page/src/content/catalog/*.json`|
 
 ### Key Commands
 
@@ -1210,7 +1282,7 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 make setup      # First-time setup
 make build      # Production build
 make dev        # Development mode (backend)
-bun run dev     # Development mode (frontend)
+npm run start   # Development mode (frontend)
 make test       # Run tests
 make clean      # Clean artifacts
 ./oneoff        # Run application
@@ -1256,6 +1328,8 @@ Job Types:   GET /api/job-types
 - **package.json**: Frontend dependencies and scripts
 - **go.mod**: Backend dependencies
 - **Makefile**: Build commands and automation
+- **landing-page/**: Marketing website and job template catalog
+- **landing-page/README.md**: Landing page development guide
 
 ---
 
@@ -1283,6 +1357,6 @@ When making changes to this codebase:
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-11-26
+**Document Version**: 1.2
+**Last Updated**: 2025-11-27
 **Maintainer**: OneOff Development Team

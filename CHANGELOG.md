@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/meysam81/oneoff/compare/v1.0.1...v1.0.2) (2025-11-27)
+
+
+### Bug Fixes
+
+* **CI:** use official goreleaser action ([a9d3900](https://github.com/meysam81/oneoff/commit/a9d3900ddee78491c74682ad969d0754a125fee7))
+
 ## [1.0.1](https://github.com/meysam81/oneoff/compare/v1.0.0...v1.0.1) (2025-11-25)
 
 

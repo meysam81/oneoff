@@ -75,7 +75,7 @@ async function getBinarySize(
   };
 
   if (token) {
-    headers["Authorization"] = `token ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   const response = await fetch(downloadUrl, {
@@ -122,7 +122,7 @@ async function getBinarySize(
     }
 
     // Get filename (first 100 bytes)
-    const filename = header.subarray(0, 100).toString("utf8").replace(/\0/g, "");
+    const filename = header.subarray(0, 100).toString("utf8").split("\0")[0];
 
     // Get file size
     const fileSize = parseTarHeaderSize(header);
@@ -159,7 +159,7 @@ export async function fetchGitHubData(): Promise<GitHubData> {
     };
 
     if (token) {
-      headers["Authorization"] = `token ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     log.info("Fetching GitHub release data...");
@@ -185,7 +185,7 @@ export async function fetchGitHubData(): Promise<GitHubData> {
       throw new Error("Linux amd64 asset not found");
     }
 
-    const downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${fullVersion}/oneoff_linux_amd64.tar.gz`;
+    const downloadUrl = linuxAsset.browser_download_url;
 
     // Get actual binary size by downloading and decompressing
     log.info("Downloading and measuring binary size...");

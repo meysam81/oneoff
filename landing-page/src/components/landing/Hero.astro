@@ -3,6 +3,9 @@ import Container from '../ui/Container.astro';
 import Button from '../ui/Button.astro';
 import Badge from '../ui/Badge.astro';
 import Icon from '../icons/index.astro';
+import { getGitHubData } from '../../utils/github';
+
+const { version, fullVersion } = await getGitHubData();
 ---
 
 <section class="relative min-h-screen flex items-center py-20 overflow-hidden">
@@ -21,7 +24,7 @@ import Icon from '../icons/index.astro';
         <Badge variant="accent">
           <span class="flex items-center gap-2">
             <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
-            v1.0 &bull; Open Source
+            {version} &bull; Open Source
           </span>
         </Badge>
       </div>
@@ -71,20 +74,16 @@ import Icon from '../icons/index.astro';
           <div class="terminal-body" id="hero-terminal">
             <div class="code-line">
               <span class="code-prompt">$</span>
-              <span class="code-command" id="cmd-1"> curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff</span>
+              <span class="code-command" id="cmd-1"> curl -fsSL https://github.com/meysam81/oneoff/releases/download/{fullVersion}/oneoff_linux_amd64.tar.gz | tar xz</span>
             </div>
             <div class="code-line opacity-0" id="line-2">
               <span class="code-prompt">$</span>
-              <span class="code-command"> chmod +x oneoff</span>
-            </div>
-            <div class="code-line opacity-0" id="line-3">
-              <span class="code-prompt">$</span>
               <span class="code-command"> ./oneoff</span>
             </div>
-            <div class="code-line opacity-0" id="line-4">
+            <div class="code-line opacity-0" id="line-3">
               <span class="code-output">→ Server running at http://localhost:8080</span>
             </div>
-            <div class="code-line mt-2 opacity-0" id="line-5">
+            <div class="code-line mt-2 opacity-0" id="line-4">
               <span class="text-success">✓ Ready to schedule jobs!</span>
               <span class="cursor-blink"></span>
             </div>
@@ -109,7 +108,6 @@ import Icon from '../icons/index.astro';
       { id: 'line-2', delay: 1500 },
       { id: 'line-3', delay: 2200 },
       { id: 'line-4', delay: 3000 },
-      { id: 'line-5', delay: 3800 },
     ];
 
     lines.forEach(({ id, delay }) => {

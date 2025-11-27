@@ -1,0 +1,206 @@
+---
+import Container from '../ui/Container.astro';
+import Icon from '../icons/index.astro';
+
+const steps = [
+  {
+    number: '01',
+    title: 'Download',
+    description: 'Grab the binary for your platform (Linux, macOS, Windows)',
+    icon: 'download',
+    code: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff',
+  },
+  {
+    number: '02',
+    title: 'Run',
+    description: 'Execute ./oneoff — server starts in <1 second',
+    icon: 'terminal',
+    code: 'chmod +x oneoff && ./oneoff',
+  },
+  {
+    number: '03',
+    title: 'Schedule',
+    description: 'Use the web UI or API to create jobs',
+    icon: 'clock',
+    code: 'open http://localhost:8080',
+  },
+];
+
+const jobExamples = [
+  {
+    type: 'HTTP',
+    label: 'http',
+    icon: 'globe',
+    color: 'accent-primary',
+    config: `{
+  "name": "Notify Slack on deploy",
+  "type": "http",
+  "scheduled_at": "2025-01-15T09:00:00Z",
+  "config": {
+    "url": "https://hooks.slack.com/...",
+    "method": "POST",
+    "body": "{\\"text\\": \\"Deployment complete\\"}"
+  }
+}`,
+  },
+  {
+    type: 'Shell',
+    label: 'shell',
+    icon: 'terminal',
+    color: 'success',
+    config: `{
+  "name": "Database backup",
+  "type": "shell",
+  "scheduled_at": "2025-01-15T03:00:00Z",
+  "config": {
+    "script": "pg_dump $DB_URL > backup.sql",
+    "timeout": 300
+  }
+}`,
+  },
+  {
+    type: 'Docker',
+    label: 'docker',
+    icon: 'container',
+    color: 'warning',
+    config: `{
+  "name": "Clean unused images",
+  "type": "docker",
+  "scheduled_at": "2025-01-16T00:00:00Z",
+  "config": {
+    "image": "docker:cli",
+    "command": ["docker", "system", "prune", "-af"]
+  }
+}`,
+  },
+];
+---
+
+<section class="section bg-bg-secondary/30" id="how-it-works">
+  <Container size="xl">
+    <div class="section-header">
+      <h2 class="section-title">Up and running in <span class="text-accent-primary">3 steps</span></h2>
+      <p class="section-subtitle">
+        No configuration files. No environment setup. No dependencies to install.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="relative mb-20">
+      <!-- Connection line -->
+      <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border-default to-transparent -translate-y-1/2"></div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        {steps.map((step, index) => (
+          <div class="relative group">
+            <!-- Step card -->
+            <div class="bg-bg-secondary rounded-2xl border border-border-subtle p-6 transition-all duration-300 group-hover:border-accent-primary/30">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-xl bg-accent-primary/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent-primary/20">
+                    <Icon name={step.icon} size={24} class="text-accent-primary" />
+                  </div>
+                  <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-bg-tertiary border border-border-default flex items-center justify-center text-xs font-mono text-accent-primary">
+                    {step.number}
+                  </span>
+                </div>
+                <div>
+                  <h3 class="text-lg font-display font-semibold text-fg-primary">{step.title}</h3>
+                  <p class="text-sm text-fg-muted">{step.description}</p>
+                </div>
+              </div>
+
+              <!-- Code snippet -->
+              <div class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto">
+                <code>{step.code}</code>
+              </div>
+            </div>
+
+            {/* Arrow between steps */}
+            {index < steps.length - 1 && (
+              <div class="hidden md:flex absolute top-1/2 -right-4 w-8 h-8 items-center justify-center -translate-y-1/2 z-10">
+                <Icon name="arrowRight" size={16} class="text-fg-muted" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Job Examples -->
+    <div>
+      <h3 class="text-xl font-display font-semibold text-fg-primary text-center mb-8">
+        Create jobs via the API
+      </h3>
+
+      <!-- Tabs -->
+      <div class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-center gap-2 mb-4" id="job-tabs">
+          {jobExamples.map((job, index) => (
+            <button
+              class={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                index === 0 ? 'bg-bg-tertiary text-accent-primary border border-accent-primary/30' : 'text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50'
+              }`}
+              data-tab={job.label}
+            >
+              <Icon name={job.icon} size={16} />
+              {job.type}
+            </button>
+          ))}
+        </div>
+
+        <!-- Tab content -->
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="flex items-center gap-2">
+              <span class="terminal-dot terminal-dot-red"></span>
+              <span class="terminal-dot terminal-dot-yellow"></span>
+              <span class="terminal-dot terminal-dot-green"></span>
+            </div>
+            <span class="text-xs text-fg-muted ml-4">POST /api/jobs</span>
+          </div>
+          <div class="terminal-body">
+            {jobExamples.map((job, index) => (
+              <pre
+                class={`job-config text-sm ${index === 0 ? '' : 'hidden'}`}
+                data-config={job.label}
+              ><code class="text-fg-secondary">{job.config}</code></pre>
+            ))}
+          </div>
+        </div>
+
+        <p class="text-center text-fg-muted text-sm mt-4">
+          Or use the web UI — no code required.
+        </p>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<script>
+  const tabs = document.querySelectorAll('[data-tab]');
+  const configs = document.querySelectorAll('[data-config]');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tab');
+
+      // Update tab styles
+      tabs.forEach(t => {
+        t.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+        t.classList.add('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+      });
+      tab.classList.remove('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+      tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+
+      // Show/hide configs
+      configs.forEach(config => {
+        if (config.getAttribute('data-config') === target) {
+          config.classList.remove('hidden');
+        } else {
+          config.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>

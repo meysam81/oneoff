@@ -1,0 +1,76 @@
+---
+import Container from '../ui/Container.astro';
+import Card from '../ui/Card.astro';
+import Icon from '../icons/index.astro';
+
+const painPoints = [
+  {
+    title: 'cron',
+    icon: 'clock',
+    description: 'Great for recurring jobs. Terrible for one-time tasks. No visibility. No history. No web interface.',
+    highlight: 'No one-time support',
+  },
+  {
+    title: 'Airflow / Temporal',
+    icon: 'server',
+    description: 'Enterprise-grade complexity for a simple task. 47 YAML files later... you still haven\'t scheduled that one job.',
+    highlight: 'Massive overkill',
+  },
+  {
+    title: 'Cloud Schedulers',
+    icon: 'database',
+    description: 'Vendor lock-in. Cold starts. Pay-per-invocation anxiety. Your simple task now has a monthly bill.',
+    highlight: 'Unnecessary costs',
+  },
+];
+---
+
+<section class="section bg-bg-primary relative">
+  <div class="absolute inset-0 bg-gradient-to-b from-bg-primary via-bg-secondary/30 to-bg-primary"></div>
+
+  <Container size="xl" class="relative z-10">
+    <div class="section-header">
+      <h2 class="section-title">
+        Scheduling one-time jobs shouldn't require<br class="hidden sm:block" />
+        <span class="text-accent-primary">a PhD in DevOps</span>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 mb-16">
+      {painPoints.map((point, index) => (
+        <Card variant="default" class="group relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-error/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+          <div class="flex items-center gap-3 mb-4">
+            <div class="p-2 bg-bg-tertiary rounded-lg text-fg-muted">
+              <Icon name={point.icon} size={24} />
+            </div>
+            <h3 class="text-lg font-display font-semibold text-fg-primary">{point.title}</h3>
+          </div>
+
+          <p class="text-fg-secondary text-sm leading-relaxed mb-4">{point.description}</p>
+
+          <span class="inline-flex items-center gap-1.5 text-xs text-error/80">
+            <Icon name="x" size={14} />
+            {point.highlight}
+          </span>
+        </Card>
+      ))}
+    </div>
+
+    <!-- Solution statement -->
+    <div class="text-center">
+      <div class="inline-flex items-center gap-4 px-6 py-4 bg-bg-secondary/50 rounded-2xl border border-border-subtle">
+        <div class="flex items-center gap-2">
+          <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+            <Icon name="zap" size={20} class="text-accent-primary" />
+          </div>
+        </div>
+        <div class="text-left">
+          <p class="text-fg-primary font-display font-semibold">OneOff: Download. Run. Schedule.</p>
+          <p class="text-fg-muted text-sm">That's it. Really.</p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

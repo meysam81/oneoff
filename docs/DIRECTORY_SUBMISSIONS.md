@@ -24,14 +24,17 @@
 **URL**: https://alternativeto.net/
 
 ### Product Name
+
 OneOff
 
 ### Short Description (160 chars)
+
 ```
 One-time job scheduler. Single binary, SQLite, Vue 3 UI. Schedule HTTP requests, shell scripts, Docker containers. Zero dependencies.
 ```
 
 ### Full Description
+
 ```
 OneOff is a self-hosted, developer-focused job scheduler designed specifically for one-time tasks. Unlike complex workflow engines, OneOff embraces simplicity: download a single binary, run it, and schedule your jobs through a modern web interface.
 
@@ -53,6 +56,7 @@ Built with Go backend and Vue 3 frontend. MIT licensed and fully open source.
 ```
 
 ### Alternatives To
+
 - Celery
 - Airflow
 - Rundeck
@@ -63,11 +67,13 @@ Built with Go backend and Vue 3 frontend. MIT licensed and fully open source.
 - Bull (Node.js)
 
 ### Tags
+
 ```
 Job Scheduler, Task Scheduler, Self-Hosted, Open Source, Developer Tools, DevOps, Webhook, Automation, SQLite, Go, Vue.js
 ```
 
 ### Platforms
+
 - Linux
 - macOS
 - Windows
@@ -81,20 +87,24 @@ Job Scheduler, Task Scheduler, Self-Hosted, Open Source, Developer Tools, DevOps
 **URL**: https://github.com/awesome-selfhosted/awesome-selfhosted
 
 ### Category
+
 `Software Development - Task Runners and Job Schedulers`
 
 ### Entry Format
+
 ```markdown
 - [OneOff](https://github.com/meysam81/oneoff) - One-time job scheduler with web UI for scheduling HTTP requests, shell scripts, and Docker containers. Single binary, SQLite database, zero dependencies. `MIT` `Go/Docker`
 ```
 
 ### Pull Request Description
+
 ```markdown
 ## Add OneOff to Task Runners and Job Schedulers
 
 OneOff is a self-hosted job scheduler specifically designed for one-time tasks (as opposed to recurring cron jobs).
 
 ### Key differentiators:
+
 - Single binary deployment (~15MB)
 - Embedded SQLite database (no external DB required)
 - Modern Vue 3 web interface
@@ -102,6 +112,7 @@ OneOff is a self-hosted job scheduler specifically designed for one-time tasks (
 - Zero dependencies
 
 ### Why it belongs in awesome-selfhosted:
+
 1. Fully self-hosted with no external dependencies
 2. Single binary makes deployment trivial
 3. Fills a specific niche (one-time scheduled tasks)
@@ -118,9 +129,11 @@ Demo: N/A (self-hosted only)
 **URL**: https://github.com/avelino/awesome-go
 
 ### Category
+
 `Job Scheduler`
 
 ### Entry Format
+
 ```markdown
 - [OneOff](https://github.com/meysam81/oneoff) - One-time job scheduler with embedded Vue 3 web UI, SQLite database, and support for HTTP, shell, and Docker jobs.
 ```
@@ -156,14 +169,17 @@ developer-tools
 **URL**: https://devhunt.org/
 
 ### Name
+
 OneOff
 
 ### Tagline
+
 ```
 One-time job scheduler. Single binary. Zero dependencies.
 ```
 
 ### Description
+
 ```
 OneOff is what happens when you're tired of setting up Redis + Postgres + Celery just to schedule a webhook.
 
@@ -182,6 +198,7 @@ Built for developers who value simplicity over enterprise complexity.
 ```
 
 ### Categories
+
 - Developer Tools
 - Open Source
 - Productivity
@@ -195,11 +212,13 @@ Built for developers who value simplicity over enterprise complexity.
 ### Show HN Post
 
 **Title**:
+
 ```
 Show HN: OneOff – One-time job scheduler with zero dependencies
 ```
 
 **Post Text**:
+
 ```
 Hey HN,
 
@@ -235,12 +254,14 @@ GitHub: https://github.com/meysam81/oneoff
 **Title**: `OneOff - Self-hosted one-time job scheduler (single binary, SQLite, Vue 3 UI)`
 
 **Post**:
+
 ```markdown
 Hey r/selfhosted!
 
 I built **OneOff**, a job scheduler designed specifically for one-time tasks.
 
 **The problem**: Every time I needed to schedule a webhook or run a script at a specific time, my options were either:
+
 1. Set up a full Celery/Redis stack (overkill)
 2. Write a cron job and remember to delete it (messy)
 3. Set a phone alarm (embarrassing)
@@ -248,6 +269,7 @@ I built **OneOff**, a job scheduler designed specifically for one-time tasks.
 **The solution**: A single binary you download and run. That's it.
 
 **Features**:
+
 - Single binary (~15MB) with embedded frontend
 - SQLite database (no external DB needed)
 - Modern Vue 3 web interface
@@ -257,6 +279,7 @@ I built **OneOff**, a job scheduler designed specifically for one-time tasks.
 - Priority queue
 
 **Self-hosting details**:
+
 - No dependencies
 - Works offline
 - Data stored in a single SQLite file
@@ -272,10 +295,12 @@ Would love your feedback!
 **Title**: `OneOff - Job scheduler built with Go, featuring embedded Vue 3 frontend via go:embed`
 
 **Post**:
+
 ```markdown
 Built a one-time job scheduler in Go with some interesting patterns:
 
 **Architecture highlights**:
+
 - Frontend embedded using `go:embed` - single binary distribution
 - SQLite with `golang-migrate` for automatic migrations
 - Worker pool pattern with priority queue
@@ -283,6 +308,7 @@ Built a one-time job scheduler in Go with some interesting patterns:
 - Standard library `net/http` for routing (no framework)
 
 **Tech stack**:
+
 - Go 1.23+ backend
 - Vue 3 + Pinia + Naive UI frontend
 - SQLite with `mattn/go-sqlite3`
@@ -305,41 +331,52 @@ Interested in feedback on the architecture and any Go patterns I could improve!
 ## Dev.to
 
 ### Article Title
+
 ```
 I built a job scheduler that doesn't require a PhD in DevOps
 ```
 
 ### Tags
+
 `go`, `vue`, `opensource`, `devops`, `showdev`
 
 ### Article Outline
+
 ```markdown
 # I built a job scheduler that doesn't require a PhD in DevOps
 
 ## The Problem
+
 [Story about needing to schedule a simple webhook and facing complex solutions]
 
 ## What I Built
+
 [OneOff introduction with screenshot]
 
 ## Key Design Decisions
 
 ### 1. Single Binary
+
 [Explain go:embed and why it matters]
 
 ### 2. SQLite > Everything
+
 [Why SQLite is perfect for this use case]
 
 ### 3. No Framework
+
 [Using Go's standard library for HTTP]
 
 ## How It Works
+
 [Architecture diagram and explanation]
 
 ## Try It
+
 [Quick start instructions]
 
 ## What's Next
+
 [Roadmap and call for feedback]
 ```
 
@@ -350,6 +387,7 @@ I built a job scheduler that doesn't require a PhD in DevOps
 Same content as Dev.to, adapted for Hashnode's format.
 
 ### Tags
+
 `Go`, `Vue.js`, `Open Source`, `DevOps`, `Self-Hosted`
 
 ---
@@ -371,6 +409,7 @@ Same content as Dev.to, adapted for Hashnode's format.
    - Various servers, look for showcase channels
 
 ### Template Message
+
 ```
 Hey everyone! 👋
 
@@ -392,6 +431,7 @@ Would love any feedback!
 ## Directory Submission Checklist
 
 ### Week 1
+
 - [ ] Submit to ProductHunt
 - [ ] Post on Hacker News (Show HN)
 - [ ] Submit to AlternativeTo
@@ -399,6 +439,7 @@ Would love any feedback!
 - [ ] Post on r/golang
 
 ### Week 2
+
 - [ ] Submit PR to awesome-selfhosted
 - [ ] Submit PR to awesome-go
 - [ ] Publish Dev.to article
@@ -406,12 +447,14 @@ Would love any feedback!
 - [ ] Share in Discord communities
 
 ### Week 3
+
 - [ ] Submit to DevHunt
 - [ ] Post on r/webdev
 - [ ] Share on Twitter/X with relevant hashtags
 - [ ] Reach out to newsletter curators
 
 ### Ongoing
+
 - [ ] Monitor and respond to all comments
 - [ ] Update descriptions based on feedback
 - [ ] Track which sources drive the most traffic/stars

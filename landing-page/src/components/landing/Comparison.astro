@@ -1,0 +1,131 @@
+---
+import Container from '../ui/Container.astro';
+import Icon from '../icons/index.astro';
+
+const features = [
+  { name: 'One-time scheduling', at: true, cron: false, airflow: true, oneoff: true },
+  { name: 'Web UI', at: false, cron: false, airflow: true, oneoff: true },
+  { name: 'Execution history', at: false, cron: false, airflow: true, oneoff: true },
+  { name: 'Self-hosted', at: true, cron: true, airflow: true, oneoff: true },
+  { name: 'Zero dependencies', at: true, cron: true, airflow: false, oneoff: true },
+  { name: 'Setup time', at: '0 min', cron: '0 min', airflow: '30+ min', oneoff: '<1 min' },
+  { name: 'Docker jobs', at: false, cron: false, airflow: true, oneoff: true },
+  { name: 'HTTP jobs', at: false, cron: 'Via curl', airflow: true, oneoff: true },
+  { name: 'Priority levels', at: false, cron: false, airflow: true, oneoff: true },
+  { name: 'Job chaining', at: false, cron: false, airflow: true, oneoff: true },
+];
+
+const tools = [
+  { name: 'at', description: 'Unix utility' },
+  { name: 'cron', description: 'Recurring only' },
+  { name: 'Airflow', description: 'Enterprise' },
+  { name: 'OneOff', description: 'You are here', highlight: true },
+];
+---
+
+<section class="section bg-bg-primary" id="comparison">
+  <Container size="xl">
+    <div class="section-header">
+      <h2 class="section-title">How OneOff compares</h2>
+      <p class="section-subtitle">
+        The right tool for the job. OneOff fills the gap between basic utilities and enterprise solutions.
+      </p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="comparison-table w-full min-w-[640px]">
+        <thead>
+          <tr>
+            <th class="text-left">Feature</th>
+            {tools.map(tool => (
+              <th class={`text-center ${tool.highlight ? 'bg-accent-primary/5' : ''}`}>
+                <div class="flex flex-col items-center gap-1">
+                  <span class={tool.highlight ? 'text-accent-primary font-semibold' : ''}>{tool.name}</span>
+                  <span class="text-xs font-normal text-fg-muted">{tool.description}</span>
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {features.map(feature => (
+            <tr>
+              <td class="font-medium text-fg-primary">{feature.name}</td>
+              <td class="text-center">
+                {typeof feature.at === 'boolean' ? (
+                  feature.at ? (
+                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                  ) : (
+                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                  )
+                ) : (
+                  <span class="text-fg-secondary text-sm">{feature.at}</span>
+                )}
+              </td>
+              <td class="text-center">
+                {typeof feature.cron === 'boolean' ? (
+                  feature.cron ? (
+                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                  ) : (
+                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                  )
+                ) : (
+                  <span class="text-fg-secondary text-sm">{feature.cron}</span>
+                )}
+              </td>
+              <td class="text-center">
+                {typeof feature.airflow === 'boolean' ? (
+                  feature.airflow ? (
+                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                  ) : (
+                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                  )
+                ) : (
+                  <span class="text-fg-secondary text-sm">{feature.airflow}</span>
+                )}
+              </td>
+              <td class="text-center bg-accent-primary/5">
+                {typeof feature.oneoff === 'boolean' ? (
+                  feature.oneoff ? (
+                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                  ) : (
+                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                  )
+                ) : (
+                  <span class="text-accent-primary font-medium text-sm">{feature.oneoff}</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Summary -->
+    <div class="mt-12 text-center">
+      <p class="text-fg-secondary">
+        <span class="text-accent-primary font-semibold">OneOff</span> gives you the simplicity of
+        <code class="bg-bg-tertiary px-1.5 py-0.5 rounded text-sm">at</code> with the features of enterprise schedulers.
+      </p>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .comparison-table th,
+  .comparison-table td {
+    @apply px-4 py-4 border-b border-border-subtle;
+  }
+
+  .comparison-table thead th {
+    @apply bg-bg-tertiary/50 text-fg-secondary font-medium;
+  }
+
+  .comparison-table tbody tr:hover td {
+    @apply bg-bg-tertiary/30;
+  }
+
+  .comparison-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+</style>

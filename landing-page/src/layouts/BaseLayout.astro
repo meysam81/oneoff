@@ -1,0 +1,99 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title = 'OneOff — One-Time Job Scheduler',
+  description = 'Self-hosted job scheduler for one-time tasks. Schedule HTTP webhooks, shell scripts, and Docker containers. Single binary, zero dependencies.',
+  image = '/og-image.png',
+  type = 'website',
+  noindex = false
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, 'https://tryoneoff.com');
+const fullImageURL = new URL(image, 'https://tryoneoff.com');
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:site_name" content="OneOff" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageURL} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Fonts - Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="dns-prefetch" href="https://analytics.tryoneoff.com" />
+    <link rel="preconnect" href="https://analytics.tryoneoff.com" crossorigin />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "OneOff",
+        "description": "Self-hosted job scheduler for one-time tasks",
+        "url": "https://tryoneoff.com",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Meysam",
+          "url": "https://github.com/meysam81"
+        },
+        "license": "https://opensource.org/licenses/Apache-2.0"
+      }
+    </script>
+
+    <script async defer src="https://analytics.tryoneoff.com/pa.js"
+        id="pianjs"
+        data-code="Ps7P9lNlBMmOGObpwLsiakgRYOwEp6zT"
+        data-hit-endpoint="https://analytics.tryoneoff.com/hit"
+        data-event-endpoint="https://analytics.tryoneoff.com/event"
+        data-session-endpoint="https://analytics.tryoneoff.com/session"></script>
+  </head>
+  <body class="bg-bg-primary text-fg-primary min-h-screen">
+    <slot />
+  </body>
+</html>

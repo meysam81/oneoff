@@ -136,6 +136,8 @@ function clearFilters() {
               ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
               : 'bg-bg-tertiary text-fg-secondary border border-border-subtle hover:border-border-default',
           ]"
+          role="button"
+          :aria-pressed="selectedCategories.includes(cat.value)"
         >
           {{ cat.label }}
         </button>

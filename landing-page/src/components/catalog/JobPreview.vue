@@ -88,6 +88,7 @@ function formatDate(dateStr: string) {
                 ? 'bg-success/10 text-success'
                 : 'bg-bg-secondary text-fg-secondary hover:text-fg-primary'
             "
+            aria-label="Copy configuration to clipboard"
           >
             <svg
               v-if="!copied"
@@ -136,8 +137,8 @@ function formatDate(dateStr: string) {
           class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto"
         >
           <code
-            >curl -X POST http://localhost:8080/api/jobs \ -H "Content-Type:
-            application/json" \ -d '{{ JSON.stringify(template.job) }}'</code
+            >curl -X POST http://localhost:8080/api/jobs -H "Content-Type:
+            application/json" -d '{{ JSON.stringify(template.job) }}'</code
           >
         </div>
         <p class="text-xs text-fg-muted mt-3">

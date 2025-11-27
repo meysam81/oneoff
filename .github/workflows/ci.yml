@@ -253,7 +253,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           name: build-pr${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: dist
+          path: landing-page/dist
       - name: Deploy to Netlify
         id: netlify
         run: |
@@ -324,7 +324,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           name: github-actions-${{ github.run_id }}-${{ github.run_attempt }}
-          path: dist
+          path: landing-page/dist
       - id: deployment
         name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4

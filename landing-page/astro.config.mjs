@@ -16,6 +16,7 @@ export default defineConfig({
     }),
   ],
   output: "static",
+  outDir: "dist",
   server: {
     port: 3000,
   },

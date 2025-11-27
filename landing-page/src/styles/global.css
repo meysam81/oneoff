@@ -3,31 +3,31 @@
 @tailwind utilities;
 
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 /* Geist font - using system fallback since it's not on Google Fonts */
 @font-face {
-  font-family: 'Geist';
+  font-family: "Geist";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: local('Geist'), local('-apple-system');
+  src: local("Geist"), local("-apple-system");
 }
 
 @font-face {
-  font-family: 'Geist';
+  font-family: "Geist";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: local('Geist Medium'), local('-apple-system');
+  src: local("Geist Medium"), local("-apple-system");
 }
 
 @font-face {
-  font-family: 'Geist';
+  font-family: "Geist";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: local('Geist SemiBold'), local('-apple-system');
+  src: local("Geist SemiBold"), local("-apple-system");
 }
 
 /* Base styles */
@@ -95,7 +95,7 @@
   }
 
   .scan-lines::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
@@ -115,7 +115,7 @@
   }
 
   .noise::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -134,7 +134,9 @@
 
   /* Text glow */
   .text-glow {
-    text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+    text-shadow:
+      0 0 20px var(--accent-glow),
+      0 0 40px var(--accent-glow);
   }
 
   /* Gradient border effect */
@@ -145,7 +147,7 @@
   }
 
   .gradient-border::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     padding: 1px;
@@ -156,8 +158,12 @@
       transparent 50%,
       var(--border-subtle) 100%
     );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;

@@ -21,33 +21,35 @@ defineProps<{
 }>();
 
 const jobTypeIcons: Record<string, string> = {
-  http: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9',
-  shell: 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-  docker: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4',
+  http: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9",
+  shell:
+    "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+  docker:
+    "M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4",
 };
 
 const jobTypeColors: Record<string, string> = {
-  http: 'text-accent-primary',
-  shell: 'text-success',
-  docker: 'text-warning',
+  http: "text-accent-primary",
+  shell: "text-success",
+  docker: "text-warning",
 };
 
 const categoryLabels: Record<string, string> = {
-  backup: 'Backup',
-  monitoring: 'Monitoring',
-  cicd: 'CI/CD',
-  database: 'Database',
-  api: 'API',
-  devops: 'DevOps',
-  reporting: 'Reporting',
-  misc: 'Misc',
+  backup: "Backup",
+  monitoring: "Monitoring",
+  cicd: "CI/CD",
+  database: "Database",
+  api: "API",
+  devops: "DevOps",
+  reporting: "Reporting",
+  misc: "Misc",
 };
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   });
 }
 </script>
@@ -68,8 +70,12 @@ function formatDate(dateStr: string) {
           d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
-      <p class="text-fg-secondary">No templates found matching your criteria.</p>
-      <p class="text-fg-muted text-sm mt-1">Try adjusting your search or filters.</p>
+      <p class="text-fg-secondary">
+        No templates found matching your criteria.
+      </p>
+      <p class="text-fg-muted text-sm mt-1">
+        Try adjusting your search or filters.
+      </p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -121,7 +127,9 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Title & Description -->
-        <h3 class="text-lg font-display font-semibold text-fg-primary mb-2 group-hover:text-accent-primary transition-colors">
+        <h3
+          class="text-lg font-display font-semibold text-fg-primary mb-2 group-hover:text-accent-primary transition-colors"
+        >
           {{ template.name }}
         </h3>
         <p class="text-fg-secondary text-sm leading-relaxed mb-4 line-clamp-2">
@@ -146,7 +154,9 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Footer -->
-        <div class="flex items-center justify-between text-xs text-fg-muted pt-4 border-t border-border-subtle">
+        <div
+          class="flex items-center justify-between text-xs text-fg-muted pt-4 border-t border-border-subtle"
+        >
           <a
             :href="`https://github.com/${template.author.github}`"
             target="_blank"

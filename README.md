@@ -71,15 +71,18 @@ curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff_Da
 
 ./oneoff
 ```
+
 </details>
 
 <details>
 <summary><strong>Windows</strong></summary>
 
 Download from [Releases](https://github.com/meysam81/oneoff/releases), extract, and run:
+
 ```powershell
 .\oneoff.exe
 ```
+
 </details>
 
 <details>
@@ -88,6 +91,7 @@ Download from [Releases](https://github.com/meysam81/oneoff/releases), extract, 
 ```bash
 docker run -p 8080:8080 -v oneoff-data:/data ghcr.io/meysam81/oneoff:latest
 ```
+
 </details>
 
 <details>
@@ -101,24 +105,25 @@ cd oneoff
 make setup && make build
 ./oneoff
 ```
+
 </details>
 
 ---
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **Single Binary** | Everything bundled into one ~15MB executable |
-| **SQLite Database** | No external database to manage |
-| **Modern Web UI** | Dark-mode-first Vue 3 interface |
-| **HTTP Jobs** | Schedule webhooks, API calls, notifications |
-| **Shell Jobs** | Run scripts, backups, maintenance tasks |
-| **Docker Jobs** | Execute containers on demand |
-| **Priority Queue** | 1-10 priority levels for job execution |
-| **Projects & Tags** | Organize jobs your way |
-| **Real-time Monitoring** | Live worker status and execution tracking |
-| **Job Chaining** | Create sequences of dependent jobs |
+| Feature                  | Description                                  |
+| ------------------------ | -------------------------------------------- |
+| **Single Binary**        | Everything bundled into one ~15MB executable |
+| **SQLite Database**      | No external database to manage               |
+| **Modern Web UI**        | Dark-mode-first Vue 3 interface              |
+| **HTTP Jobs**            | Schedule webhooks, API calls, notifications  |
+| **Shell Jobs**           | Run scripts, backups, maintenance tasks      |
+| **Docker Jobs**          | Execute containers on demand                 |
+| **Priority Queue**       | 1-10 priority levels for job execution       |
+| **Projects & Tags**      | Organize jobs your way                       |
+| **Real-time Monitoring** | Live worker status and execution tracking    |
+| **Job Chaining**         | Create sequences of dependent jobs           |
 
 ---
 
@@ -134,7 +139,9 @@ make setup && make build
 ### Job Types
 
 #### HTTP Job
+
 Send a webhook when a trial expires:
+
 ```json
 {
   "url": "https://api.yourapp.com/webhooks/trial-expired",
@@ -149,7 +156,9 @@ Send a webhook when a trial expires:
 ```
 
 #### Shell Job
+
 Run a database backup at midnight:
+
 ```json
 {
   "script": "#!/bin/bash\npg_dump $DATABASE_URL > /backups/$(date +%Y%m%d).sql",
@@ -161,7 +170,9 @@ Run a database backup at midnight:
 ```
 
 #### Docker Job
+
 Run a migration container:
+
 ```json
 {
   "image": "your-app:latest",
@@ -180,17 +191,18 @@ Run a migration container:
 
 All configuration via environment variables. Zero config files.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `8080` | HTTP server port |
-| `HOST` | `localhost` | HTTP server host |
-| `DB_PATH` | `./oneoff.db` | SQLite database path |
-| `WORKERS_COUNT` | `0` | Worker count (0 = CPU cores / 2) |
-| `LOG_LEVEL` | `info` | Log level: debug, info, warn, error |
-| `DEFAULT_TIMEZONE` | `UTC` | Default timezone for jobs |
-| `DEFAULT_PRIORITY` | `5` | Default job priority (1-10) |
+| Variable           | Default       | Description                         |
+| ------------------ | ------------- | ----------------------------------- |
+| `PORT`             | `8080`        | HTTP server port                    |
+| `HOST`             | `localhost`   | HTTP server host                    |
+| `DB_PATH`          | `./oneoff.db` | SQLite database path                |
+| `WORKERS_COUNT`    | `0`           | Worker count (0 = CPU cores / 2)    |
+| `LOG_LEVEL`        | `info`        | Log level: debug, info, warn, error |
+| `DEFAULT_TIMEZONE` | `UTC`         | Default timezone for jobs           |
+| `DEFAULT_PRIORITY` | `5`           | Default job priority (1-10)         |
 
 ### Example
+
 ```bash
 PORT=3000 DB_PATH=/var/lib/oneoff/data.db ./oneoff
 ```
@@ -202,6 +214,7 @@ PORT=3000 DB_PATH=/var/lib/oneoff/data.db ./oneoff
 OneOff exposes a REST API for programmatic access.
 
 ### Jobs
+
 ```bash
 # List jobs
 curl http://localhost:8080/api/jobs
@@ -224,21 +237,22 @@ curl -X POST http://localhost:8080/api/jobs/{id}/cancel
 ```
 
 ### Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/jobs` | List all jobs |
-| `POST` | `/api/jobs` | Create job |
-| `GET` | `/api/jobs/:id` | Get job details |
-| `PATCH` | `/api/jobs/:id` | Update job |
-| `DELETE` | `/api/jobs/:id` | Delete job |
-| `POST` | `/api/jobs/:id/execute` | Execute now |
-| `POST` | `/api/jobs/:id/clone` | Clone job |
-| `POST` | `/api/jobs/:id/cancel` | Cancel job |
-| `GET` | `/api/executions` | List executions |
-| `GET` | `/api/projects` | List projects |
-| `GET` | `/api/tags` | List tags |
-| `GET` | `/api/system/status` | System stats |
-| `GET` | `/api/workers/status` | Worker status |
+
+| Method   | Endpoint                | Description     |
+| -------- | ----------------------- | --------------- |
+| `GET`    | `/api/jobs`             | List all jobs   |
+| `POST`   | `/api/jobs`             | Create job      |
+| `GET`    | `/api/jobs/:id`         | Get job details |
+| `PATCH`  | `/api/jobs/:id`         | Update job      |
+| `DELETE` | `/api/jobs/:id`         | Delete job      |
+| `POST`   | `/api/jobs/:id/execute` | Execute now     |
+| `POST`   | `/api/jobs/:id/clone`   | Clone job       |
+| `POST`   | `/api/jobs/:id/cancel`  | Cancel job      |
+| `GET`    | `/api/executions`       | List executions |
+| `GET`    | `/api/projects`         | List projects   |
+| `GET`    | `/api/tags`             | List tags       |
+| `GET`    | `/api/system/status`    | System stats    |
+| `GET`    | `/api/workers/status`   | Worker status   |
 
 ---
 
@@ -278,14 +292,14 @@ curl -X POST http://localhost:8080/api/jobs/{id}/cancel
 
 ## Comparison
 
-| Feature | OneOff | Celery | Airflow | Rundeck |
-|---------|--------|--------|---------|---------|
-| Setup time | 30 sec | Hours | Hours | Hours |
-| Dependencies | 0 | Redis + DB | DB + Scheduler | Java + DB |
-| Memory | ~20MB | 500MB+ | 1GB+ | 1GB+ |
-| Binary size | ~15MB | N/A | N/A | N/A |
-| Learning curve | Minimal | Steep | Steep | Moderate |
-| Best for | One-time jobs | Recurring tasks | Data pipelines | Runbooks |
+| Feature        | OneOff        | Celery          | Airflow        | Rundeck   |
+| -------------- | ------------- | --------------- | -------------- | --------- |
+| Setup time     | 30 sec        | Hours           | Hours          | Hours     |
+| Dependencies   | 0             | Redis + DB      | DB + Scheduler | Java + DB |
+| Memory         | ~20MB         | 500MB+          | 1GB+           | 1GB+      |
+| Binary size    | ~15MB         | N/A             | N/A            | N/A       |
+| Learning curve | Minimal       | Steep           | Steep          | Moderate  |
+| Best for       | One-time jobs | Recurring tasks | Data pipelines | Runbooks  |
 
 ---
 
@@ -311,6 +325,7 @@ make build
 ```
 
 ### Project Structure
+
 ```
 oneoff/
 ├── main.go              # CLI entry point

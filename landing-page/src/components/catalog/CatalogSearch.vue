@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch } from "vue";
 
 interface Template {
   id: string;
@@ -23,22 +23,22 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'filter', templates: Template[]): void;
+  (e: "filter", templates: Template[]): void;
 }>();
 
-const search = ref('');
+const search = ref("");
 const selectedCategories = ref<string[]>([]);
-const sortBy = ref<'newest' | 'alpha'>('newest');
+const sortBy = ref<"newest" | "alpha">("newest");
 
 const categories = [
-  { value: 'backup', label: 'Backup & Recovery' },
-  { value: 'monitoring', label: 'Monitoring & Alerts' },
-  { value: 'cicd', label: 'CI/CD Integration' },
-  { value: 'database', label: 'Database Maintenance' },
-  { value: 'api', label: 'API & Webhooks' },
-  { value: 'devops', label: 'DevOps Automation' },
-  { value: 'reporting', label: 'Reporting' },
-  { value: 'misc', label: 'Miscellaneous' },
+  { value: "backup", label: "Backup & Recovery" },
+  { value: "monitoring", label: "Monitoring & Alerts" },
+  { value: "cicd", label: "CI/CD Integration" },
+  { value: "database", label: "Database Maintenance" },
+  { value: "api", label: "API & Webhooks" },
+  { value: "devops", label: "DevOps Automation" },
+  { value: "reporting", label: "Reporting" },
+  { value: "misc", label: "Miscellaneous" },
 ];
 
 const filtered = computed(() => {
@@ -47,32 +47,36 @@ const filtered = computed(() => {
   // Search filter
   if (search.value) {
     const q = search.value.toLowerCase();
-    result = result.filter(t =>
-      t.name.toLowerCase().includes(q) ||
-      t.description.toLowerCase().includes(q) ||
-      t.tags.some(tag => tag.toLowerCase().includes(q))
+    result = result.filter(
+      (t) =>
+        t.name.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.tags.some((tag) => tag.toLowerCase().includes(q)),
     );
   }
 
   // Category filter
   if (selectedCategories.value.length > 0) {
-    result = result.filter(t =>
-      selectedCategories.value.includes(t.category)
+    result = result.filter((t) =>
+      selectedCategories.value.includes(t.category),
     );
   }
 
   // Sort
-  if (sortBy.value === 'alpha') {
+  if (sortBy.value === "alpha") {
     result.sort((a, b) => a.name.localeCompare(b.name));
   } else {
-    result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    result.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
   }
 
   return result;
 });
 
 // Emit filtered results on change
-watch(filtered, (val) => emit('filter', val), { immediate: true });
+watch(filtered, (val) => emit("filter", val), { immediate: true });
 
 function toggleCategory(category: string) {
   const index = selectedCategories.value.indexOf(category);
@@ -84,9 +88,9 @@ function toggleCategory(category: string) {
 }
 
 function clearFilters() {
-  search.value = '';
+  search.value = "";
   selectedCategories.value = [];
-  sortBy.value = 'newest';
+  sortBy.value = "newest";
 }
 </script>
 
@@ -116,7 +120,9 @@ function clearFilters() {
     </div>
 
     <!-- Filters row -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+    >
       <!-- Category filters -->
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-sm text-fg-muted">Filter:</span>
@@ -128,7 +134,7 @@ function clearFilters() {
             'px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200',
             selectedCategories.includes(cat.value)
               ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
-              : 'bg-bg-tertiary text-fg-secondary border border-border-subtle hover:border-border-default'
+              : 'bg-bg-tertiary text-fg-secondary border border-border-subtle hover:border-border-default',
           ]"
         >
           {{ cat.label }}

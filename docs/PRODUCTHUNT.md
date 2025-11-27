@@ -7,19 +7,23 @@
 ## Product Information
 
 ### Name
+
 **OneOff**
 
 ### Tagline (60 characters max)
+
 ```
 One-time job scheduler. Single binary. Zero dependencies.
 ```
 
 Alternative taglines:
+
 - `Schedule once, execute perfectly. No Redis required.`
 - `The job scheduler that respects your time and sanity.`
 - `Linux "at" command meets modern web UI.`
 
 ### Description (260 characters for short description)
+
 ```
 Self-hosted job scheduler for one-time tasks. Schedule HTTP webhooks, shell scripts, and Docker containers. Single binary, SQLite database, Vue 3 UI. No Redis, no Postgres, no complexity.
 ```
@@ -33,6 +37,7 @@ Self-hosted job scheduler for one-time tasks. Schedule HTTP webhooks, shell scri
 Every developer has been there: you need to schedule a one-time task—maybe send a webhook when a trial expires, run a database migration at 2 AM, or trigger a notification at a specific time.
 
 Your options?
+
 - Set up Celery with Redis and Postgres (hours of work)
 - Deploy Airflow (overkill for simple tasks)
 - Write a cron job and hope you remember to delete it
@@ -50,6 +55,7 @@ OneOff is the antidote to over-engineered job schedulers.
 ```
 
 **What you get:**
+
 - Single binary (~15MB) with everything bundled
 - SQLite database (no external DB to manage)
 - Beautiful Vue 3 dark-mode UI
@@ -59,6 +65,7 @@ OneOff is the antidote to over-engineered job schedulers.
 - Real-time execution monitoring
 
 **What you DON'T need:**
+
 - Redis
 - PostgreSQL
 - Message queues
@@ -149,6 +156,7 @@ What one-time tasks would you schedule?
 Primary: **Developer Tools**
 
 Secondary:
+
 - Open Source
 - Productivity
 - Self-Hosted
@@ -166,6 +174,7 @@ Secondary:
 ## Promotional Tweets
 
 ### Launch Tweet
+
 ```
 🚀 Just launched OneOff on Product Hunt!
 
@@ -183,6 +192,7 @@ https://producthunt.com/posts/oneoff
 ```
 
 ### Technical Tweet
+
 ```
 Built a job scheduler in Go + Vue 3 that:
 
@@ -198,6 +208,7 @@ Open source: github.com/meysam81/oneoff
 ```
 
 ### Problem/Solution Tweet
+
 ```
 The old way to schedule a webhook:
 1. Set up Redis
@@ -246,16 +257,21 @@ No pressure at all—just wanted to share what I've been working on!
 ## FAQ Responses
 
 **Q: How is this different from cron?**
+
 > OneOff is for one-time scheduled tasks with a modern UI. Cron is great for recurring jobs, but managing one-off cron entries is tedious and error-prone. OneOff gives you a visual interface, execution history, and automatic cleanup.
 
 **Q: Why SQLite instead of a "real" database?**
+
 > SQLite is a real database! It's perfect for single-node deployments. No connection strings to manage, no separate process to run, and it handles thousands of jobs without breaking a sweat. OneOff is designed to be simple.
 
 **Q: Can I use this in production?**
+
 > Absolutely. SQLite handles write-ahead logging, OneOff has graceful shutdown, and the worker pool is battle-tested. For high-availability, you'd want a clustered solution, but for 99% of one-time job needs, OneOff is production-ready.
 
 **Q: What about recurring jobs?**
+
 > OneOff is specifically designed for one-time scheduled tasks. For recurring jobs, cron or dedicated schedulers like Temporal are better fits. We believe in doing one thing well.
 
 **Q: Is there a hosted version?**
+
 > Not yet! OneOff is designed for self-hosting. A hosted version might come in the future based on demand.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue";
 
 interface Template {
   id: string;
@@ -34,32 +34,32 @@ async function copyConfig() {
       copied.value = false;
     }, 2000);
   } catch (err) {
-    console.error('Failed to copy:', err);
+    console.error("Failed to copy:", err);
   }
 }
 
 const categoryLabels: Record<string, string> = {
-  backup: 'Backup & Recovery',
-  monitoring: 'Monitoring & Alerts',
-  cicd: 'CI/CD Integration',
-  database: 'Database Maintenance',
-  api: 'API & Webhooks',
-  devops: 'DevOps Automation',
-  reporting: 'Reporting',
-  misc: 'Miscellaneous',
+  backup: "Backup & Recovery",
+  monitoring: "Monitoring & Alerts",
+  cicd: "CI/CD Integration",
+  database: "Database Maintenance",
+  api: "API & Webhooks",
+  devops: "DevOps Automation",
+  reporting: "Reporting",
+  misc: "Miscellaneous",
 };
 
 const jobTypeColors: Record<string, string> = {
-  http: 'text-accent-primary bg-accent-primary/10 border-accent-primary/20',
-  shell: 'text-success bg-success/10 border-success/20',
-  docker: 'text-warning bg-warning/10 border-warning/20',
+  http: "text-accent-primary bg-accent-primary/10 border-accent-primary/20",
+  shell: "text-success bg-success/10 border-success/20",
+  docker: "text-warning bg-warning/10 border-warning/20",
 };
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 </script>
@@ -68,8 +68,12 @@ function formatDate(dateStr: string) {
   <div class="job-preview grid lg:grid-cols-2 gap-8">
     <!-- Left: Code Preview -->
     <div class="order-2 lg:order-1">
-      <div class="bg-bg-secondary rounded-xl border border-border-subtle overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b border-border-subtle">
+      <div
+        class="bg-bg-secondary rounded-xl border border-border-subtle overflow-hidden"
+      >
+        <div
+          class="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b border-border-subtle"
+        >
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-error/80"></span>
             <span class="w-3 h-3 rounded-full bg-warning/80"></span>
@@ -79,7 +83,11 @@ function formatDate(dateStr: string) {
           <button
             @click="copyConfig"
             class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200"
-            :class="copied ? 'bg-success/10 text-success' : 'bg-bg-secondary text-fg-secondary hover:text-fg-primary'"
+            :class="
+              copied
+                ? 'bg-success/10 text-success'
+                : 'bg-bg-secondary text-fg-secondary hover:text-fg-primary'
+            "
           >
             <svg
               v-if="!copied"
@@ -109,19 +117,28 @@ function formatDate(dateStr: string) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            {{ copied ? 'Copied!' : 'Copy config' }}
+            {{ copied ? "Copied!" : "Copy config" }}
           </button>
         </div>
-        <pre class="p-4 overflow-x-auto text-sm font-mono text-fg-secondary"><code>{{ configJson }}</code></pre>
+        <pre
+          class="p-4 overflow-x-auto text-sm font-mono text-fg-secondary"
+        ><code>{{ configJson }}</code></pre>
       </div>
 
       <!-- Import instructions -->
-      <div class="mt-6 bg-bg-secondary rounded-xl border border-border-subtle p-4">
-        <h4 class="text-sm font-semibold text-fg-primary mb-3">Import via API</h4>
-        <div class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto">
-          <code>curl -X POST http://localhost:8080/api/jobs \
-  -H "Content-Type: application/json" \
-  -d '{{ JSON.stringify(template.job) }}'</code>
+      <div
+        class="mt-6 bg-bg-secondary rounded-xl border border-border-subtle p-4"
+      >
+        <h4 class="text-sm font-semibold text-fg-primary mb-3">
+          Import via API
+        </h4>
+        <div
+          class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto"
+        >
+          <code
+            >curl -X POST http://localhost:8080/api/jobs \ -H "Content-Type:
+            application/json" \ -d '{{ JSON.stringify(template.job) }}'</code
+          >
         </div>
         <p class="text-xs text-fg-muted mt-3">
           Or copy the config above and create the job manually via the web UI.
@@ -144,16 +161,23 @@ function formatDate(dateStr: string) {
 
         <!-- Metadata cards -->
         <div class="grid grid-cols-2 gap-4">
-          <div class="bg-bg-secondary rounded-lg border border-border-subtle p-4">
+          <div
+            class="bg-bg-secondary rounded-lg border border-border-subtle p-4"
+          >
             <span class="text-xs text-fg-muted block mb-1">Job Type</span>
             <span
               class="inline-flex items-center px-2 py-1 text-sm font-medium rounded-full border"
-              :class="jobTypeColors[template.job.type] || 'text-fg-secondary bg-bg-tertiary border-border-subtle'"
+              :class="
+                jobTypeColors[template.job.type] ||
+                'text-fg-secondary bg-bg-tertiary border-border-subtle'
+              "
             >
               {{ template.job.type.toUpperCase() }}
             </span>
           </div>
-          <div class="bg-bg-secondary rounded-lg border border-border-subtle p-4">
+          <div
+            class="bg-bg-secondary rounded-lg border border-border-subtle p-4"
+          >
             <span class="text-xs text-fg-muted block mb-1">Category</span>
             <span class="text-sm text-fg-primary font-medium">
               {{ categoryLabels[template.category] || template.category }}
@@ -191,8 +215,12 @@ function formatDate(dateStr: string) {
               loading="lazy"
             />
             <div>
-              <span class="text-sm font-medium text-fg-primary block">{{ template.author.name }}</span>
-              <span class="text-xs text-fg-muted">@{{ template.author.github }}</span>
+              <span class="text-sm font-medium text-fg-primary block">{{
+                template.author.name
+              }}</span>
+              <span class="text-xs text-fg-muted"
+                >@{{ template.author.github }}</span
+              >
             </div>
           </a>
         </div>

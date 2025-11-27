@@ -1,0 +1,33 @@
+{
+  "author": {
+    "github": "meysam81",
+    "name": "Example Contributor"
+  },
+  "category": "devops",
+  "created_at": "2025-01-15",
+  "description": "Clean up unused Docker resources including stopped containers, unused images, and dangling volumes. Helps reclaim disk space on Docker hosts.",
+  "id": "docker-cleanup",
+  "job": {
+    "config": {
+      "auto_remove": true,
+      "command": [
+        "sh",
+        "-c",
+        "docker system prune -af --volumes && echo 'Cleanup completed!'"
+      ],
+      "image": "docker:cli",
+      "timeout": 120,
+      "volumes": {
+        "/var/run/docker.sock": "/var/run/docker.sock"
+      }
+    },
+    "type": "docker"
+  },
+  "name": "Docker System Prune",
+  "tags": [
+    "docker",
+    "cleanup",
+    "maintenance",
+    "disk-space"
+  ]
+}

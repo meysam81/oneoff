@@ -1,0 +1,137 @@
+---
+import Container from '../ui/Container.astro';
+import Icon from '../icons/index.astro';
+
+const navigation = {
+  product: [
+    { name: 'Home', href: '/' },
+    { name: 'Catalog', href: '/catalog' },
+    { name: 'Roadmap', href: 'https://github.com/meysam81/oneoff/blob/main/ROADMAP.md', external: true },
+    { name: 'Changelog', href: 'https://github.com/meysam81/oneoff/releases', external: true },
+  ],
+  resources: [
+    { name: 'Documentation', href: 'https://github.com/meysam81/oneoff#readme', external: true },
+    { name: 'API Reference', href: 'https://github.com/meysam81/oneoff#api-endpoints', external: true },
+    { name: 'Contributing', href: 'https://github.com/meysam81/oneoff/blob/main/CONTRIBUTING.md', external: true },
+    { name: 'Issues', href: 'https://github.com/meysam81/oneoff/issues', external: true },
+  ],
+  legal: [
+    { name: 'Terms of Service', href: '/terms' },
+    { name: 'Privacy Policy', href: '/privacy' },
+  ],
+};
+---
+
+<footer class="bg-bg-secondary/30 border-t border-border-subtle">
+  <Container size="xl">
+    <div class="py-12 lg:py-16">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+        <!-- Brand -->
+        <div class="col-span-2 md:col-span-1">
+          <a href="/" class="flex items-center gap-2 text-fg-primary mb-4">
+            <Icon name="clock" size={24} class="text-accent-primary" />
+            <span class="font-display font-semibold text-lg">OneOff</span>
+          </a>
+          <p class="text-fg-secondary text-sm leading-relaxed mb-4">
+            One-time job scheduling, simplified. Self-hosted, single binary, zero dependencies.
+          </p>
+          <a
+            href="https://github.com/meysam81/oneoff"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-fg-muted hover:text-accent-primary transition-colors"
+          >
+            <Icon name="github" size={20} />
+            <span class="text-sm">Star on GitHub</span>
+          </a>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <h4 class="font-display font-semibold text-fg-primary mb-4">Product</h4>
+          <ul class="space-y-3">
+            {navigation.product.map(item => (
+              <li>
+                <a
+                  href={item.href}
+                  target={item.external ? '_blank' : undefined}
+                  rel={item.external ? 'noopener noreferrer' : undefined}
+                  class="text-fg-secondary hover:text-fg-primary text-sm transition-colors inline-flex items-center gap-1"
+                >
+                  {item.name}
+                  {item.external && <Icon name="external" size={12} class="text-fg-muted" />}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Resources -->
+        <div>
+          <h4 class="font-display font-semibold text-fg-primary mb-4">Resources</h4>
+          <ul class="space-y-3">
+            {navigation.resources.map(item => (
+              <li>
+                <a
+                  href={item.href}
+                  target={item.external ? '_blank' : undefined}
+                  rel={item.external ? 'noopener noreferrer' : undefined}
+                  class="text-fg-secondary hover:text-fg-primary text-sm transition-colors inline-flex items-center gap-1"
+                >
+                  {item.name}
+                  {item.external && <Icon name="external" size={12} class="text-fg-muted" />}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <h4 class="font-display font-semibold text-fg-primary mb-4">Legal</h4>
+          <ul class="space-y-3">
+            {navigation.legal.map(item => (
+              <li>
+                <a
+                  href={item.href}
+                  class="text-fg-secondary hover:text-fg-primary text-sm transition-colors"
+                >
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="py-6 border-t border-border-subtle">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p class="text-fg-muted text-sm">
+          &copy; {new Date().getFullYear()} OneOff Contributors. Open source under
+          <a
+            href="https://opensource.org/licenses/Apache-2.0"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-fg-secondary hover:text-accent-primary transition-colors"
+          >
+            Apache-2.0 License
+          </a>.
+        </p>
+
+        <div class="flex items-center gap-4">
+          <a
+            href="https://github.com/meysam81/oneoff"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-fg-muted hover:text-fg-primary transition-colors"
+            title="GitHub"
+          >
+            <Icon name="github" size={20} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </Container>
+</footer>

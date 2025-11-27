@@ -170,15 +170,12 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ needs.release-please.outputs.tag_name }}
-
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-
       - name: Cache Go modules
         uses: actions/cache@v4
         with:
@@ -188,19 +185,10 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
-
       - name: Install syft
         uses: anchore/sbom-action/download-syft@v0
-
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
-
-      - name: Install goreleaser
-        run: |
-          curl -sL https://github.com/goreleaser/goreleaser/releases/download/v2.12.0/goreleaser_Linux_x86_64.tar.gz | \
-            tar xvz -C /usr/local/bin/ goreleaser
-          goreleaser --version
-
       - name: Import GPG key
         if: ${{ env.GPG_PRIVATE_KEY != '' }}
         env:
@@ -210,16 +198,14 @@ jobs:
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --quick-add-uid "$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')" || true
           GPG_FINGERPRINT=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')
           echo "GPG_FINGERPRINT=$GPG_FINGERPRINT" >> "$GITHUB_ENV"
-
-      - name: Run goreleaser
-        env:
+      - env:
           GITHUB_TOKEN: ${{ github.token }}
-          GPG_FINGERPRINT: ${{ env.GPG_FINGERPRINT }}
-        run: |
-          if [ -n "${{ secrets.GPG_PASSPHRASE }}" ]; then
-            echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --sign-key "$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')" || true
-          fi
-          goreleaser release --clean
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release --release-notes CHANGELOG.md --clean
+          distribution: goreleaser
+          version: ~> v2
 
   preview:
     if: github.event_name == 'pull_request'

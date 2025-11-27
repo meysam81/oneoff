@@ -101,4 +101,4 @@ npm run build
 
 ## License
 
-MIT License - see the main [OneOff repository](https://github.com/meysam81/oneoff) for details.
+Apache-2.0 License - see the main [OneOff repository](https://github.com/meysam81/oneoff) for details.

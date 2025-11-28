@@ -78,48 +78,55 @@ const jobExamples = [
 
 <section class="section bg-bg-secondary/30" id="how-it-works">
   <Container size="xl">
-    <div class="section-header">
-      <h2 class="section-title">Up and running in <span class="text-accent-primary">3 steps</span></h2>
-      <p class="section-subtitle">
+    <div class="section-header px-2 sm:px-0">
+      <h2 class="section-title text-2xl sm:text-3xl md:text-headline">Up and running in <span class="text-accent-primary">3 steps</span></h2>
+      <p class="section-subtitle text-sm sm:text-base">
         No configuration files. No environment setup. No dependencies to install.
       </p>
     </div>
 
     <!-- Steps -->
-    <div class="relative mb-20">
-      <!-- Connection line -->
+    <div class="relative mb-12 sm:mb-20 px-2 sm:px-0">
+      <!-- Connection line - hidden on mobile and tablet -->
       <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border-default to-transparent -translate-y-1/2"></div>
 
-      <div class="grid md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
         {steps.map((step, index) => (
           <div class="relative group">
             <!-- Step card -->
-            <div class="bg-bg-secondary rounded-2xl border border-border-subtle p-6 transition-all duration-300 group-hover:border-accent-primary/30">
-              <div class="flex items-center gap-4 mb-4">
-                <div class="relative">
-                  <div class="w-14 h-14 rounded-xl bg-accent-primary/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent-primary/20">
-                    <Icon name={step.icon} size={24} class="text-accent-primary" />
+            <div class="bg-bg-secondary rounded-xl sm:rounded-2xl border border-border-subtle p-4 sm:p-6 transition-all duration-300 group-hover:border-accent-primary/30">
+              <div class="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <div class="relative flex-shrink-0">
+                  <div class="w-11 h-11 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-accent-primary/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent-primary/20">
+                    <Icon name={step.icon} size={20} class="text-accent-primary sm:w-6 sm:h-6" />
                   </div>
-                  <span class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-bg-tertiary border border-border-default flex items-center justify-center text-xs font-mono text-accent-primary">
+                  <span class="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-bg-tertiary border border-border-default flex items-center justify-center text-[10px] sm:text-xs font-mono text-accent-primary">
                     {step.number}
                   </span>
                 </div>
-                <div>
-                  <h3 class="text-lg font-display font-semibold text-fg-primary">{step.title}</h3>
-                  <p class="text-sm text-fg-muted">{step.description}</p>
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{step.title}</h3>
+                  <p class="text-xs sm:text-sm text-fg-muted line-clamp-2">{step.description}</p>
                 </div>
               </div>
 
               <!-- Code snippet -->
-              <div class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto">
-                <code>{step.code}</code>
+              <div class="bg-bg-tertiary rounded-lg p-2 sm:p-3 font-mono text-[10px] sm:text-xs text-fg-secondary overflow-x-auto">
+                <code class="whitespace-nowrap">{step.code}</code>
               </div>
             </div>
 
-            {/* Arrow between steps */}
+            {/* Arrow between steps - visible on medium+ screens */}
             {index < steps.length - 1 && (
-              <div class="hidden md:flex absolute top-1/2 -right-4 w-8 h-8 items-center justify-center -translate-y-1/2 z-10">
-                <Icon name="arrowRight" size={16} class="text-fg-muted" />
+              <div class="hidden md:flex absolute top-1/2 -right-3 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 items-center justify-center -translate-y-1/2 z-10">
+                <Icon name="arrowRight" size={14} class="text-fg-muted sm:w-4 sm:h-4" />
+              </div>
+            )}
+
+            {/* Arrow below step on mobile */}
+            {index < steps.length - 1 && (
+              <div class="flex md:hidden justify-center py-2">
+                <Icon name="arrowRight" size={14} class="text-fg-muted rotate-90" />
               </div>
             )}
           </div>
@@ -128,22 +135,22 @@ const jobExamples = [
     </div>
 
     <!-- Job Examples -->
-    <div>
-      <h3 class="text-xl font-display font-semibold text-fg-primary text-center mb-8">
+    <div class="px-2 sm:px-0">
+      <h3 class="text-lg sm:text-xl font-display font-semibold text-fg-primary text-center mb-6 sm:mb-8">
         Create jobs via the API
       </h3>
 
       <!-- Tabs -->
       <div class="max-w-3xl mx-auto">
-        <div class="flex items-center justify-center gap-2 mb-4" id="job-tabs">
+        <div class="flex items-center justify-center gap-1 sm:gap-2 mb-4 overflow-x-auto pb-2" id="job-tabs">
           {jobExamples.map((job, index) => (
             <button
-              class={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              class={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                 index === 0 ? 'bg-bg-tertiary text-accent-primary border border-accent-primary/30' : 'text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50'
               }`}
               data-tab={job.label}
             >
-              <Icon name={job.icon} size={16} />
+              <Icon name={job.icon} size={14} class="sm:w-4 sm:h-4" />
               {job.type}
             </button>
           ))}
@@ -152,24 +159,24 @@ const jobExamples = [
         <!-- Tab content -->
         <div class="terminal-window">
           <div class="terminal-header">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
               <span class="terminal-dot terminal-dot-red"></span>
               <span class="terminal-dot terminal-dot-yellow"></span>
               <span class="terminal-dot terminal-dot-green"></span>
             </div>
-            <span class="text-xs text-fg-muted ml-4">POST /api/jobs</span>
+            <span class="text-[10px] sm:text-xs text-fg-muted ml-2 sm:ml-4">POST /api/jobs</span>
           </div>
-          <div class="terminal-body">
+          <div class="terminal-body overflow-x-auto">
             {jobExamples.map((job, index) => (
               <pre
-                class={`job-config text-sm ${index === 0 ? '' : 'hidden'}`}
+                class={`job-config text-[10px] sm:text-sm ${index === 0 ? '' : 'hidden'}`}
                 data-config={job.label}
               ><code class="text-fg-secondary">{job.config}</code></pre>
             ))}
           </div>
         </div>
 
-        <p class="text-center text-fg-muted text-sm mt-4">
+        <p class="text-center text-fg-muted text-xs sm:text-sm mt-3 sm:mt-4">
           Or use the web UI — no code required.
         </p>
       </div>

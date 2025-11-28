@@ -118,8 +118,8 @@ function formatDate(dateStr: string) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span class="hidden xs:inline">{{ copied ? "Copied!" : "Copy config" }}</span>
-            <span class="xs:hidden">{{ copied ? "✓" : "Copy" }}</span>
+            <span class="xs:inline">{{ copied ? "Copied!" : "Copy config" }}</span>
+            <span class="xs:hidden">{{ copied ? "Copied!" : "Copy" }}</span>
           </button>
         </div>
         <pre

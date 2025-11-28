@@ -152,8 +152,8 @@ function clearFilters() {
           class="px-2 sm:px-3 py-1 sm:py-1.5 bg-bg-tertiary border border-border-subtle rounded-lg text-xs sm:text-sm text-fg-secondary focus:outline-none focus:border-accent-primary/50"
           aria-label="Sort by"
         >
-          <option value="newest">Newest first</option>
-          <option value="alpha">A-Z</option>
+          <option value="newest">Sort by: Newest first</option>
+          <option value="alpha">Sort by: A-Z</option>
         </select>
 
         <button

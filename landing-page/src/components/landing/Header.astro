@@ -15,15 +15,15 @@ const navigation = [
   <div class="absolute inset-0 bg-bg-primary/80 backdrop-blur-md border-b border-transparent transition-all duration-300" id="header-bg"></div>
 
   <Container size="xl" class="relative">
-    <nav class="flex items-center justify-between h-16">
+    <nav class="flex items-center justify-between h-14 sm:h-16">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-2 text-fg-primary hover:text-accent-primary transition-colors">
         <Icon name="clock" size={24} class="text-accent-primary" />
-        <span class="font-display font-semibold text-lg">OneOff</span>
+        <span class="font-display font-semibold text-base sm:text-lg">OneOff</span>
       </a>
 
       <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center gap-8">
+      <div class="hidden md:flex items-center gap-6 lg:gap-8">
         {navigation.map(item => (
           <a
             href={item.href}
@@ -53,31 +53,51 @@ const navigation = [
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-btn"
-        class="md:hidden p-2 text-fg-muted hover:text-fg-primary transition-colors"
+        class="md:hidden flex items-center justify-center w-10 h-10 -mr-2 text-fg-muted hover:text-fg-primary hover:bg-bg-tertiary/50 rounded-lg transition-all active:scale-95"
         aria-label="Toggle menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
       >
-        <Icon name="menu" size={24} id="menu-icon" />
-        <Icon name="x" size={24} id="close-icon" class="hidden" />
+        <Icon name="menu" size={22} id="menu-icon" class="transition-transform duration-200" />
+        <Icon name="x" size={22} id="close-icon" class="hidden transition-transform duration-200" />
       </button>
     </nav>
   </Container>
 
   <!-- Mobile Navigation -->
-  <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-bg-secondary border-b border-border-subtle">
+  <div
+    id="mobile-menu"
+    class="md:hidden absolute top-full left-0 right-0 bg-bg-secondary/95 backdrop-blur-lg border-b border-border-subtle transform transition-all duration-300 ease-out opacity-0 -translate-y-2 pointer-events-none"
+    aria-hidden="true"
+  >
     <Container size="xl">
-      <div class="py-4 space-y-2">
-        {navigation.map(item => (
+      <div class="py-3 space-y-1">
+        {navigation.map((item, index) => (
           <a
             href={item.href}
-            class="block px-4 py-2 text-fg-secondary hover:text-fg-primary hover:bg-bg-tertiary rounded-lg text-sm transition-colors"
+            class="mobile-menu-item flex items-center justify-between px-4 py-3 text-fg-secondary hover:text-fg-primary active:text-accent-primary hover:bg-bg-tertiary/50 active:bg-bg-tertiary rounded-lg text-base font-medium transition-all"
+            style={`transition-delay: ${index * 50}ms`}
           >
-            {item.name}
+            <span>{item.name}</span>
+            <Icon name="arrowRight" size={16} class="text-fg-muted" />
           </a>
         ))}
-        <div class="pt-4 mt-4 border-t border-border-subtle">
-          <Button href="#installation" size="sm" class="w-full">
-            Download
-          </Button>
+        <div class="pt-3 mt-3 border-t border-border-subtle space-y-3">
+          <a
+            href="https://github.com/meysam81/oneoff"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-3 px-4 py-3 text-fg-secondary hover:text-fg-primary hover:bg-bg-tertiary/50 rounded-lg transition-all"
+          >
+            <Icon name="github" size={20} />
+            <span class="text-base font-medium">View on GitHub</span>
+          </a>
+          <div class="px-4">
+            <Button href="#installation" size="md" class="w-full justify-center">
+              <Icon name="download" size={18} />
+              Download
+            </Button>
+          </div>
         </div>
       </div>
     </Container>
@@ -99,7 +119,7 @@ const navigation = [
     }
   }
 
-  window.addEventListener('scroll', updateHeader);
+  window.addEventListener('scroll', updateHeader, { passive: true });
   updateHeader();
 
   // Mobile menu toggle
@@ -107,19 +127,58 @@ const navigation = [
   const mobileMenu = document.getElementById('mobile-menu');
   const menuIcon = document.getElementById('menu-icon');
   const closeIcon = document.getElementById('close-icon');
+  let isMenuOpen = false;
+
+  function openMenu() {
+    isMenuOpen = true;
+    mobileMenu?.classList.remove('opacity-0', '-translate-y-2', 'pointer-events-none');
+    mobileMenu?.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+    mobileMenu?.setAttribute('aria-hidden', 'false');
+    menuBtn?.setAttribute('aria-expanded', 'true');
+    menuIcon?.classList.add('hidden');
+    closeIcon?.classList.remove('hidden');
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    isMenuOpen = false;
+    mobileMenu?.classList.add('opacity-0', '-translate-y-2', 'pointer-events-none');
+    mobileMenu?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+    mobileMenu?.setAttribute('aria-hidden', 'true');
+    menuBtn?.setAttribute('aria-expanded', 'false');
+    menuIcon?.classList.remove('hidden');
+    closeIcon?.classList.add('hidden');
+    // Restore body scroll
+    document.body.style.overflow = '';
+  }
 
   menuBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
-    menuIcon?.classList.toggle('hidden');
-    closeIcon?.classList.toggle('hidden');
+    if (isMenuOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
   });
 
   // Close mobile menu on link click
   mobileMenu?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
-      mobileMenu?.classList.add('hidden');
-      menuIcon?.classList.remove('hidden');
-      closeIcon?.classList.add('hidden');
+      closeMenu();
     });
   });
+
+  // Close menu on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMenuOpen) {
+      closeMenu();
+    }
+  });
+
+  // Close menu on resize to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768 && isMenuOpen) {
+      closeMenu();
+    }
+  }, { passive: true });
 </script>

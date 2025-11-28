@@ -83,7 +83,7 @@ function formatDate(dateStr: string) {
         v-for="template in templates"
         :key="template.id"
         :href="`/catalog/${template.id}`"
-        class="group bg-bg-secondary rounded-lg sm:rounded-xl border border-border-subtle p-4 sm:p-6 transition-all duration-300 hover:border-accent-primary/30 hover:shadow-[0_0_30px_rgba(34,211,238,0.05)] active:scale-[0.98]"
+        class="group bg-bg-secondary rounded-lg sm:rounded-xl border border-border-subtle p-4 sm:p-6 transition-all duration-300 hover:border-accent-primary/30 hover:shadow-[0_0_30px_rgba(34,211,238,0.05)] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary"
       >
         <!-- Header -->
         <div class="flex items-start justify-between mb-3 sm:mb-4">

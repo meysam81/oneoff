@@ -95,11 +95,11 @@ function clearFilters() {
 </script>
 
 <template>
-  <div class="catalog-search space-y-4">
+  <div class="catalog-search space-y-3 sm:space-y-4">
     <!-- Search input -->
     <div class="relative">
       <svg
-        class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-fg-muted"
+        class="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-fg-muted"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -114,40 +114,43 @@ function clearFilters() {
       <input
         v-model="search"
         type="search"
-        placeholder="Search templates by name, description, or tags..."
-        class="w-full pl-10 pr-4 py-3 bg-bg-tertiary border border-border-subtle rounded-lg text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/50 transition-colors"
+        placeholder="Search templates..."
+        class="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 bg-bg-tertiary border border-border-subtle rounded-lg text-sm sm:text-base text-fg-primary placeholder:text-fg-muted focus:outline-none focus:border-accent-primary/50 focus:ring-1 focus:ring-accent-primary/50 transition-colors"
       />
     </div>
 
     <!-- Filters row -->
     <div
-      class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      class="flex flex-col gap-3 sm:gap-4"
     >
       <!-- Category filters -->
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-sm text-fg-muted">Filter:</span>
-        <button
-          v-for="cat in categories"
-          :key="cat.value"
-          @click="toggleCategory(cat.value)"
-          :class="[
-            'px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200',
-            selectedCategories.includes(cat.value)
-              ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
-              : 'bg-bg-tertiary text-fg-secondary border border-border-subtle hover:border-border-default',
-          ]"
-          role="button"
-          :aria-pressed="selectedCategories.includes(cat.value)"
-        >
-          {{ cat.label }}
-        </button>
+      <div class="overflow-x-auto -mx-2 px-2 pb-2 sm:mx-0 sm:px-0 sm:pb-0">
+        <div class="flex items-center gap-1.5 sm:gap-2 sm:flex-wrap min-w-max sm:min-w-0">
+          <span class="text-xs sm:text-sm text-fg-muted whitespace-nowrap">Filter:</span>
+          <button
+            v-for="cat in categories"
+            :key="cat.value"
+            @click="toggleCategory(cat.value)"
+            :class="[
+              'px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium rounded-full transition-all duration-200 whitespace-nowrap',
+              selectedCategories.includes(cat.value)
+                ? 'bg-accent-primary/20 text-accent-primary border border-accent-primary/30'
+                : 'bg-bg-tertiary text-fg-secondary border border-border-subtle hover:border-border-default',
+            ]"
+            role="button"
+            :aria-pressed="selectedCategories.includes(cat.value)"
+          >
+            {{ cat.label }}
+          </button>
+        </div>
       </div>
 
       <!-- Sort & Clear -->
-      <div class="flex items-center gap-4">
+      <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
         <select
           v-model="sortBy"
-          class="px-3 py-1.5 bg-bg-tertiary border border-border-subtle rounded-lg text-sm text-fg-secondary focus:outline-none focus:border-accent-primary/50"
+          class="px-2 sm:px-3 py-1 sm:py-1.5 bg-bg-tertiary border border-border-subtle rounded-lg text-xs sm:text-sm text-fg-secondary focus:outline-none focus:border-accent-primary/50"
+          aria-label="Sort by"
         >
           <option value="newest">Newest first</option>
           <option value="alpha">A-Z</option>
@@ -156,7 +159,7 @@ function clearFilters() {
         <button
           v-if="search || selectedCategories.length > 0"
           @click="clearFilters"
-          class="text-sm text-fg-muted hover:text-fg-secondary transition-colors"
+          class="text-xs sm:text-sm text-fg-muted hover:text-fg-secondary transition-colors"
         >
           Clear filters
         </button>
@@ -164,7 +167,7 @@ function clearFilters() {
     </div>
 
     <!-- Results count -->
-    <div class="text-sm text-fg-muted">
+    <div class="text-xs sm:text-sm text-fg-muted">
       Showing {{ filtered.length }} of {{ templates.length }} templates
     </div>
   </div>

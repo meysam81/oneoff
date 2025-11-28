@@ -8,83 +8,87 @@ import { getGitHubData } from '../../utils/github';
 const { version, fullVersion } = await getGitHubData();
 ---
 
-<section class="relative min-h-screen flex items-center py-20 overflow-hidden">
+<section class="relative min-h-screen flex items-center pt-16 pb-12 sm:py-20 overflow-hidden">
   <!-- Background effects -->
   <div class="absolute inset-0 grid-bg opacity-50"></div>
   <div class="absolute inset-0 bg-gradient-to-b from-transparent via-bg-primary/50 to-bg-primary"></div>
 
-  <!-- Floating terminal windows (decorative) -->
-  <div class="absolute top-1/4 -left-20 w-72 h-48 bg-bg-secondary/20 rounded-lg border border-border-subtle transform -rotate-6 blur-sm opacity-30 hidden lg:block"></div>
-  <div class="absolute bottom-1/4 -right-20 w-80 h-56 bg-bg-secondary/20 rounded-lg border border-border-subtle transform rotate-6 blur-sm opacity-30 hidden lg:block"></div>
+  <!-- Floating terminal windows (decorative) - hidden on mobile/tablet -->
+  <div class="absolute top-1/4 -left-20 w-72 h-48 bg-bg-secondary/20 rounded-lg border border-border-subtle transform -rotate-6 blur-sm opacity-30 hidden xl:block"></div>
+  <div class="absolute bottom-1/4 -right-20 w-80 h-56 bg-bg-secondary/20 rounded-lg border border-border-subtle transform rotate-6 blur-sm opacity-30 hidden xl:block"></div>
 
   <Container size="xl" class="relative z-10">
-    <div class="max-w-4xl mx-auto text-center">
+    <div class="max-w-4xl mx-auto text-center px-1 sm:px-0">
       <!-- Badge -->
-      <div class="mb-8 animate-fade-in">
+      <div class="mb-6 sm:mb-8 animate-fade-in">
         <Badge variant="accent">
-          <span class="flex items-center gap-2">
-            <span class="w-2 h-2 bg-success rounded-full animate-pulse"></span>
-            {version} &bull; Open Source
+          <span class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-success rounded-full animate-pulse"></span>
+            <span class="hidden xs:inline">{version} &bull;</span>
+            <span class="xs:hidden">{version}</span>
+            <span class="hidden xs:inline">Open Source</span>
           </span>
         </Badge>
       </div>
 
       <!-- Headline -->
-      <h1 class="text-4xl sm:text-5xl md:text-display font-display font-bold text-fg-primary mb-6 animate-fade-in animate-delay-100">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-display font-display font-bold text-fg-primary mb-4 sm:mb-6 animate-fade-in animate-delay-100 leading-tight">
         One-time jobs.<br />
         <span class="text-accent-primary text-glow">Zero dependencies.</span>
       </h1>
 
       <!-- Subheadline -->
-      <p class="text-lg md:text-xl text-fg-secondary max-w-2xl mx-auto mb-10 animate-fade-in animate-delay-200">
-        The modern <code class="bg-bg-tertiary px-2 py-1 rounded text-accent-primary font-mono">at</code> command.
+      <p class="text-base sm:text-lg md:text-xl text-fg-secondary max-w-2xl mx-auto mb-8 sm:mb-10 animate-fade-in animate-delay-200 px-2 sm:px-0">
+        The modern <code class="bg-bg-tertiary px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-accent-primary font-mono text-sm sm:text-base">at</code> command.
         Schedule HTTP webhooks, shell scripts, and Docker containers to run once at a specific time.
-        Single binary. Self-hosted. Done.
+        <span class="hidden sm:inline">Single binary. Self-hosted. Done.</span>
       </p>
 
       <!-- CTA Buttons -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in animate-delay-300">
-        <Button href="#installation" size="lg">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 animate-fade-in animate-delay-300 px-4 sm:px-0">
+        <Button href="#installation" size="lg" class="w-full sm:w-auto justify-center">
           <Icon name="download" size={20} />
-          Download for Linux
+          <span class="sm:hidden">Download</span>
+          <span class="hidden sm:inline">Download for Linux</span>
         </Button>
-        <Button href="https://github.com/meysam81/oneoff" variant="secondary" size="lg" external>
+        <Button href="https://github.com/meysam81/oneoff" variant="secondary" size="lg" external class="w-full sm:w-auto justify-center">
           <Icon name="github" size={20} />
-          View on GitHub
+          <span class="sm:hidden">GitHub</span>
+          <span class="hidden sm:inline">View on GitHub</span>
           <img
             src="https://img.shields.io/github/stars/meysam81/oneoff?style=flat&color=22d3ee&labelColor=111113"
             alt="GitHub stars"
-            class="h-5 ml-1"
+            class="h-5 ml-1 hidden md:block"
             loading="lazy"
           />
         </Button>
       </div>
 
       <!-- Terminal Animation -->
-      <div class="animate-fade-in animate-delay-500">
+      <div class="animate-fade-in animate-delay-500 px-2 sm:px-0">
         <div class="terminal-window max-w-2xl mx-auto text-left shadow-2xl">
           <div class="terminal-header">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
               <span class="terminal-dot terminal-dot-red"></span>
               <span class="terminal-dot terminal-dot-yellow"></span>
               <span class="terminal-dot terminal-dot-green"></span>
             </div>
-            <span class="text-xs text-fg-muted ml-4">Terminal</span>
+            <span class="text-xs text-fg-muted ml-2 sm:ml-4">Terminal</span>
           </div>
-          <div class="terminal-body" id="hero-terminal">
-            <div class="code-line">
+          <div class="terminal-body overflow-x-auto" id="hero-terminal">
+            <div class="code-line whitespace-nowrap">
               <span class="code-prompt">$</span>
-              <span class="code-command" id="cmd-1"> curl -fsSL https://github.com/meysam81/oneoff/releases/download/{fullVersion}/oneoff_linux_amd64.tar.gz | tar xz</span>
+              <span class="code-command text-xs sm:text-sm" id="cmd-1"> curl -fsSL <span class="hidden sm:inline">https://github.com/meysam81/oneoff/releases/download/{fullVersion}/oneoff_linux_amd64.tar.gz</span><span class="sm:hidden">...oneoff.tar.gz</span> | tar xz</span>
             </div>
             <div class="code-line opacity-0" id="line-2">
               <span class="code-prompt">$</span>
-              <span class="code-command"> ./oneoff</span>
+              <span class="code-command text-xs sm:text-sm"> ./oneoff</span>
             </div>
             <div class="code-line opacity-0" id="line-3">
-              <span class="code-output">→ Server running at http://localhost:8080</span>
+              <span class="code-output text-xs sm:text-sm">→ Server running at http://localhost:8080</span>
             </div>
             <div class="code-line mt-2 opacity-0" id="line-4">
-              <span class="text-success">✓ Ready to schedule jobs!</span>
+              <span class="text-success text-xs sm:text-sm">✓ Ready to schedule jobs!</span>
               <span class="cursor-blink"></span>
             </div>
           </div>
@@ -93,9 +97,9 @@ const { version, fullVersion } = await getGitHubData();
     </div>
   </Container>
 
-  <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-    <svg class="w-6 h-6 text-fg-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Scroll indicator - hidden on small mobile -->
+  <div class="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
+    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-fg-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
     </svg>
   </div>

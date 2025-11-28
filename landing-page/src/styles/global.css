@@ -1,9 +1,9 @@
+/* Fonts - must be before @tailwind directives */
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Fonts */
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
 /* Geist font - using system fallback since it's not on Google Fonts */
 @font-face {
@@ -183,11 +183,11 @@
   }
 
   .terminal-header {
-    @apply flex items-center gap-2 px-4 py-3 bg-bg-tertiary border-b border-border-subtle;
+    @apply flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-bg-tertiary border-b border-border-subtle;
   }
 
   .terminal-dot {
-    @apply w-3 h-3 rounded-full;
+    @apply w-2 h-2 sm:w-3 sm:h-3 rounded-full;
   }
 
   .terminal-dot-red {
@@ -203,7 +203,7 @@
   }
 
   .terminal-body {
-    @apply p-4 font-mono text-sm;
+    @apply p-3 sm:p-4 font-mono text-xs sm:text-sm;
   }
 
   /* Code highlighting */
@@ -322,19 +322,19 @@
 
   /* Section spacing */
   .section {
-    @apply py-20 md:py-32;
+    @apply py-12 sm:py-20 md:py-32;
   }
 
   .section-header {
-    @apply text-center mb-16;
+    @apply text-center mb-8 sm:mb-12 md:mb-16;
   }
 
   .section-title {
-    @apply text-headline font-display font-bold text-fg-primary mb-4;
+    @apply text-xl sm:text-2xl md:text-headline font-display font-bold text-fg-primary mb-3 sm:mb-4;
   }
 
   .section-subtitle {
-    @apply text-body text-fg-secondary max-w-2xl mx-auto;
+    @apply text-sm sm:text-base text-fg-secondary max-w-2xl mx-auto;
   }
 
   /* Container */

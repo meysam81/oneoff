@@ -29,29 +29,29 @@ const painPoints = [
   <div class="absolute inset-0 bg-gradient-to-b from-bg-primary via-bg-secondary/30 to-bg-primary"></div>
 
   <Container size="xl" class="relative z-10">
-    <div class="section-header">
-      <h2 class="section-title">
-        Scheduling one-time jobs shouldn't require<br class="hidden sm:block" />
-        <span class="text-accent-primary">a PhD in DevOps</span>
+    <div class="section-header px-2 sm:px-0">
+      <h2 class="section-title text-xl sm:text-2xl md:text-headline leading-tight">
+        Scheduling one-time jobs shouldn't require<br class="hidden md:block" />
+        <span class="md:hidden"> </span><span class="text-accent-primary">a PhD in DevOps</span>
       </h2>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6 mb-16">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-16 px-2 sm:px-0">
       {painPoints.map((point, index) => (
         <Card variant="default" class="group relative overflow-hidden">
           <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-error/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-          <div class="flex items-center gap-3 mb-4">
-            <div class="p-2 bg-bg-tertiary rounded-lg text-fg-muted">
-              <Icon name={point.icon} size={24} />
+          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted">
+              <Icon name={point.icon} size={20} class="sm:w-6 sm:h-6" />
             </div>
-            <h3 class="text-lg font-display font-semibold text-fg-primary">{point.title}</h3>
+            <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{point.title}</h3>
           </div>
 
-          <p class="text-fg-secondary text-sm leading-relaxed mb-4">{point.description}</p>
+          <p class="text-fg-secondary text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">{point.description}</p>
 
-          <span class="inline-flex items-center gap-1.5 text-xs text-error/80">
-            <Icon name="x" size={14} />
+          <span class="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-error/80">
+            <Icon name="x" size={12} class="sm:w-[14px] sm:h-[14px]" />
             {point.highlight}
           </span>
         </Card>
@@ -59,16 +59,16 @@ const painPoints = [
     </div>
 
     <!-- Solution statement -->
-    <div class="text-center">
-      <div class="inline-flex items-center gap-4 px-6 py-4 bg-bg-secondary/50 rounded-2xl border border-border-subtle">
+    <div class="text-center px-2 sm:px-0">
+      <div class="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 bg-bg-secondary/50 rounded-xl sm:rounded-2xl border border-border-subtle">
         <div class="flex items-center gap-2">
-          <div class="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center">
-            <Icon name="zap" size={20} class="text-accent-primary" />
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center">
+            <Icon name="zap" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
           </div>
         </div>
-        <div class="text-left">
-          <p class="text-fg-primary font-display font-semibold">OneOff: Download. Run. Schedule.</p>
-          <p class="text-fg-muted text-sm">That's it. Really.</p>
+        <div class="text-center sm:text-left">
+          <p class="text-fg-primary font-display font-semibold text-sm sm:text-base">OneOff: Download. Run. Schedule.</p>
+          <p class="text-fg-muted text-xs sm:text-sm">That's it. Really.</p>
         </div>
       </div>
     </div>

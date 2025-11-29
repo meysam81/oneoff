@@ -96,9 +96,9 @@ func (e *WebhookEvent) ToJSON() string {
 
 // WebhookPayload represents the full webhook payload
 type WebhookPayload struct {
-	Event     string        `json:"event"`
-	Timestamp time.Time     `json:"timestamp"`
-	Data      WebhookData   `json:"data"`
+	Event     string      `json:"event"`
+	Timestamp time.Time   `json:"timestamp"`
+	Data      WebhookData `json:"data"`
 }
 
 // WebhookData contains the event data

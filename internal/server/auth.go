@@ -15,10 +15,10 @@ import (
 
 // AuthConfig holds authentication configuration
 type AuthConfig struct {
-	Enabled       bool
-	CacheSize     int
-	CacheTTL      time.Duration
-	SkipPaths     []string // Paths that don't require auth
+	Enabled   bool
+	CacheSize int
+	CacheTTL  time.Duration
+	SkipPaths []string // Paths that don't require auth
 }
 
 // DefaultAuthConfig returns default auth configuration
@@ -28,8 +28,8 @@ func DefaultAuthConfig() AuthConfig {
 		CacheSize: 128,
 		CacheTTL:  5 * time.Minute,
 		SkipPaths: []string{
-			"/",           // Frontend
-			"/assets/",    // Static assets
+			"/",        // Frontend
+			"/assets/", // Static assets
 			"/favicon.ico",
 		},
 	}
@@ -43,11 +43,11 @@ type authCacheEntry struct {
 
 // authCache is a thread-safe LRU cache for API keys
 type authCache struct {
-	mu       sync.RWMutex
-	items    map[string]*list.Element
-	order    *list.List
-	maxSize  int
-	ttl      time.Duration
+	mu      sync.RWMutex
+	items   map[string]*list.Element
+	order   *list.List
+	maxSize int
+	ttl     time.Duration
 }
 
 type cacheItem struct {

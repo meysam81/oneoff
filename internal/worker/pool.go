@@ -45,9 +45,9 @@ func NewPool(workers int, repo repository.Repository, registry *domain.JobRegist
 		stopChan:         make(chan struct{}),
 		runningJobs:      make(map[string]bool),
 		jobContexts:      make(map[string]context.CancelFunc),
-		pollInterval:     5 * time.Second,  // Check for new jobs every 5 seconds
-		logRetentionDays: 90,               // Default: 90 days
-		cleanupInterval:  24 * time.Hour,   // Run cleanup daily
+		pollInterval:     5 * time.Second, // Check for new jobs every 5 seconds
+		logRetentionDays: 90,              // Default: 90 days
+		cleanupInterval:  24 * time.Hour,  // Run cleanup daily
 	}
 }
 

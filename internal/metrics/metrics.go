@@ -307,15 +307,15 @@ func (c *PrometheusCollector) Handler() http.Handler {
 // NoopCollector is a no-op metrics collector for when metrics are disabled
 type NoopCollector struct{}
 
-func (n *NoopCollector) IncJobsTotal(jobType, status string)                            {}
-func (n *NoopCollector) ObserveJobDuration(jobType string, duration time.Duration)      {}
-func (n *NoopCollector) SetActiveWorkers(count int)                                     {}
-func (n *NoopCollector) SetTotalWorkers(count int)                                      {}
-func (n *NoopCollector) SetQueuedJobs(count int)                                        {}
-func (n *NoopCollector) IncRequestsTotal(method, path string, status int)               {}
+func (n *NoopCollector) IncJobsTotal(jobType, status string)                                {}
+func (n *NoopCollector) ObserveJobDuration(jobType string, duration time.Duration)          {}
+func (n *NoopCollector) SetActiveWorkers(count int)                                         {}
+func (n *NoopCollector) SetTotalWorkers(count int)                                          {}
+func (n *NoopCollector) SetQueuedJobs(count int)                                            {}
+func (n *NoopCollector) IncRequestsTotal(method, path string, status int)                   {}
 func (n *NoopCollector) ObserveRequestDuration(method, path string, duration time.Duration) {}
-func (n *NoopCollector) IncAPIKeyValidations(valid bool)                                {}
-func (n *NoopCollector) IncWebhookDeliveries(success bool)                              {}
+func (n *NoopCollector) IncAPIKeyValidations(valid bool)                                    {}
+func (n *NoopCollector) IncWebhookDeliveries(success bool)                                  {}
 func (n *NoopCollector) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)

@@ -36,7 +36,7 @@ type APIKeyWithSecret struct {
 // CreateAPIKeyRequest represents a request to create a new API key
 type CreateAPIKeyRequest struct {
 	Name      string     `json:"name"`
-	Scopes    string     `json:"scopes,omitempty"`    // Default: "read,write"
+	Scopes    string     `json:"scopes,omitempty"`     // Default: "read,write"
 	ExpiresAt *time.Time `json:"expires_at,omitempty"` // Optional expiration
 }
 

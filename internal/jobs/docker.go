@@ -110,7 +110,10 @@ func (j *DockerJob) Execute(ctx context.Context) (*domain.ExecutionResult, error
 	errorMsg := ""
 
 	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
+		if ctx.Err() == context.Canceled {
+			exitCode = 130 // SIGINT exit code
+			errorMsg = "Container execution cancelled by user"
+		} else if exitErr, ok := err.(*exec.ExitError); ok {
 			exitCode = exitErr.ExitCode()
 			errorMsg = fmt.Sprintf("Container exited with code %d: %s", exitCode, stderr.String())
 		} else if ctx.Err() == context.DeadlineExceeded {

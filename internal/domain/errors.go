@@ -3,6 +3,9 @@ package domain
 import "errors"
 
 var (
+	// Generic errors
+	ErrNotFound = errors.New("not found")
+
 	// Job errors
 	ErrJobNotFound      = errors.New("job not found")
 	ErrJobTypeNotFound  = errors.New("job type not found")

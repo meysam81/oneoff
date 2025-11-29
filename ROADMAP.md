@@ -573,13 +573,13 @@ oneoff_api_requests_total{method,path,status}
 
 **Suggested Commands**:
 ```bash
-oneoff cli jobs list [--status=scheduled] [--project=default]
-oneoff cli jobs create --name "Backup" --type shell --config '{...}'
-oneoff cli jobs run <job-id>
-oneoff cli jobs cancel <job-id>
-oneoff cli executions list --job-id <id>
-oneoff cli config get
-oneoff cli config set workers_count 4
+oneoff jobs list [--status=scheduled] [--project=default]
+oneoff jobs create --name "Backup" --type shell --config '{...}'
+oneoff jobs run <job-id>
+oneoff jobs cancel <job-id>
+oneoff executions list --job-id <id>
+oneoff config get
+oneoff config set workers_count 4
 ```
 
 **Success Criteria**:

@@ -228,7 +228,11 @@ func (s *WebhookService) deliver(ctx context.Context, task *webhookDeliveryTask)
 		s.handleDeliveryFailure(ctx, delivery, fmt.Sprintf("Request failed: %v", err))
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to close response body")
+		}
+	}()
 
 	// Read response (limit to 1KB)
 	responseBody := make([]byte, 1024)

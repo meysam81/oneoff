@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
+	"github.com/rs/zerolog/log"
 )
 
 // CreateAPIKey creates a new API key
@@ -114,7 +115,11 @@ func (r *SQLiteRepository) ListAPIKeys(ctx context.Context) ([]*domain.APIKey, e
 	if err != nil {
 		return nil, fmt.Errorf("failed to list API keys: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Error().Err(err).Msg("Failed to close rows in ListAPIKeys")
+		}
+	}()
 
 	var keys []*domain.APIKey
 	for rows.Next() {

@@ -300,7 +300,7 @@ func (c *PrometheusCollector) Handler() http.Handler {
 		sb.WriteString(fmt.Sprintf("oneoff_webhook_deliveries_total{result=\"failed\"} %d\n",
 			atomic.LoadInt64(&c.webhookDeliveriesFailed)))
 
-		w.Write([]byte(sb.String()))
+		w.Write([]byte(sb.String())) //nolint:errcheck // HTTP write errors are connection issues
 	})
 }
 

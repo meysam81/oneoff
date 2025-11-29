@@ -120,7 +120,7 @@
       preset="dialog"
       :title="editingProject ? 'Edit Project' : 'Create Project'"
       :positive-text="editingProject ? 'Update' : 'Create'"
-      :negative-text="'Cancel'"
+      negative-text="Cancel"
       @positive-click="handleSubmit"
       @negative-click="closeModal"
     >

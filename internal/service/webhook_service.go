@@ -276,7 +276,13 @@ func (s *WebhookService) handleDeliveryFailureWithResponse(ctx context.Context, 
 	}
 
 	// Schedule retry with exponential backoff
-	backoff := time.Duration(1<<uint(delivery.Attempts)) * time.Second
+	// Cap the exponent to prevent overflow (max 30, i.e., ~17 minutes, but will be capped to 5 minutes below)
+	maxExponent := 30
+	exponent := delivery.Attempts
+	if exponent > maxExponent {
+		exponent = maxExponent
+	}
+	backoff := time.Duration(1<<uint(exponent)) * time.Second
 	if backoff > 5*time.Minute {
 		backoff = 5 * time.Minute
 	}

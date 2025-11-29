@@ -269,7 +269,7 @@ const fetchProjects = async () => {
   try {
     await systemStore.fetchProjects(false);
   } catch (error) {
-    message.error("Failed to fetch projects");
+    message.error(`Failed to fetch projects: ${error?.message || 'Unknown error'}`);
   } finally {
     loading.value = false;
   }

@@ -29,8 +29,10 @@ var (
 	ErrTagAlreadyExists = errors.New("tag already exists")
 
 	// Chain errors
-	ErrChainNotFound = errors.New("job chain not found")
-	ErrInvalidChain  = errors.New("invalid job chain")
+	ErrChainNotFound    = errors.New("job chain not found")
+	ErrInvalidChain     = errors.New("invalid job chain")
+	ErrChainEmpty       = errors.New("chain must have at least one job")
+	ErrChainJobNotFound = errors.New("job in chain not found")
 
 	// Validation errors
 	ErrInvalidPriority      = errors.New("priority must be between 1 and 10")

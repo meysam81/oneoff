@@ -65,6 +65,16 @@ export const tagsAPI = {
   delete: (id) => api.delete(`tags/${id}`),
 };
 
+// Chains API
+export const chainsAPI = {
+  list: (params) => api.get("chains", { searchParams: params }).json(),
+  get: (id) => api.get(`chains/${id}`).json(),
+  create: (data) => api.post("chains", { json: data }).json(),
+  update: (id, data) => api.patch(`chains/${id}`, { json: data }).json(),
+  delete: (id) => api.delete(`chains/${id}`),
+  execute: (id) => api.post(`chains/${id}/execute`).json(),
+};
+
 // System API
 export const systemAPI = {
   status: () => api.get("system/status").json(),

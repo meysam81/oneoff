@@ -49,6 +49,10 @@ type Repository interface {
 	CreateChain(ctx context.Context, chain *domain.JobChain) error
 	GetChain(ctx context.Context, id string) (*domain.JobChain, error)
 	ListChains(ctx context.Context, projectID string) ([]*domain.JobChain, error)
+	ListChainsWithFilter(ctx context.Context, filter domain.ChainFilter) ([]*domain.JobChain, error)
+	CountChains(ctx context.Context, filter domain.ChainFilter) (int64, error)
+	UpdateChain(ctx context.Context, id string, name *string) error
+	UpdateChainLinks(ctx context.Context, chainID string, links []domain.ChainLinkInput) error
 	DeleteChain(ctx context.Context, id string) error
 
 	// System config operations

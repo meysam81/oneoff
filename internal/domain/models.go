@@ -172,3 +172,29 @@ type WorkerStatus struct {
 	QueuedJobs       int      `json:"queued_jobs"`
 	RunningJobs      []string `json:"running_jobs"` // Job IDs
 }
+
+// CreateChainRequest represents a request to create a new job chain
+type CreateChainRequest struct {
+	Name      string           `json:"name"`
+	ProjectID string           `json:"project_id,omitempty"`
+	Links     []ChainLinkInput `json:"links"`
+}
+
+// ChainLinkInput represents input for a chain link
+type ChainLinkInput struct {
+	JobID         string `json:"job_id"`
+	StopOnFailure bool   `json:"stop_on_failure"`
+}
+
+// UpdateChainRequest represents a request to update a chain
+type UpdateChainRequest struct {
+	Name  *string          `json:"name,omitempty"`
+	Links []ChainLinkInput `json:"links,omitempty"`
+}
+
+// ChainFilter represents filters for querying chains
+type ChainFilter struct {
+	ProjectID string
+	Limit     int
+	Offset    int
+}

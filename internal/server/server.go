@@ -89,12 +89,14 @@ func New(cfg *config.Config) (*Server, error) {
 	tagService := service.NewTagService(repo)
 	systemService := service.NewSystemService(repo, pool)
 	apiKeyService := service.NewAPIKeyService(repo)
+	chainService := service.NewChainService(repo, jobService)
 	// Note: webhookService initialized earlier for pool callback
 
 	// Initialize handlers
 	h := handler.NewHandler(jobService, executionService, projectService, tagService, systemService)
 	apiKeyHandler := handler.NewAPIKeyHandler(apiKeyService)
 	webhookHandler := handler.NewWebhookHandler(webhookService)
+	chainHandler := handler.NewChainHandler(chainService)
 
 	// Initialize auth middleware
 	authConfig := DefaultAuthConfig()
@@ -103,7 +105,7 @@ func New(cfg *config.Config) (*Server, error) {
 
 	// Setup router
 	mux := http.NewServeMux()
-	setupRoutes(mux, h, apiKeyHandler, webhookHandler, metricsCollector)
+	setupRoutes(mux, h, apiKeyHandler, webhookHandler, chainHandler, metricsCollector)
 
 	// Build middleware chain: CORS -> Logging -> Metrics -> Auth -> Handler
 	var finalHandler http.Handler = mux
@@ -186,7 +188,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 // setupRoutes configures all HTTP routes
-func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.APIKeyHandler, webhookHandler *handler.WebhookHandler, metricsCollector metrics.Collector) {
+func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.APIKeyHandler, webhookHandler *handler.WebhookHandler, chainHandler *handler.ChainHandler, metricsCollector metrics.Collector) {
 	// Metrics endpoint (no auth required for Prometheus scraping)
 	mux.Handle("/metrics", metricsCollector.Handler())
 
@@ -277,6 +279,39 @@ func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.
 			apiKeyHandler.UpdateAPIKey(w, r)
 		case http.MethodDelete:
 			apiKeyHandler.DeleteAPIKey(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Chain routes
+	mux.HandleFunc("/api/chains", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			chainHandler.ListChains(w, r)
+		case http.MethodPost:
+			chainHandler.CreateChain(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/chains/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if strings.HasSuffix(path, "/execute") {
+			if r.Method == http.MethodPost {
+				chainHandler.ExecuteChain(w, r)
+				return
+			}
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			chainHandler.GetChain(w, r)
+		case http.MethodPatch:
+			chainHandler.UpdateChain(w, r)
+		case http.MethodDelete:
+			chainHandler.DeleteChain(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}

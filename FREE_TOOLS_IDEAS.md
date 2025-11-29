@@ -615,16 +615,16 @@ Scoring criteria:
 
 | Rank | Tool | Utility | Fit | Discovery | Effort | Score |
 |------|------|---------|-----|-----------|--------|-------|
-| 1 | Cron Expression Generator | 9 | 7 | 10 | 3 | **8.4** |
-| 2 | Unix Timestamp Converter | 8 | 6 | 10 | 1 | **8.1** |
-| 3 | JSON Formatter | 8 | 5 | 10 | 2 | **7.9** |
-| 4 | HTTP Request Builder | 9 | 9 | 7 | 4 | **7.9** |
-| 5 | Webhook Tester | 9 | 10 | 7 | 6 | **7.8** |
-| 6 | Docker Run Builder | 8 | 8 | 6 | 3 | **7.4** |
+| 1 | Cron Expression Generator | 9 | 7 | 10 | 3 | **8.5** |
+| 2 | Unix Timestamp Converter | 8 | 6 | 10 | 1 | **8.125** |
+| 3 | JSON Formatter | 8 | 5 | 10 | 2 | **7.75** |
+| 4 | HTTP Request Builder | 9 | 9 | 7 | 4 | **8.125** |
+| 5 | Webhook Tester | 9 | 10 | 7 | 6 | **8.125** |
+| 6 | Docker Run Builder | 8 | 8 | 6 | 3 | **7.375** |
 | 7 | Timezone Scheduler | 7 | 8 | 6 | 3 | **7.0** |
 | 8 | API Response Mocker | 8 | 7 | 7 | 5 | **7.0** |
 | 9 | Shell Script Validator | 7 | 8 | 5 | 5 | **6.5** |
-| 10 | Job Schedule Calculator | 6 | 10 | 3 | 1 | **6.1** |
+| 10 | Job Schedule Calculator | 6 | 10 | 3 | 1 | **6.625** |
 
 ---
 

@@ -44,31 +44,6 @@ const { template } = Astro.props;
   title={`${template.name} — OneOff Catalog`}
   description={template.description}
 >
-  <!-- Header -->
-  <header class="border-b border-border-subtle bg-bg-primary/80 backdrop-blur-md sticky top-0 z-50">
-    <Container size="xl">
-      <nav class="flex items-center justify-between h-16">
-        <a href="/" class="flex items-center gap-2 text-fg-primary hover:text-accent-primary transition-colors">
-          <Icon name="clock" size={24} class="text-accent-primary" />
-          <span class="font-display font-semibold text-lg">OneOff</span>
-        </a>
-        <div class="flex items-center gap-4">
-          <a href="/catalog" class="text-fg-secondary hover:text-fg-primary text-sm transition-colors">
-            Catalog
-          </a>
-          <a
-            href="https://github.com/meysam81/oneoff"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-fg-muted hover:text-fg-primary transition-colors"
-          >
-            <Icon name="github" size={20} />
-          </a>
-        </div>
-      </nav>
-    </Container>
-  </header>
-
   <main class="py-12 md:py-20">
     <Container size="xl">
       <!-- Back link -->
@@ -98,20 +73,4 @@ const { template } = Astro.props;
       <JobPreview client:load template={template} />
     </Container>
   </main>
-
-  <!-- Footer -->
-  <footer class="border-t border-border-subtle py-8 mt-12">
-    <Container size="xl">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
-        <p>&copy; {new Date().getFullYear()} OneOff Contributors. Open source under Apache-2.0 License.</p>
-        <div class="flex items-center gap-6">
-          <a href="/terms" class="hover:text-fg-secondary transition-colors">Terms</a>
-          <a href="/privacy" class="hover:text-fg-secondary transition-colors">Privacy</a>
-          <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors">
-            <Icon name="github" size={20} />
-          </a>
-        </div>
-      </div>
-    </Container>
-  </footer>
 </BaseLayout>

@@ -28,7 +28,7 @@ The OneOff landing page has a **solid technical foundation** - clean dark theme,
 
 | Issue | Impact | Current State |
 |-------|--------|---------------|
-| Time-to-Aha | Critical | Users must download & run before seeing value |
+| Time-to-Aha | Critical | Users must download and run before seeing value |
 | Social Proof | Critical | Zero testimonials, logos, or usage metrics |
 | Emotional Hook | High | Copy is descriptive but not compelling |
 | Interactive Demo | High | No way to "try before download" |
@@ -195,7 +195,7 @@ These changes will have the highest impact on conversion and should be implement
         <div class="text-sm text-fg-muted">Downloads</div>
       </div>
       <div class="text-center">
-        <div class="text-2xl font-bold text-fg-primary">&lt;1min</div>
+        <div class="text-2xl font-bold text-fg-primary"><1min</div>
         <div class="text-sm text-fg-muted">Setup Time</div>
       </div>
     </div>
@@ -870,30 +870,40 @@ landing-page/src/
 
 export async function getGitHubData() {
   // Existing: version, fullVersion, binarySize
+  try {
+    // ADD: Download count from releases
+    const releases = await fetch(
+      'https://api.github.com/repos/meysam81/oneoff/releases'
+    ).then(r => r.json());
 
-  // ADD: Download count from releases
-  const releases = await fetch(
-    'https://api.github.com/repos/meysam81/oneoff/releases'
-  ).then(r => r.json());
-
-  const totalDownloads = releases.reduce((sum, release) => {
-    return sum + release.assets.reduce((assetSum, asset) => {
-      return assetSum + asset.download_count;
+    const totalDownloads = releases.reduce((sum, release) => {
+      return sum + release.assets.reduce((assetSum, asset) => {
+        return assetSum + asset.download_count;
+      }, 0);
     }, 0);
-  }, 0);
 
-  // ADD: Star count
-  const repo = await fetch(
-    'https://api.github.com/repos/meysam81/oneoff'
-  ).then(r => r.json());
+    // ADD: Star count
+    const repo = await fetch(
+      'https://api.github.com/repos/meysam81/oneoff'
+    ).then(r => r.json());
 
-  return {
-    version,
-    fullVersion,
-    binarySize,
-    stars: repo.stargazers_count,      // NEW
-    downloads: totalDownloads,          // NEW
-  };
+    return {
+      version,
+      fullVersion,
+      binarySize,
+      stars: repo.stargazers_count,      // NEW
+      downloads: totalDownloads,          // NEW
+    };
+  } catch (e) {
+    // Fallback values if API requests fail
+    return {
+      version,
+      fullVersion,
+      binarySize,
+      stars: 0,
+      downloads: 0,
+    };
+  }
 }
 ```
 

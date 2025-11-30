@@ -2,8 +2,8 @@
 
 This document provides comprehensive guidance for AI assistants working on the OneOff codebase. It explains the architecture, conventions, workflows, and important considerations for making changes.
 
-**Last Updated**: 2025-11-29
-**Codebase Size**: ~11,400 lines across 63 source files
+**Last Updated**: 2025-11-30
+**Codebase Size**: ~10,500 lines across 65+ source files
 **Version**: 1.0.2
 
 ---
@@ -36,10 +36,12 @@ This document provides comprehensive guidance for AI assistants working on the O
 - Project organization and tag system
 - Real-time worker monitoring
 - Job chaining for sequential execution
-- Landing page with job template catalog
+- Landing page with job template catalog (Astro-based)
 - API key authentication with scopes (read, write, admin)
+- LRU cache-based authentication middleware (128 entries, 5-min TTL)
 - Webhook notifications for job lifecycle events
-- Prometheus-compatible metrics endpoint
+- Prometheus-compatible metrics endpoint with HTTP request tracking
+- CLI with serve/migrate commands
 
 ### Key Design Goals
 
@@ -192,8 +194,9 @@ internal/
 │   ├── handler.go      # Base handler with common utilities
 │   ├── job.go          # Job endpoints (CRUD, execute, clone, cancel)
 │   ├── misc.go         # System/worker/job-type/project/tag endpoints
-│   ├── apikey.go       # API key management endpoints
-│   └── webhook.go      # Webhook configuration endpoints
+│   ├── apikey.go       # API key management (CRUD, revoke, rotate)
+│   ├── webhook.go      # Webhook configuration endpoints
+│   └── chain.go        # Job chain endpoints (CRUD, execute)
 │
 ├── jobs/               # Job executor implementations
 │   ├── http.go         # HTTP request job (with retry)
@@ -220,14 +223,17 @@ internal/
 │   ├── tag_service.go       # Tag management
 │   ├── system_service.go    # System stats and config
 │   ├── apikey_service.go    # API key generation and validation
-│   └── webhook_service.go   # Webhook dispatch and delivery
+│   ├── webhook_service.go   # Webhook dispatch and delivery
+│   └── chain_service.go     # Job chain orchestration
 │
 ├── worker/             # Job execution workers
 │   └── pool.go         # Worker pool with scheduler
 │
 └── server/             # HTTP server
-    ├── server.go       # Server setup, routing, middleware
-    └── dist/           # Embedded frontend (generated)
+    ├── server.go           # Server setup, routing, middleware
+    ├── auth.go             # LRU cache-based authentication middleware
+    ├── metrics_middleware.go # HTTP request metrics collection
+    └── dist/               # Embedded frontend (generated)
 ```
 
 ### Frontend Directory Layout
@@ -309,7 +315,7 @@ landing-page/
 
 ## Technology Stack
 
-### Backend (Go 1.25.4)
+### Backend (Go 1.24.7)
 
 | Package                     | Purpose                    | Notes                            |
 | --------------------------- | -------------------------- | -------------------------------- |
@@ -366,6 +372,25 @@ make build
 # Access at http://localhost:8080
 ```
 
+### CLI Commands
+
+The OneOff binary supports the following commands:
+
+```bash
+# Start the server (default command)
+./oneoff serve
+# Or simply:
+./oneoff
+
+# Run database migrations
+./oneoff migrate --direction up    # Apply migrations
+./oneoff migrate --direction down  # Rollback migrations
+
+# Show version information
+./oneoff --version
+# Output: oneoff version X.X.X (commit: abc123, built: 2025-01-01T00:00:00Z)
+```
+
 ### Development Commands
 
 ```bash
@@ -399,6 +424,23 @@ make clean
 cd landing-page && npm run dev
 # Access at http://localhost:4321
 ```
+
+### Development Tools
+
+The project uses several development tools:
+
+| Tool | Purpose | Config File |
+|------|---------|-------------|
+| **Air** | Go hot reload | `.air.toml` |
+| **GoReleaser** | Multi-platform releases | `.goreleaser.yaml` |
+| **Pre-commit** | Git hooks | `.pre-commit-config.yaml` |
+| **Vite** | Frontend build | `vite.config.js` |
+
+**GoReleaser Features**:
+- Builds for Linux, macOS, Windows (amd64, arm64, arm)
+- Cosign binary signing with SBOM generation
+- Automatic changelog from conventional commits
+- Docker image publishing to GHCR
 
 ### Git Workflow
 
@@ -437,6 +479,8 @@ DEFAULT_TIMEZONE=UTC         # Default timezone for jobs
 LOG_RETENTION_DAYS=90        # How long to keep execution logs
 DEFAULT_PRIORITY=5           # Default job priority (1-10)
 ENVIRONMENT=production       # Environment name
+AUTH_ENABLED=false           # Enable API key authentication (default: false for easy migration)
+METRICS_ENABLED=true         # Enable Prometheus metrics endpoint
 ```
 
 ---
@@ -951,6 +995,74 @@ curl http://localhost:8080/api/jobs \
   -H "X-API-Key: oneoff_xxxxxxxxxxxx"
 ```
 
+**Revoking and Rotating API Keys**:
+
+```bash
+# Revoke an API key (disables it without deletion)
+curl -X POST http://localhost:8080/api/api-keys/<id>/revoke \
+  -H "Authorization: Bearer <admin-key>"
+
+# Rotate an API key (generates new key, invalidates old)
+curl -X POST http://localhost:8080/api/api-keys/<id>/rotate \
+  -H "Authorization: Bearer <admin-key>"
+
+# Response includes the new key (only shown once)
+```
+
+### Authentication Middleware
+
+When `AUTH_ENABLED=true`, all `/api/*` endpoints require authentication.
+
+**Architecture**:
+- LRU cache with 128 entries and 5-minute TTL for validated keys
+- Cache uses key hash as lookup to avoid storing raw keys
+- Automatic scope enforcement based on HTTP method:
+  - GET, HEAD, OPTIONS → `read` scope required
+  - POST, PUT, PATCH, DELETE → `write` scope required
+- `admin` scope has all permissions
+- `write` scope implies `read` permissions
+
+**Skipped Paths** (no auth required):
+- `/` - Frontend application
+- `/assets/*` - Static assets
+- `/favicon.ico`
+- `/health` - Health check endpoint
+- `/metrics` - Prometheus metrics
+
+**Error Responses**:
+- `401 Unauthorized`: Missing or invalid API key
+- `403 Forbidden`: Insufficient permissions (wrong scope)
+
+### Working with Job Chains
+
+Job chains allow executing multiple jobs in sequence. When one job completes, the next job in the chain starts.
+
+**Creating a Chain**:
+
+```bash
+curl -X POST http://localhost:8080/api/chains \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Backup Pipeline",
+    "description": "Daily backup workflow",
+    "project_id": "default",
+    "job_ids": ["job-1-id", "job-2-id", "job-3-id"]
+  }'
+```
+
+**Chain Operations**:
+- `GET /api/chains` - List all chains
+- `GET /api/chains/:id` - Get chain details
+- `POST /api/chains` - Create new chain
+- `PATCH /api/chains/:id` - Update chain
+- `DELETE /api/chains/:id` - Delete chain
+- `POST /api/chains/:id/execute` - Execute chain (starts first job)
+
+**Chain Errors**:
+- `ErrChainNotFound` - Chain does not exist
+- `ErrChainEmpty` - Chain must have at least one job
+- `ErrChainJobNotFound` - One or more jobs in chain not found
+
 ### Working with Webhooks
 
 Webhooks notify external services when job events occur.
@@ -1387,26 +1499,29 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 
 ### File Locations
 
-| What             | Where                                    |
-| ---------------- | ---------------------------------------- |
-| Entry point      | `main.go`                                |
-| Server setup     | `internal/server/server.go`              |
-| HTTP handlers    | `internal/handler/*.go`                  |
-| Business logic   | `internal/service/*.go`                  |
-| Database         | `internal/repository/*.go`               |
-| Job executors    | `internal/jobs/*.go`                     |
-| Domain models    | `internal/domain/*.go`                   |
-| Metrics          | `internal/metrics/metrics.go`            |
-| API key auth     | `internal/service/apikey_service.go`     |
-| Webhooks         | `internal/service/webhook_service.go`    |
-| Migrations       | `migrations/*.sql`                       |
-| Frontend entry   | `src/main.js`                            |
-| Vue components   | `src/components/*.vue`                   |
-| Vue pages        | `src/views/*.vue`                        |
-| API client       | `src/utils/api.js`                       |
-| Stores           | `src/stores/*.js`                        |
-| Landing page     | `landing-page/src/`                      |
-| Job templates    | `landing-page/src/content/catalog/*.json`|
+| What               | Where                                      |
+| ------------------ | ------------------------------------------ |
+| Entry point        | `main.go`                                  |
+| Server setup       | `internal/server/server.go`                |
+| Auth middleware    | `internal/server/auth.go`                  |
+| Metrics middleware | `internal/server/metrics_middleware.go`    |
+| HTTP handlers      | `internal/handler/*.go`                    |
+| Business logic     | `internal/service/*.go`                    |
+| Database           | `internal/repository/*.go`                 |
+| Job executors      | `internal/jobs/*.go`                       |
+| Domain models      | `internal/domain/*.go`                     |
+| Metrics collector  | `internal/metrics/metrics.go`              |
+| API key auth       | `internal/service/apikey_service.go`       |
+| Webhooks           | `internal/service/webhook_service.go`      |
+| Job chains         | `internal/service/chain_service.go`        |
+| Migrations         | `migrations/*.sql`                         |
+| Frontend entry     | `src/main.js`                              |
+| Vue components     | `src/components/*.vue`                     |
+| Vue pages          | `src/views/*.vue`                          |
+| API client         | `src/utils/api.js`                         |
+| Stores             | `src/stores/*.js`                          |
+| Landing page       | `landing-page/src/`                        |
+| Job templates      | `landing-page/src/content/catalog/*.json`  |
 
 ### Key Commands
 
@@ -1432,6 +1547,8 @@ DEFAULT_TIMEZONE=UTC         # Default TZ
 LOG_RETENTION_DAYS=90        # Log retention
 DEFAULT_PRIORITY=5           # Default priority
 ENVIRONMENT=production       # Environment
+AUTH_ENABLED=false           # Enable API key auth
+METRICS_ENABLED=true         # Enable /metrics endpoint
 ```
 
 ### API Endpoints
@@ -1444,15 +1561,21 @@ Jobs:        GET/POST/PATCH/DELETE /api/jobs
 Executions:  GET /api/executions
 Projects:    GET/POST/PATCH/DELETE /api/projects
 Tags:        GET/POST/PATCH/DELETE /api/tags
+Chains:      GET/POST/PATCH/DELETE /api/chains
+             POST /api/chains/:id/execute
 System:      GET /api/system/status
              GET /api/system/config
              PATCH /api/system/config
 Workers:     GET /api/workers/status
 Job Types:   GET /api/job-types
 API Keys:    GET/POST/PATCH/DELETE /api/api-keys
+             POST /api/api-keys/:id/revoke
+             POST /api/api-keys/:id/rotate
 Webhooks:    GET/POST/PATCH/DELETE /api/webhooks
              GET /api/webhooks/:id/deliveries
              POST /api/webhooks/:id/test
+             GET /api/webhook-events
+Health:      GET /health
 Metrics:     GET /metrics (Prometheus format)
 ```
 
@@ -1494,6 +1617,6 @@ When making changes to this codebase:
 
 ---
 
-**Document Version**: 1.3
-**Last Updated**: 2025-11-29
+**Document Version**: 1.4
+**Last Updated**: 2025-11-30
 **Maintainer**: OneOff Development Team

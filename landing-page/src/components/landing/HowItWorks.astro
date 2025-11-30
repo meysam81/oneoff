@@ -168,8 +168,8 @@ const jobExamples = [
           {jobExamples.map(function(job, index) {
             return (
               <button
-                class={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                  index === 0 ? 'bg-bg-tertiary text-accent-primary border border-accent-primary/30' : 'text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50'
+                class={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap border ${
+                  index === 0 ? 'bg-bg-tertiary text-accent-primary border-accent-primary/30' : 'text-fg-muted border-transparent hover:text-fg-secondary hover:bg-bg-tertiary/50'
                 }`}
                 data-tab={job.label}
               >
@@ -219,11 +219,11 @@ const jobExamples = [
       var target = tab.getAttribute('data-tab');
 
       tabs.forEach(function(t) {
-        t.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
-        t.classList.add('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+        t.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border-accent-primary/30');
+        t.classList.add('text-fg-muted', 'border-transparent', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
       });
-      tab.classList.remove('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
-      tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+      tab.classList.remove('text-fg-muted', 'border-transparent', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+      tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border-accent-primary/30');
 
       configs.forEach(function(config) {
         if (config.getAttribute('data-config') === target) {

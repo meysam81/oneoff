@@ -302,6 +302,9 @@ func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.
 			if r.Method == http.MethodPost {
 				chainHandler.ExecuteChain(w, r)
 				return
+			} else {
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+				return
 			}
 		}
 

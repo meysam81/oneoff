@@ -2,6 +2,7 @@
 import Container from '../ui/Container.astro';
 import Icon from '../icons/index.astro';
 import { getGitHubData } from '../../utils/github';
+import { getDownloadCommand, getRunCommand, getOpenCommand } from '../../utils/os-detect';
 
 const { fullVersion } = await getGitHubData();
 
@@ -11,7 +12,7 @@ const steps = [
     title: 'Download',
     description: 'Grab the binary for your platform (Linux, macOS, Windows)',
     icon: 'download',
-    code: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff_linux_amd64.tar.gz | tar xz',
+    code: getDownloadCommand('linux-amd64', fullVersion),
     codeId: 'step-download-cmd',
   },
   {
@@ -19,7 +20,7 @@ const steps = [
     title: 'Run',
     description: 'Execute the binary — server starts in <1 second',
     icon: 'terminal',
-    code: './oneoff',
+    code: getRunCommand('linux-amd64'),
     codeId: 'step-run-cmd',
   },
   {
@@ -27,7 +28,7 @@ const steps = [
     title: 'Schedule',
     description: 'Use the web UI or API to create jobs',
     icon: 'clock',
-    code: 'open http://localhost:8080',
+    code: getOpenCommand('linux-amd64'),
     codeId: 'step-open-cmd',
   },
 ];
@@ -198,76 +199,62 @@ const jobExamples = [
 
 <script define:vars={{ fullVersion }}>
   function detectPlatform() {
-    if (typeof navigator === 'undefined') {
-      return 'linux-amd64';
-    }
+    if (typeof navigator === 'undefined') return 'linux-amd64';
 
     var userAgent = navigator.userAgent.toLowerCase();
     var platform = (navigator.platform || '').toLowerCase();
 
     var isWindows = platform.includes('win') || userAgent.includes('windows');
     var isMac = platform.includes('mac') || userAgent.includes('macintosh');
-
-    var isArm = userAgent.includes('arm') ||
-                userAgent.includes('aarch64') ||
+    var isArm = userAgent.includes('arm') || userAgent.includes('aarch64') ||
                 (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
 
-    if (isWindows) {
-      return 'windows-amd64';
-    }
-
-    if (isMac) {
-      return 'darwin-arm64';
-    }
-
-    if (isArm) {
-      return 'linux-arm64';
-    }
-
+    if (isWindows) return 'windows-amd64';
+    if (isMac) return isArm ? 'darwin-arm64' : 'darwin-amd64';
+    if (isArm) return 'linux-arm64';
     return 'linux-amd64';
   }
 
-  function updateStepCommands() {
-    var detectedPlatform = detectPlatform();
+  function getDownloadUrl(platform) {
     var baseUrl = 'https://github.com/meysam81/oneoff/releases/download/' + fullVersion;
-
-    var platformFiles = {
+    var files = {
       'linux-amd64': 'oneoff_linux_amd64.tar.gz',
       'linux-arm64': 'oneoff_linux_arm64.tar.gz',
       'darwin-amd64': 'oneoff_darwin_amd64.tar.gz',
       'darwin-arm64': 'oneoff_darwin_arm64.tar.gz',
       'windows-amd64': 'oneoff_windows_amd64.zip',
     };
+    return baseUrl + '/' + files[platform];
+  }
+
+  function getDownloadCommand(platform) {
+    var url = getDownloadUrl(platform);
+    if (platform === 'windows-amd64') {
+      return 'Invoke-WebRequest -Uri "' + url + '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
+    }
+    return 'curl -fsSL ' + url + ' | tar xz';
+  }
+
+  function getRunCommand(platform) {
+    return platform === 'windows-amd64' ? '.\\oneoff.exe' : './oneoff';
+  }
+
+  function getOpenCommand(platform) {
+    if (platform === 'windows-amd64') return 'Start-Process "http://localhost:8080"';
+    if (platform.startsWith('darwin')) return 'open http://localhost:8080';
+    return 'xdg-open http://localhost:8080';
+  }
+
+  function updateStepCommands() {
+    var platform = detectPlatform();
 
     var downloadCmd = document.getElementById('step-download-cmd');
     var runCmd = document.getElementById('step-run-cmd');
     var openCmd = document.getElementById('step-open-cmd');
 
-    if (downloadCmd) {
-      if (detectedPlatform === 'windows-amd64') {
-        downloadCmd.textContent = 'Invoke-WebRequest -Uri "' + baseUrl + '/' + platformFiles[detectedPlatform] + '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
-      } else {
-        downloadCmd.textContent = 'curl -fsSL ' + baseUrl + '/' + platformFiles[detectedPlatform] + ' | tar xz';
-      }
-    }
-
-    if (runCmd) {
-      if (detectedPlatform === 'windows-amd64') {
-        runCmd.textContent = '.\\oneoff.exe';
-      } else {
-        runCmd.textContent = './oneoff';
-      }
-    }
-
-    if (openCmd) {
-      if (detectedPlatform === 'windows-amd64') {
-        openCmd.textContent = 'Start-Process "http://localhost:8080"';
-      } else if (detectedPlatform.startsWith('darwin')) {
-        openCmd.textContent = 'open http://localhost:8080';
-      } else {
-        openCmd.textContent = 'xdg-open http://localhost:8080';
-      }
-    }
+    if (downloadCmd) downloadCmd.textContent = getDownloadCommand(platform);
+    if (runCmd) runCmd.textContent = getRunCommand(platform);
+    if (openCmd) openCmd.textContent = getOpenCommand(platform);
   }
 
   updateStepCommands();

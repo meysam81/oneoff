@@ -51,6 +51,14 @@ export var platforms: Record<Platform, PlatformInfo> = {
   },
 };
 
+export var platformList: PlatformInfo[] = [
+  platforms["linux-amd64"],
+  platforms["linux-arm64"],
+  platforms["darwin-arm64"],
+  platforms["darwin-amd64"],
+  platforms["windows-amd64"],
+];
+
 export function detectPlatform(): Platform {
   if (typeof navigator === "undefined") {
     return "linux-amd64";
@@ -73,17 +81,11 @@ export function detectPlatform(): Platform {
   }
 
   if (isMac) {
-    if (isArm || (navigator as any).userAgentData?.architecture === "arm") {
-      return "darwin-arm64";
-    }
-    return "darwin-arm64";
+    return isArm ? "darwin-arm64" : "darwin-amd64";
   }
 
   if (isLinux) {
-    if (isArm) {
-      return "linux-arm64";
-    }
-    return "linux-amd64";
+    return isArm ? "linux-arm64" : "linux-amd64";
   }
 
   return "linux-amd64";
@@ -101,6 +103,23 @@ export function getDownloadUrl(platform: Platform, version: string): string {
   return baseUrl + "/" + version + "/" + platformMap[platform];
 }
 
+export function getDownloadCommand(
+  platform: Platform,
+  version: string,
+): string {
+  var url = getDownloadUrl(platform, version);
+
+  if (platform === "windows-amd64") {
+    return (
+      'Invoke-WebRequest -Uri "' +
+      url +
+      '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."'
+    );
+  }
+
+  return "curl -fsSL " + url + " | tar xz";
+}
+
 export function getInstallCommand(platform: Platform, version: string): string {
   var url = getDownloadUrl(platform, version);
 
@@ -115,9 +134,44 @@ export function getInstallCommand(platform: Platform, version: string): string {
   return "curl -fsSL " + url + " | tar xz && ./oneoff";
 }
 
+export function getRunCommand(platform: Platform): string {
+  if (platform === "windows-amd64") {
+    return ".\\oneoff.exe";
+  }
+  return "./oneoff";
+}
+
+export function getOpenCommand(platform: Platform): string {
+  if (platform === "windows-amd64") {
+    return 'Start-Process "http://localhost:8080"';
+  }
+  if (platform.startsWith("darwin")) {
+    return "open http://localhost:8080";
+  }
+  return "xdg-open http://localhost:8080";
+}
+
+export function getTerminalTitle(platform: Platform): string {
+  if (platform === "windows-amd64") {
+    return "PowerShell";
+  }
+  return "Terminal";
+}
+
 export function getShortInstallCommand(platform: Platform): string {
   if (platform === "windows-amd64") {
     return "Invoke-WebRequest ... | Expand-Archive";
   }
   return "curl -fsSL github.com/.../oneoff.tar.gz | tar xz";
+}
+
+export function generatePlatformCommandsJson(version: string): string {
+  var commands: Record<Platform, string> = {
+    "linux-amd64": getInstallCommand("linux-amd64", version),
+    "linux-arm64": getInstallCommand("linux-arm64", version),
+    "darwin-amd64": getInstallCommand("darwin-amd64", version),
+    "darwin-arm64": getInstallCommand("darwin-arm64", version),
+    "windows-amd64": getInstallCommand("windows-amd64", version),
+  };
+  return JSON.stringify(commands);
 }

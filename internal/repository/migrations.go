@@ -1,18 +1,19 @@
 package repository
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/meysam81/oneoff/internal/logging"
+	"github.com/meysam81/x/sqlite"
 )
 
 // RunMigrations runs database migrations
-func RunMigrations(dbPath string, migrationsPath string, direction string) error {
-	db, err := sql.Open("sqlite3", dbPath)
+func RunMigrations(ctx context.Context, dbPath string, migrationsPath string, direction string) error {
+	db, err := sqlite.NewDB(ctx, dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
@@ -25,7 +26,7 @@ func RunMigrations(dbPath string, migrationsPath string, direction string) error
 
 	m, err := migrate.NewWithDatabaseInstance(
 		fmt.Sprintf("file://%s", migrationsPath),
-		"sqlite3",
+		sqlite.ENGINE,
 		driver,
 	)
 	if err != nil {

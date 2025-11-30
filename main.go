@@ -51,7 +51,7 @@ func main() {
 					},
 				},
 				Action: func(ctx context.Context, c *cli.Command) error {
-					return runMigrations(c.String("direction"))
+					return runMigrations(ctx, c.String("direction"))
 				},
 			},
 		},
@@ -122,7 +122,7 @@ func runServer(ctx context.Context) error {
 	return nil
 }
 
-func runMigrations(direction string) error {
+func runMigrations(ctx context.Context, direction string) error {
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
@@ -146,7 +146,7 @@ func runMigrations(direction string) error {
 	}
 
 	// Run migrations
-	if err := repository.RunMigrations(cfg.DBPath, migrationsPath, direction); err != nil {
+	if err := repository.RunMigrations(ctx, cfg.DBPath, migrationsPath, direction); err != nil {
 		return fmt.Errorf("migration failed: %w", err)
 	}
 

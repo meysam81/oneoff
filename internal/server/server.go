@@ -47,7 +47,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 
 	// Run migrations
 	migrationsPath := filepath.Join(".", "migrations")
-	if err := repository.RunMigrations(cfg.DBPath, migrationsPath, "up"); err != nil {
+	if err := repository.RunMigrations(ctx, cfg.DBPath, migrationsPath, "up"); err != nil {
 		logging.Warn().Err(err).Msg("Failed to run migrations (continuing anyway)")
 	}
 

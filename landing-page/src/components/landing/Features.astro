@@ -59,7 +59,7 @@ const features = [
     </div>
 
     <!-- Bento Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-fr px-2 sm:px-0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-2 sm:px-0">
       <!-- Single Binary - Large -->
       <Card variant="accent" class="sm:col-span-2 lg:col-span-2 lg:row-span-2 flex flex-col">
         <div class="flex-1">
@@ -82,7 +82,7 @@ const features = [
               </div>
               <div>
                 <div class="font-mono text-sm text-fg-primary">oneoff</div>
-                <div class="text-xs text-fg-muted">{binarySize} • Self-contained</div>
+                <div class="text-xs text-fg-muted mt-1">{binarySize} • Self-contained</div>
               </div>
             </div>
             <div class="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 text-xs text-fg-muted">
@@ -140,6 +140,22 @@ const features = [
         <p class="text-fg-secondary text-xs sm:text-sm">Sequence jobs together. Build simple workflows.</p>
       </Card>
 
+      <!-- Project Organization - Small -->
+      <Card variant="accent" class="sm:col-span-2 lg:col-span-2">
+        <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+            <Icon name="folder" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
+          </div>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Project Organization</h3>
+        </div>
+        <p class="text-fg-secondary text-xs sm:text-sm mb-2 sm:mb-3">Group jobs by project. Add tags. Stay organized.</p>
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-accent-primary/10 text-accent-primary rounded-full">#production</span>
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-success/10 text-success rounded-full">#backup</span>
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-warning/10 text-warning rounded-full">#alerts</span>
+        </div>
+      </Card>
+
       <!-- Modern UI - Large with Screenshot -->
       <Card variant="accent" padding="none" class="sm:col-span-2 lg:col-span-2 lg:row-span-2 overflow-hidden">
         <div class="p-4 sm:p-6 pb-0">
@@ -195,20 +211,26 @@ const features = [
         </div>
       </Card>
 
-      <!-- Project Organization - Small -->
-      <Card variant="accent" class="sm:col-span-2 lg:col-span-2">
+      <!-- REST API - Small -->
+      <Card variant="accent">
         <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
-            <Icon name="folder" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
+            <Icon name="code" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
           </div>
-          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Project Organization</h3>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">REST API</h3>
         </div>
-        <p class="text-fg-secondary text-xs sm:text-sm mb-2 sm:mb-3">Group jobs by project. Add tags. Stay organized.</p>
-        <div class="flex flex-wrap gap-1.5 sm:gap-2">
-          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-accent-primary/10 text-accent-primary rounded-full">#production</span>
-          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-success/10 text-success rounded-full">#backup</span>
-          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-warning/10 text-warning rounded-full">#alerts</span>
+        <p class="text-fg-secondary text-xs sm:text-sm">Full API access. Automate everything programmatically.</p>
+      </Card>
+
+      <!-- Webhooks - Small -->
+      <Card variant="accent">
+        <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+            <Icon name="globe" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
+          </div>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Webhooks</h3>
         </div>
+        <p class="text-fg-secondary text-xs sm:text-sm">Get notified on job events. Integrate with any service.</p>
       </Card>
     </div>
   </Container>

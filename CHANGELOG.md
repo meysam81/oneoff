@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/meysam81/oneoff/compare/v1.1.0...v1.1.1) (2025-11-30)
+
+
+### Bug Fixes
+
+* add cgo aware sqlite to migrations as well ([1a9db02](https://github.com/meysam81/oneoff/commit/1a9db024eaea015a155725bbef9683fb8dbd1981))
+* **CI:** handle windows specific signals ([84d2687](https://github.com/meysam81/oneoff/commit/84d2687a946f420703249cffd1766d22f9443c19))
+
 ## [1.1.0](https://github.com/meysam81/oneoff/compare/v1.0.2...v1.1.0) (2025-11-30)
 
 

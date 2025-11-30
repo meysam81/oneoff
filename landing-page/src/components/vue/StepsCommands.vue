@@ -30,6 +30,8 @@ var openCommand = computed(function () {
 watch(
   platform,
   function (newPlatform) {
+    if (typeof document === "undefined") return;
+
     var downloadEl = document.getElementById("step-download-cmd");
     var runEl = document.getElementById("step-run-cmd");
     var openEl = document.getElementById("step-open-cmd");

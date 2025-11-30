@@ -446,6 +446,141 @@ func (r *SQLiteRepository) DeleteChain(ctx context.Context, id string) error {
 	return nil
 }
 
+func (r *SQLiteRepository) ListChainsWithFilter(ctx context.Context, filter domain.ChainFilter) ([]*domain.JobChain, error) {
+	query := "SELECT id, name, project_id, created_at FROM job_chains WHERE 1=1"
+	args := []interface{}{}
+
+	if filter.ProjectID != "" {
+		query += " AND project_id = ?"
+		args = append(args, filter.ProjectID)
+	}
+
+	query += " ORDER BY name ASC"
+
+	if filter.Limit > 0 {
+		query += " LIMIT ?"
+		args = append(args, filter.Limit)
+	}
+	if filter.Offset > 0 {
+		query += " OFFSET ?"
+		args = append(args, filter.Offset)
+	}
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list chains: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var chains []*domain.JobChain
+	for rows.Next() {
+		chain := &domain.JobChain{}
+		var createdAt string
+
+		err := rows.Scan(&chain.ID, &chain.Name, &chain.ProjectID, &createdAt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan chain: %w", err)
+		}
+
+		chain.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
+
+		// Load links for each chain
+		links, err := r.getChainLinks(ctx, chain.ID)
+		if err != nil {
+			return nil, err
+		}
+		chain.Links = links
+
+		chains = append(chains, chain)
+	}
+
+	return chains, rows.Err()
+}
+
+func (r *SQLiteRepository) CountChains(ctx context.Context, filter domain.ChainFilter) (int64, error) {
+	query := "SELECT COUNT(*) FROM job_chains WHERE 1=1"
+	args := []interface{}{}
+
+	if filter.ProjectID != "" {
+		query += " AND project_id = ?"
+		args = append(args, filter.ProjectID)
+	}
+
+	var count int64
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(&count)
+	return count, err
+}
+
+func (r *SQLiteRepository) UpdateChain(ctx context.Context, id string, name *string) error {
+	if name == nil {
+		return nil
+	}
+
+	result, err := r.db.ExecContext(ctx, "UPDATE job_chains SET name = ? WHERE id = ?", *name, id)
+	if err != nil {
+		return fmt.Errorf("failed to update chain: %w", err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return domain.ErrChainNotFound
+	}
+
+	return nil
+}
+
+func (r *SQLiteRepository) UpdateChainLinks(ctx context.Context, chainID string, links []domain.ChainLinkInput) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() { _ = tx.Rollback() }()
+
+	// Delete existing links
+	_, err = tx.ExecContext(ctx, "DELETE FROM job_chain_links WHERE chain_id = ?", chainID)
+	if err != nil {
+		return fmt.Errorf("failed to delete old links: %w", err)
+	}
+
+	// Insert new links with sequence order
+	for i, link := range links {
+		_, err := tx.ExecContext(ctx, `
+			INSERT INTO job_chain_links (chain_id, job_id, sequence_order, stop_on_failure)
+			VALUES (?, ?, ?, ?)
+		`, chainID, link.JobID, i+1, link.StopOnFailure)
+		if err != nil {
+			return fmt.Errorf("failed to create chain link: %w", err)
+		}
+	}
+
+	return tx.Commit()
+}
+
+func (r *SQLiteRepository) getChainLinks(ctx context.Context, chainID string) ([]domain.JobChainLink, error) {
+	query := "SELECT id, job_id, sequence_order, stop_on_failure, created_at FROM job_chain_links WHERE chain_id = ? ORDER BY sequence_order ASC"
+	rows, err := r.db.QueryContext(ctx, query, chainID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chain links: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var links []domain.JobChainLink
+	for rows.Next() {
+		link := domain.JobChainLink{ChainID: chainID}
+		var createdAt string
+
+		err := rows.Scan(&link.ID, &link.JobID, &link.SequenceOrder, &link.StopOnFailure, &createdAt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan chain link: %w", err)
+		}
+
+		link.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAt)
+		links = append(links, link)
+	}
+
+	return links, rows.Err()
+}
+
 // System config operations
 
 func (r *SQLiteRepository) GetConfig(ctx context.Context, key string) (*domain.SystemConfig, error) {

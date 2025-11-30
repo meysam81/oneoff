@@ -230,7 +230,9 @@ const jobExamples = [
   function getDownloadCommand(platform) {
     var url = getDownloadUrl(platform);
     if (platform === 'windows-amd64') {
-      return 'Invoke-WebRequest -Uri "' + url + '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
+      return 'Invoke-WebRequest -Uri "' + url + '" `\n' +
+             '  -OutFile "oneoff.zip"; `\n' +
+             'Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
     }
     return 'curl -fsSL ' + url + ' | tar xz';
   }

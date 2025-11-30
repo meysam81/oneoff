@@ -4,8 +4,8 @@ import Icon from '../icons/index.astro';
 import { getGitHubData } from '../../utils/github';
 import { platformList, generatePlatformCommandsJson } from '../../utils/os-detect';
 
-const { fullVersion } = await getGitHubData();
-const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
+var { fullVersion } = await getGitHubData();
+var platformCommandsJson = generatePlatformCommandsJson(fullVersion);
 ---
 
 <section class="section bg-bg-secondary/30" id="installation">
@@ -72,16 +72,6 @@ const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
           <Icon name="external" size={14} class="sm:w-4 sm:h-4" />
           View all releases
         </a>
-        <span class="text-fg-muted hidden sm:inline">|</span>
-        <a
-          href="https://github.com/meysam81/oneoff#installation"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="flex items-center gap-1.5 sm:gap-2 text-fg-secondary hover:text-accent-primary transition-colors"
-        >
-          <Icon name="github" size={14} class="sm:w-4 sm:h-4" />
-          Installation docs
-        </a>
       </div>
     </div>
   </Container>
@@ -90,6 +80,31 @@ const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
 <script define:vars={{ platformCommandsJson }}>
   var platformCommands = JSON.parse(platformCommandsJson);
   var currentPlatform = 'linux-amd64';
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    return new Promise(function(resolve, reject) {
+      var success = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      if (success) {
+        resolve();
+      } else {
+        reject(new Error('execCommand copy failed'));
+      }
+    });
+  }
 
   function detectPlatform() {
     if (typeof navigator === 'undefined') {
@@ -114,6 +129,14 @@ const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
     return platformId === 'windows-amd64' ? 'PowerShell' : 'Terminal';
   }
 
+  function formatCommandForDisplay(command) {
+    var lines = command.split('\n');
+    var formattedLines = lines.map(function(line) {
+      return '$ ' + line;
+    });
+    return formattedLines.join('<br>');
+  }
+
   function selectPlatform(platformId) {
     currentPlatform = platformId;
 
@@ -129,8 +152,10 @@ const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
     });
 
     var commandDisplay = document.getElementById('install-command-display');
+    var rawCommand = platformCommands[currentPlatform];
+    var displayCommand = formatCommandForDisplay(rawCommand);
     if (commandDisplay) {
-      commandDisplay.innerHTML = '<code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">' + platformCommands[platformId] + '</code>';
+      commandDisplay.innerHTML = '<code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">' + displayCommand + '</code>';
     }
 
     var terminalTitle = document.getElementById('terminal-title');
@@ -156,8 +181,8 @@ const platformCommandsJson = generatePlatformCommandsJson(fullVersion);
 
   if (copyBtn) {
     copyBtn.addEventListener('click', function() {
-      var command = platformCommands[currentPlatform];
-      navigator.clipboard.writeText(command).then(function() {
+      var rawCommand = platformCommands[currentPlatform];
+      copyToClipboard(rawCommand).then(function() {
         if (copyFeedback) {
           copyFeedback.classList.remove('hidden');
           setTimeout(function() {

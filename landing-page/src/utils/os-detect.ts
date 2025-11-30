@@ -113,11 +113,13 @@ export function getDownloadCommand(
     return (
       'Invoke-WebRequest -Uri "' +
       url +
-      '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."'
+      '" `\n' +
+      '  -OutFile "oneoff.zip"\n' +
+      'Expand-Archive -Path "oneoff.zip" -DestinationPath "."'
     );
   }
 
-  return "curl -fsSL " + url + " | tar xz";
+  return "curl -fsSL " + url + " -o oneoff.tar.gz\n" + "tar xzf oneoff.tar.gz";
 }
 
 export function getInstallCommand(platform: Platform, version: string): string {
@@ -127,11 +129,20 @@ export function getInstallCommand(platform: Platform, version: string): string {
     return (
       'Invoke-WebRequest -Uri "' +
       url +
-      '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."; .\\oneoff.exe'
+      '" `\n' +
+      '  -OutFile "oneoff.zip"\n' +
+      'Expand-Archive -Path "oneoff.zip" -DestinationPath "."\n' +
+      ".\\oneoff.exe"
     );
   }
 
-  return "curl -fsSL " + url + " | tar xz && ./oneoff";
+  return (
+    "curl -fsSL " +
+    url +
+    " -o oneoff.tar.gz\n" +
+    "tar xzf oneoff.tar.gz\n" +
+    "./oneoff"
+  );
 }
 
 export function getRunCommand(platform: Platform): string {

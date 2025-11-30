@@ -17,20 +17,6 @@ const {
 ---
 
 <BaseLayout title={`${title} — OneOff`} description={description}>
-  <header class="border-b border-border-subtle">
-    <Container size="xl">
-      <nav class="flex items-center justify-between h-16">
-        <a href="/" class="flex items-center gap-2 text-fg-primary hover:text-accent-primary transition-colors">
-          <Icon name="clock" size={24} />
-          <span class="font-display font-semibold">OneOff</span>
-        </a>
-        <a href="/" class="text-fg-secondary hover:text-fg-primary transition-colors text-sm">
-          Back to Home
-        </a>
-      </nav>
-    </Container>
-  </header>
-
   <main class="py-16 md:py-24">
     <Container size="md">
       <article class="prose prose-invert max-w-none">
@@ -45,21 +31,6 @@ const {
       </article>
     </Container>
   </main>
-
-  <footer class="border-t border-border-subtle py-8">
-    <Container size="xl">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
-        <p>&copy; {new Date().getFullYear()} OneOff Contributors. Open source under Apache-2.0 License.</p>
-        <div class="flex items-center gap-6">
-          <a href="/terms" class="hover:text-fg-secondary transition-colors">Terms</a>
-          <a href="/privacy" class="hover:text-fg-secondary transition-colors">Privacy</a>
-          <a href="https://github.com/meysam81/oneoff" target="_blank" rel="noopener noreferrer" class="hover:text-fg-secondary transition-colors">
-            <Icon name="github" size={20} />
-          </a>
-        </div>
-      </div>
-    </Container>
-  </footer>
 </BaseLayout>
 
 <style>

@@ -19,6 +19,9 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, 'https://tryoneoff.com');
 const fullImageURL = new URL(image, 'https://tryoneoff.com');
+
+import Footer from '../components/landing/Footer.astro';
+import Header from '../components/landing/Header.astro';
 ---
 
 <!doctype html>
@@ -94,6 +97,8 @@ const fullImageURL = new URL(image, 'https://tryoneoff.com');
         data-session-endpoint="https://analytics.tryoneoff.com/session"></script>
   </head>
   <body class="bg-bg-primary text-fg-primary min-h-screen">
+    <Header />
     <slot />
+    <Footer />
   </body>
 </html>

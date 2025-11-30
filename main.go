@@ -10,10 +10,9 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/config"
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/repository"
 	"github.com/meysam81/oneoff/internal/server"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v3"
 )
 
@@ -21,13 +20,18 @@ var (
 	version = "dev"
 	commit  = "unknown"
 	date    = "unknown"
+
+	cfg *config.Config
 )
 
 func main() {
 	cmd := &cli.Command{
-		Name:    "oneoff",
-		Usage:   "OneOff - Modern Job Scheduler",
-		Version: fmt.Sprintf("%s (commit: %s, built: %s)", version, commit, date),
+		Name:                  "oneoff",
+		Usage:                 "OneOff - Modern Job Scheduler",
+		EnableShellCompletion: true,
+		Suggest:               true,
+		Before:                beforeAction,
+		Version:               fmt.Sprintf("%s (commit: %s, built: %s)", version, commit, date),
 		Commands: []*cli.Command{
 			{
 				Name:  "serve",
@@ -58,21 +62,23 @@ func main() {
 	}
 
 	if err := cmd.Run(context.Background(), os.Args); err != nil {
-		log.Fatal().Err(err).Msg("Application failed")
+		logging.Fatal().Err(err).Msg("Application failed")
 	}
 }
 
-func runServer(ctx context.Context) error {
-	// Load configuration
-	cfg, err := config.Load()
+func beforeAction(ctx context.Context, c *cli.Command) (context.Context, error) {
+	var err error
+	cfg, err = config.Load()
 	if err != nil {
-		return fmt.Errorf("failed to load configuration: %w", err)
+		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	// Setup logging
-	setupLogging(cfg.LogLevel)
+	logging.Init(cfg.LogLevel)
+	return ctx, nil
+}
 
-	log.Info().
+func runServer(ctx context.Context) error {
+	logging.Info().
 		Str("version", version).
 		Str("commit", commit).
 		Str("environment", cfg.Environment).
@@ -99,7 +105,7 @@ func runServer(ctx context.Context) error {
 	// Wait for shutdown signal or error
 	select {
 	case <-sigChan:
-		log.Info().Msg("Received shutdown signal")
+		logging.Info().Msg("Received shutdown signal")
 	case err := <-errChan:
 		return fmt.Errorf("server error: %w", err)
 	}
@@ -112,7 +118,7 @@ func runServer(ctx context.Context) error {
 		return fmt.Errorf("shutdown error: %w", err)
 	}
 
-	log.Info().Msg("Server stopped successfully")
+	logging.Info().Msg("Server stopped successfully")
 	return nil
 }
 
@@ -124,9 +130,9 @@ func runMigrations(direction string) error {
 	}
 
 	// Setup logging
-	setupLogging(cfg.LogLevel)
+	logging.Init(cfg.LogLevel)
 
-	log.Info().
+	logging.Info().
 		Str("direction", direction).
 		Str("db_path", cfg.DBPath).
 		Msg("Running migrations")
@@ -144,23 +150,6 @@ func runMigrations(direction string) error {
 		return fmt.Errorf("migration failed: %w", err)
 	}
 
-	log.Info().Msg("Migrations completed successfully")
+	logging.Info().Msg("Migrations completed successfully")
 	return nil
-}
-
-func setupLogging(level string) {
-	// Set up zerolog
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	// Parse log level
-	logLevel, err := zerolog.ParseLevel(level)
-	if err != nil {
-		logLevel = zerolog.InfoLevel
-	}
-	zerolog.SetGlobalLevel(logLevel)
-
-	noColor := level != "debug"
-
-	// Pretty logging for development
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339, NoColor: noColor})
 }

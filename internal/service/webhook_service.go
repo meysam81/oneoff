@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/repository"
-	"github.com/rs/zerolog/log"
 )
 
 // WebhookService handles webhook operations and delivery
@@ -60,14 +60,14 @@ func (s *WebhookService) Start(ctx context.Context) {
 	s.wg.Add(1)
 	go s.retryProcessor(ctx)
 
-	log.Info().Int("workers", s.workers).Msg("Webhook service started")
+	logging.Info().Int("workers", s.workers).Msg("Webhook service started")
 }
 
 // Stop stops the webhook service
 func (s *WebhookService) Stop() {
 	close(s.stopChan)
 	s.wg.Wait()
-	log.Info().Msg("Webhook service stopped")
+	logging.Info().Msg("Webhook service stopped")
 }
 
 // worker processes webhook deliveries
@@ -112,14 +112,14 @@ func (s *WebhookService) retryProcessor(ctx context.Context) {
 func (s *WebhookService) processPendingRetries(ctx context.Context) {
 	deliveries, err := s.repo.GetPendingWebhookDeliveries(ctx, 50)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to get pending webhook deliveries")
+		logging.Error().Err(err).Msg("Failed to get pending webhook deliveries")
 		return
 	}
 
 	for _, delivery := range deliveries {
 		webhook, err := s.repo.GetWebhook(ctx, delivery.WebhookID)
 		if err != nil {
-			log.Error().Err(err).Str("webhook_id", delivery.WebhookID).Msg("Failed to get webhook for retry")
+			logging.Error().Err(err).Str("webhook_id", delivery.WebhookID).Msg("Failed to get webhook for retry")
 			continue
 		}
 
@@ -133,7 +133,7 @@ func (s *WebhookService) processPendingRetries(ctx context.Context) {
 		select {
 		case s.queue <- &webhookDeliveryTask{webhook: webhook, delivery: delivery}:
 		default:
-			log.Warn().Str("delivery_id", delivery.ID).Msg("Webhook queue full, will retry later")
+			logging.Warn().Str("delivery_id", delivery.ID).Msg("Webhook queue full, will retry later")
 		}
 	}
 }
@@ -142,7 +142,7 @@ func (s *WebhookService) processPendingRetries(ctx context.Context) {
 func (s *WebhookService) Dispatch(ctx context.Context, event domain.WebhookEvent) {
 	webhooks, err := s.repo.GetActiveWebhooksForEvent(ctx, event.Type)
 	if err != nil {
-		log.Error().Err(err).Str("event", string(event.Type)).Msg("Failed to get webhooks for event")
+		logging.Error().Err(err).Str("event", string(event.Type)).Msg("Failed to get webhooks for event")
 		return
 	}
 
@@ -150,7 +150,7 @@ func (s *WebhookService) Dispatch(ctx context.Context, event domain.WebhookEvent
 		return
 	}
 
-	log.Debug().
+	logging.Debug().
 		Str("event", string(event.Type)).
 		Int("webhooks", len(webhooks)).
 		Msg("Dispatching webhook event")
@@ -178,7 +178,7 @@ func (s *WebhookService) Dispatch(ctx context.Context, event domain.WebhookEvent
 
 		// Create delivery record
 		if err := s.repo.CreateWebhookDelivery(ctx, delivery); err != nil {
-			log.Error().Err(err).Str("webhook_id", webhook.ID).Msg("Failed to create webhook delivery")
+			logging.Error().Err(err).Str("webhook_id", webhook.ID).Msg("Failed to create webhook delivery")
 			continue
 		}
 
@@ -190,7 +190,7 @@ func (s *WebhookService) Dispatch(ctx context.Context, event domain.WebhookEvent
 			event:    &event,
 		}:
 		default:
-			log.Warn().Str("webhook_id", webhook.ID).Msg("Webhook queue full, delivery will be retried")
+			logging.Warn().Str("webhook_id", webhook.ID).Msg("Webhook queue full, delivery will be retried")
 		}
 	}
 }
@@ -230,7 +230,7 @@ func (s *WebhookService) deliver(ctx context.Context, task *webhookDeliveryTask)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to close response body")
+			logging.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to close response body")
 		}
 	}()
 
@@ -244,9 +244,9 @@ func (s *WebhookService) deliver(ctx context.Context, task *webhookDeliveryTask)
 		// Success
 		statusCode := resp.StatusCode
 		if err := s.repo.UpdateWebhookDelivery(ctx, delivery.ID, domain.WebhookDeliverySuccess, &statusCode, responseBodyStr, "", nil); err != nil {
-			log.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to update delivery status")
+			logging.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to update delivery status")
 		}
-		log.Debug().
+		logging.Debug().
 			Str("webhook_id", webhook.ID).
 			Str("delivery_id", delivery.ID).
 			Int("status_code", resp.StatusCode).
@@ -269,9 +269,9 @@ func (s *WebhookService) handleDeliveryFailureWithResponse(ctx context.Context, 
 	if delivery.Attempts >= s.maxRetries {
 		// Max retries exceeded, mark as failed
 		if err := s.repo.UpdateWebhookDelivery(ctx, delivery.ID, domain.WebhookDeliveryFailed, statusCode, responseBody, errMsg, nil); err != nil {
-			log.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to update delivery status")
+			logging.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to update delivery status")
 		}
-		log.Warn().
+		logging.Warn().
 			Str("delivery_id", delivery.ID).
 			Int("attempts", delivery.Attempts).
 			Str("error", errMsg).
@@ -293,10 +293,10 @@ func (s *WebhookService) handleDeliveryFailureWithResponse(ctx context.Context, 
 	nextRetry := time.Now().UTC().Add(backoff)
 
 	if err := s.repo.UpdateWebhookDelivery(ctx, delivery.ID, domain.WebhookDeliveryPending, statusCode, responseBody, errMsg, &nextRetry); err != nil {
-		log.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to schedule retry")
+		logging.Error().Err(err).Str("delivery_id", delivery.ID).Msg("Failed to schedule retry")
 	}
 
-	log.Debug().
+	logging.Debug().
 		Str("delivery_id", delivery.ID).
 		Int("attempts", delivery.Attempts).
 		Time("next_retry", nextRetry).

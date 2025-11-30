@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/repository"
-	"github.com/rs/zerolog/log"
 )
 
 // JobEventCallback is called when a job event occurs
@@ -89,7 +89,7 @@ func (p *Pool) emitJobEvent(ctx context.Context, eventType domain.WebhookEventTy
 
 // Start starts the worker pool
 func (p *Pool) Start(ctx context.Context) error {
-	log.Info().Int("workers", p.workers).Msg("Starting worker pool")
+	logging.Info().Int("workers", p.workers).Msg("Starting worker pool")
 
 	// Start workers
 	for i := 0; i < p.workers; i++ {
@@ -105,16 +105,16 @@ func (p *Pool) Start(ctx context.Context) error {
 	if p.logRetentionDays > 0 {
 		p.wg.Add(1)
 		go p.cleanupScheduler(ctx)
-		log.Info().Int("retention_days", p.logRetentionDays).Msg("Log retention cleanup enabled")
+		logging.Info().Int("retention_days", p.logRetentionDays).Msg("Log retention cleanup enabled")
 	}
 
-	log.Info().Msg("Worker pool started")
+	logging.Info().Msg("Worker pool started")
 	return nil
 }
 
 // Stop stops the worker pool gracefully
 func (p *Pool) Stop(ctx context.Context) error {
-	log.Info().Msg("Stopping worker pool")
+	logging.Info().Msg("Stopping worker pool")
 
 	close(p.stopChan)
 	close(p.jobChan)
@@ -128,10 +128,10 @@ func (p *Pool) Stop(ctx context.Context) error {
 
 	select {
 	case <-done:
-		log.Info().Msg("Worker pool stopped gracefully")
+		logging.Info().Msg("Worker pool stopped gracefully")
 		return nil
 	case <-ctx.Done():
-		log.Warn().Msg("Worker pool shutdown timeout")
+		logging.Warn().Msg("Worker pool shutdown timeout")
 		return fmt.Errorf("worker pool shutdown timeout")
 	}
 }
@@ -140,19 +140,19 @@ func (p *Pool) Stop(ctx context.Context) error {
 func (p *Pool) worker(ctx context.Context, id int) {
 	defer p.wg.Done()
 
-	log.Debug().Int("worker_id", id).Msg("Worker started")
+	logging.Debug().Int("worker_id", id).Msg("Worker started")
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug().Int("worker_id", id).Msg("Worker context cancelled")
+			logging.Debug().Int("worker_id", id).Msg("Worker context cancelled")
 			return
 		case <-p.stopChan:
-			log.Debug().Int("worker_id", id).Msg("Worker stopped")
+			logging.Debug().Int("worker_id", id).Msg("Worker stopped")
 			return
 		case job, ok := <-p.jobChan:
 			if !ok {
-				log.Debug().Int("worker_id", id).Msg("Job channel closed")
+				logging.Debug().Int("worker_id", id).Msg("Job channel closed")
 				return
 			}
 
@@ -160,7 +160,7 @@ func (p *Pool) worker(ctx context.Context, id int) {
 				continue
 			}
 
-			log.Info().
+			logging.Info().
 				Int("worker_id", id).
 				Str("job_id", job.ID).
 				Str("job_type", job.Type).
@@ -179,15 +179,15 @@ func (p *Pool) scheduler(ctx context.Context) {
 	ticker := time.NewTicker(p.pollInterval)
 	defer ticker.Stop()
 
-	log.Debug().Msg("Scheduler started")
+	logging.Debug().Msg("Scheduler started")
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug().Msg("Scheduler context cancelled")
+			logging.Debug().Msg("Scheduler context cancelled")
 			return
 		case <-p.stopChan:
-			log.Debug().Msg("Scheduler stopped")
+			logging.Debug().Msg("Scheduler stopped")
 			return
 		case <-ticker.C:
 			p.pollJobs(ctx)
@@ -200,7 +200,7 @@ func (p *Pool) pollJobs(ctx context.Context) {
 	// Get jobs that are scheduled for now or earlier
 	jobs, err := p.repo.GetScheduledJobs(ctx, time.Now().UTC(), p.workers*2)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to get scheduled jobs")
+		logging.Error().Err(err).Msg("Failed to get scheduled jobs")
 		return
 	}
 
@@ -208,7 +208,7 @@ func (p *Pool) pollJobs(ctx context.Context) {
 		return
 	}
 
-	log.Debug().Int("count", len(jobs)).Msg("Found scheduled jobs")
+	logging.Debug().Int("count", len(jobs)).Msg("Found scheduled jobs")
 
 	for _, job := range jobs {
 		// Skip if already running
@@ -223,9 +223,9 @@ func (p *Pool) pollJobs(ctx context.Context) {
 		// Try to send to job channel (non-blocking)
 		select {
 		case p.jobChan <- job:
-			log.Debug().Str("job_id", job.ID).Msg("Job queued for execution")
+			logging.Debug().Str("job_id", job.ID).Msg("Job queued for execution")
 		default:
-			log.Warn().Str("job_id", job.ID).Msg("Job channel full, will retry on next poll")
+			logging.Warn().Str("job_id", job.ID).Msg("Job channel full, will retry on next poll")
 		}
 	}
 }
@@ -253,7 +253,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 
 	// Update job status to running
 	if err := p.repo.UpdateJobStatus(ctx, job.ID, domain.JobStatusRunning); err != nil {
-		log.Error().Err(err).Str("job_id", job.ID).Msg("Failed to update job status to running")
+		logging.Error().Err(err).Str("job_id", job.ID).Msg("Failed to update job status to running")
 		return
 	}
 
@@ -265,7 +265,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 	}
 
 	if err := p.repo.CreateExecution(ctx, execution); err != nil {
-		log.Error().Err(err).Str("job_id", job.ID).Msg("Failed to create execution record")
+		logging.Error().Err(err).Str("job_id", job.ID).Msg("Failed to create execution record")
 		return
 	}
 
@@ -275,7 +275,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 	// Create job executor
 	executor, err := p.registry.Create(job.Type, job.Config)
 	if err != nil {
-		log.Error().Err(err).
+		logging.Error().Err(err).
 			Str("job_id", job.ID).
 			Str("job_type", job.Type).
 			Msg("Failed to create job executor")
@@ -289,7 +289,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 
 	// Check if the job was cancelled
 	if jobCtx.Err() == context.Canceled {
-		log.Info().Str("job_id", job.ID).Msg("Job was cancelled")
+		logging.Info().Str("job_id", job.ID).Msg("Job was cancelled")
 		execution.Status = domain.ExecutionStatusCancelled
 		p.completeExecution(ctx, execution.ID, job.ID, domain.ExecutionStatusCancelled, "", "Job cancelled by user", nil, time.Since(startTime))
 		// Emit cancelled event
@@ -301,14 +301,14 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 	}
 
 	if err != nil {
-		log.Error().Err(err).Str("job_id", job.ID).Msg("Job execution error")
+		logging.Error().Err(err).Str("job_id", job.ID).Msg("Job execution error")
 
 		execution.Status = domain.ExecutionStatusFailed
 		execution.Error = fmt.Sprintf("Execution error: %v", err)
 		p.completeExecution(ctx, execution.ID, job.ID, domain.ExecutionStatusFailed, "", fmt.Sprintf("Execution error: %v", err), nil, time.Since(startTime))
 		// Update job status to failed
 		if updateErr := p.repo.UpdateJobStatus(ctx, job.ID, domain.JobStatusFailed); updateErr != nil {
-			log.Error().Err(updateErr).Str("job_id", job.ID).Msg("Failed to update job status to failed")
+			logging.Error().Err(updateErr).Str("job_id", job.ID).Msg("Failed to update job status to failed")
 		}
 		// Emit failed event
 		p.emitJobEvent(ctx, domain.WebhookEventJobFailed, job, execution)
@@ -337,7 +337,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 
 	// Update job status
 	if err := p.repo.UpdateJobStatus(ctx, job.ID, finalJobStatus); err != nil {
-		log.Error().Err(err).Str("job_id", job.ID).Msg("Failed to update job final status")
+		logging.Error().Err(err).Str("job_id", job.ID).Msg("Failed to update job final status")
 	}
 
 	// Emit completion or failure event
@@ -346,7 +346,7 @@ func (p *Pool) executeJob(ctx context.Context, job *domain.Job) {
 	// Report metrics
 	p.reportMetrics(job.Type, string(finalStatus), time.Since(startTime))
 
-	log.Info().
+	logging.Info().
 		Str("job_id", job.ID).
 		Str("job_name", job.Name).
 		Str("status", string(finalStatus)).
@@ -360,7 +360,7 @@ func (p *Pool) completeExecution(ctx context.Context, executionID, jobID string,
 	durationMs := duration.Milliseconds()
 
 	if err := p.repo.CompleteExecution(ctx, executionID, status, output, errorMsg, exitCode, durationMs); err != nil {
-		log.Error().Err(err).
+		logging.Error().Err(err).
 			Str("execution_id", executionID).
 			Str("job_id", jobID).
 			Msg("Failed to complete execution")
@@ -403,9 +403,9 @@ func (p *Pool) CancelJob(ctx context.Context, jobID string) error {
 	if isRunning && cancelFunc != nil {
 		// Cancel the job's context - this will trigger cancellation in the executor
 		cancelFunc()
-		log.Info().Str("job_id", jobID).Msg("Job cancellation signal sent")
+		logging.Info().Str("job_id", jobID).Msg("Job cancellation signal sent")
 	} else {
-		log.Debug().Str("job_id", jobID).Bool("is_running", isRunning).Msg("Job not currently running, status updated")
+		logging.Debug().Str("job_id", jobID).Bool("is_running", isRunning).Msg("Job not currently running, status updated")
 	}
 
 	return nil
@@ -421,15 +421,15 @@ func (p *Pool) cleanupScheduler(ctx context.Context) {
 	ticker := time.NewTicker(p.cleanupInterval)
 	defer ticker.Stop()
 
-	log.Debug().Msg("Cleanup scheduler started")
+	logging.Debug().Msg("Cleanup scheduler started")
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug().Msg("Cleanup scheduler context cancelled")
+			logging.Debug().Msg("Cleanup scheduler context cancelled")
 			return
 		case <-p.stopChan:
-			log.Debug().Msg("Cleanup scheduler stopped")
+			logging.Debug().Msg("Cleanup scheduler stopped")
 			return
 		case <-ticker.C:
 			p.runCleanup(ctx)
@@ -445,24 +445,24 @@ func (p *Pool) runCleanup(ctx context.Context) {
 
 	cutoff := time.Now().UTC().AddDate(0, 0, -p.logRetentionDays)
 
-	log.Debug().
+	logging.Debug().
 		Time("cutoff", cutoff).
 		Int("retention_days", p.logRetentionDays).
 		Msg("Running execution log cleanup")
 
 	deleted, err := p.repo.DeleteOldExecutions(ctx, cutoff)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to cleanup old execution logs")
+		logging.Error().Err(err).Msg("Failed to cleanup old execution logs")
 		return
 	}
 
 	if deleted > 0 {
-		log.Info().
+		logging.Info().
 			Int64("deleted", deleted).
 			Int("retention_days", p.logRetentionDays).
 			Time("cutoff", cutoff).
 			Msg("Cleaned up old execution logs")
 	} else {
-		log.Debug().Msg("No old execution logs to cleanup")
+		logging.Debug().Msg("No old execution logs to cleanup")
 	}
 }

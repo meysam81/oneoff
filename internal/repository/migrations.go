@@ -7,7 +7,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/rs/zerolog/log"
+	"github.com/meysam81/oneoff/internal/logging"
 )
 
 // RunMigrations runs database migrations
@@ -37,7 +37,7 @@ func RunMigrations(dbPath string, migrationsPath string, direction string) error
 		return fmt.Errorf("failed to get migration version: %w", err)
 	}
 
-	log.Info().
+	logging.Info().
 		Uint("current_version", currentVersion).
 		Bool("dirty", dirty).
 		Msg("Current migration status")
@@ -47,20 +47,20 @@ func RunMigrations(dbPath string, migrationsPath string, direction string) error
 		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 			return fmt.Errorf("migration up failed: %w", err)
 		}
-		log.Info().Msg("Migrations applied successfully")
+		logging.Info().Msg("Migrations applied successfully")
 
 	case "down":
 		if err := m.Down(); err != nil && err != migrate.ErrNoChange {
 			return fmt.Errorf("migration down failed: %w", err)
 		}
-		log.Info().Msg("Migrations rolled back successfully")
+		logging.Info().Msg("Migrations rolled back successfully")
 
 	default:
 		return fmt.Errorf("invalid migration direction: %s (must be 'up' or 'down')", direction)
 	}
 
 	newVersion, _, _ := m.Version()
-	log.Info().Uint("new_version", newVersion).Msg("Migration completed")
+	logging.Info().Uint("new_version", newVersion).Msg("Migration completed")
 
 	return nil
 }

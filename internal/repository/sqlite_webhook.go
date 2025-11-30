@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
-	"github.com/rs/zerolog/log"
+	"github.com/meysam81/oneoff/internal/logging"
 )
 
 // CreateWebhook creates a new webhook
@@ -106,7 +106,7 @@ func (r *SQLiteRepository) ListWebhooks(ctx context.Context, filter domain.Webho
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close rows in ListWebhooks")
+			logging.Error().Err(err).Msg("Failed to close rows in ListWebhooks")
 		}
 	}()
 
@@ -161,7 +161,7 @@ func (r *SQLiteRepository) GetActiveWebhooksForEvent(ctx context.Context, event 
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close rows in GetActiveWebhooksForEvent")
+			logging.Error().Err(err).Msg("Failed to close rows in GetActiveWebhooksForEvent")
 		}
 	}()
 
@@ -352,7 +352,7 @@ func (r *SQLiteRepository) ListWebhookDeliveries(ctx context.Context, filter dom
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close rows in ListWebhookDeliveries")
+			logging.Error().Err(err).Msg("Failed to close rows in ListWebhookDeliveries")
 		}
 	}()
 
@@ -420,7 +420,7 @@ func (r *SQLiteRepository) GetPendingWebhookDeliveries(ctx context.Context, limi
 	}
 	defer func() {
 		if err := rows.Close(); err != nil {
-			log.Error().Err(err).Msg("Failed to close rows in GetPendingDeliveries")
+			logging.Error().Err(err).Msg("Failed to close rows in GetPendingDeliveries")
 		}
 	}()
 

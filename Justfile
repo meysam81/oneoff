@@ -33,7 +33,6 @@ frontend:
 		bun run build; \
 	else \
 		echo "Frontend not set up yet, skipping..."; \
-		mkdir -p internal/server/dist; \
 	fi
 
 deps:

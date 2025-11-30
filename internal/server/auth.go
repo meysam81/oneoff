@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/service"
-	"github.com/rs/zerolog/log"
 )
 
 // AuthConfig holds authentication configuration
@@ -195,7 +195,7 @@ func (m *AuthMiddleware) Middleware(next http.Handler) http.Handler {
 		// Validate API key
 		apiKey, err := m.validateKey(r.Context(), rawKey)
 		if err != nil {
-			log.Debug().Err(err).Str("key_prefix", safeKeyPrefix(rawKey)).Msg("API key validation failed")
+			logging.Debug().Err(err).Str("key_prefix", safeKeyPrefix(rawKey)).Msg("API key validation failed")
 			m.respondUnauthorized(w, "invalid or expired API key")
 			return
 		}

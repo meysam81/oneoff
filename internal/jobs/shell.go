@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/meysam81/oneoff/internal/domain"
@@ -112,8 +111,7 @@ func (j *ShellJob) Execute(ctx context.Context) (*domain.ExecutionResult, error)
 		}
 	}
 
-	// Set process group for proper cleanup on cancellation
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	setSysProcAttr(cmd)
 
 	// Capture output
 	var stdout, stderr bytes.Buffer
@@ -128,11 +126,7 @@ func (j *ShellJob) Execute(ctx context.Context) (*domain.ExecutionResult, error)
 
 	if err != nil {
 		if ctx.Err() == context.Canceled {
-			// Job was cancelled - kill the process group
-			if cmd.Process != nil {
-				// Kill the entire process group
-				_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-			}
+			killProcessGroup(cmd)
 			exitCode = 130 // SIGINT exit code
 			errorMsg = "Job cancelled by user"
 		} else if exitErr, ok := err.(*exec.ExitError); ok {

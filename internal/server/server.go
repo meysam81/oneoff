@@ -15,11 +15,11 @@ import (
 	"github.com/meysam81/oneoff/internal/domain"
 	"github.com/meysam81/oneoff/internal/handler"
 	"github.com/meysam81/oneoff/internal/jobs"
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/metrics"
 	"github.com/meysam81/oneoff/internal/repository"
 	"github.com/meysam81/oneoff/internal/service"
 	"github.com/meysam81/oneoff/internal/worker"
-	"github.com/rs/zerolog/log"
 )
 
 //go:embed dist
@@ -48,7 +48,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	// Run migrations
 	migrationsPath := filepath.Join(".", "migrations")
 	if err := repository.RunMigrations(cfg.DBPath, migrationsPath, "up"); err != nil {
-		log.Warn().Err(err).Msg("Failed to run migrations (continuing anyway)")
+		logging.Warn().Err(err).Msg("Failed to run migrations (continuing anyway)")
 	}
 
 	// Initialize job registry
@@ -77,7 +77,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 			metricsCollector.IncJobsTotal(jobType, status)
 			metricsCollector.ObserveJobDuration(jobType, duration)
 		})
-		log.Info().Msg("Prometheus metrics enabled at /metrics")
+		logging.Info().Msg("Prometheus metrics enabled at /metrics")
 	} else {
 		metricsCollector = &metrics.NoopCollector{}
 	}
@@ -134,7 +134,7 @@ func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 		metricsCollector: metricsCollector,
 	}
 
-	log.Info().Bool("auth_enabled", cfg.AuthEnabled).Msg("Authentication configuration")
+	logging.Info().Bool("auth_enabled", cfg.AuthEnabled).Msg("Authentication configuration")
 
 	return server, nil
 }
@@ -152,7 +152,7 @@ func (s *Server) Start() error {
 	}
 
 	// Start HTTP server
-	log.Info().Str("address", s.config.Address()).Msg("Starting HTTP server")
+	logging.Info().Str("address", s.config.Address()).Msg("Starting HTTP server")
 	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		return fmt.Errorf("HTTP server error: %w", err)
 	}
@@ -162,25 +162,25 @@ func (s *Server) Start() error {
 
 // Shutdown gracefully shuts down the server
 func (s *Server) Shutdown(ctx context.Context) error {
-	log.Info().Msg("Shutting down server")
+	logging.Info().Msg("Shutting down server")
 
 	// Stop webhook service
 	s.webhookService.Stop()
 
 	// Stop worker pool
 	if err := s.pool.Stop(ctx); err != nil {
-		log.Error().Err(err).Msg("Failed to stop worker pool")
+		logging.Error().Err(err).Msg("Failed to stop worker pool")
 	}
 
 	// Shutdown HTTP server
 	if err := s.httpServer.Shutdown(ctx); err != nil {
-		log.Error().Err(err).Msg("Failed to shutdown HTTP server")
+		logging.Error().Err(err).Msg("Failed to shutdown HTTP server")
 		return err
 	}
 
 	// Close database
 	if err := s.repo.Close(); err != nil {
-		log.Error().Err(err).Msg("Failed to close database")
+		logging.Error().Err(err).Msg("Failed to close database")
 		return err
 	}
 
@@ -478,7 +478,7 @@ func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.
 	// Serve frontend with SPA fallback
 	distFS, err := fs.Sub(distFS, "dist")
 	if err != nil {
-		log.Warn().Err(err).Msg("Frontend dist not found, will serve placeholder")
+		logging.Warn().Err(err).Msg("Frontend dist not found, will serve placeholder")
 		mux.HandleFunc("/", servePlaceholder)
 	} else {
 		mux.Handle("/", spaHandler(distFS))
@@ -544,7 +544,7 @@ func spaHandler(fsys fs.FS) http.Handler {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Debug().
+		logging.Debug().
 			Str("method", r.Method).
 			Str("path", r.URL.Path).
 			Str("remote", r.RemoteAddr).

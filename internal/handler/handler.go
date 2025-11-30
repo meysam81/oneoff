@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/meysam81/oneoff/internal/logging"
 	"github.com/meysam81/oneoff/internal/service"
-	"github.com/rs/zerolog/log"
 )
 
 // Handler contains all HTTP handlers
@@ -56,7 +56,7 @@ func (h *Handler) respondJSON(w http.ResponseWriter, status int, data interface{
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(data); err != nil {
-		log.Error().Err(err).Msg("Failed to encode JSON response")
+		logging.Error().Err(err).Msg("Failed to encode JSON response")
 	}
 }
 

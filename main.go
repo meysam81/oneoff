@@ -33,7 +33,7 @@ func main() {
 				Name:  "serve",
 				Usage: "Start the OneOff server",
 				Action: func(ctx context.Context, c *cli.Command) error {
-					return runServer()
+					return runServer(ctx)
 				},
 			},
 			{
@@ -53,7 +53,7 @@ func main() {
 		},
 		DefaultCommand: "serve",
 		Action: func(ctx context.Context, c *cli.Command) error {
-			return runServer()
+			return runServer(ctx)
 		},
 	}
 
@@ -62,7 +62,7 @@ func main() {
 	}
 }
 
-func runServer() error {
+func runServer(ctx context.Context) error {
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
@@ -79,7 +79,7 @@ func runServer() error {
 		Msg("Starting OneOff")
 
 	// Create server
-	srv, err := server.New(cfg)
+	srv, err := server.New(ctx, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create server: %w", err)
 	}
@@ -105,7 +105,7 @@ func runServer() error {
 	}
 
 	// Graceful shutdown with timeout
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(shutdownCtx); err != nil {

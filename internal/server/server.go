@@ -38,9 +38,9 @@ type Server struct {
 }
 
 // New creates a new server instance
-func New(cfg *config.Config) (*Server, error) {
+func New(ctx context.Context, cfg *config.Config) (*Server, error) {
 	// Initialize database
-	repo, err := repository.NewSQLiteRepository(cfg.DBPath)
+	repo, err := repository.NewSQLiteRepository(ctx, cfg.DBPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create repository: %w", err)
 	}

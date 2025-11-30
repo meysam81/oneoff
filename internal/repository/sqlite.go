@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/meysam81/oneoff/internal/domain"
+	"github.com/meysam81/x/sqlite"
 )
 
 // SQLiteRepository implements Repository using SQLite
@@ -17,21 +17,17 @@ type SQLiteRepository struct {
 }
 
 // NewSQLiteRepository creates a new SQLite repository
-func NewSQLiteRepository(dbPath string) (*SQLiteRepository, error) {
-	db, err := sql.Open("sqlite3", fmt.Sprintf("%s?_foreign_keys=on&_journal_mode=WAL", dbPath))
+func NewSQLiteRepository(ctx context.Context, dbPath string) (*SQLiteRepository, error) {
+	db, err := sqlite.NewDB(
+		ctx,
+		dbPath,
+		sqlite.WithConnMaxLifetime(300),
+		sqlite.WithConnMaxOpen(25),
+		sqlite.WithJournalMode("wal"),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
-
-	// Test connection
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
-	}
-
-	// Set connection pool settings
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(5 * time.Minute)
 
 	return &SQLiteRepository{db: db}, nil
 }

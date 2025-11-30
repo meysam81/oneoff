@@ -77,7 +77,7 @@ const { version, fullVersion } = await getGitHubData();
           <div class="terminal-body overflow-x-auto" id="hero-terminal">
             <div class="code-line whitespace-nowrap">
               <span class="code-prompt">$</span>
-              <span class="code-command text-xs sm:text-sm" id="cmd-1"> curl -fsSL <span class="hidden sm:inline">https://github.com/meysam81/oneoff/releases/download/{fullVersion}/oneoff_linux_amd64.tar.gz</span><span class="sm:hidden">github.com/.../oneoff.tar.gz</span> | tar xz</span>
+              <span class="code-command text-xs sm:text-sm" id="cmd-1"> <span id="hero-install-cmd">curl -fsSL <span class="hidden sm:inline">https://github.com/meysam81/oneoff/releases/download/{fullVersion}/oneoff_linux_amd64.tar.gz</span><span class="sm:hidden">github.com/.../oneoff.tar.gz</span> | tar xz</span></span>
             </div>
             <div class="code-line opacity-0" id="line-2">
               <span class="code-prompt">$</span>
@@ -104,29 +104,105 @@ const { version, fullVersion } = await getGitHubData();
   </div>
 </section>
 
-<script>
-  // Terminal typewriter animation
+<script define:vars={{ fullVersion }}>
+  function detectPlatform() {
+    if (typeof navigator === 'undefined') {
+      return 'linux-amd64';
+    }
+
+    var userAgent = navigator.userAgent.toLowerCase();
+    var platform = (navigator.platform || '').toLowerCase();
+
+    var isWindows = platform.includes('win') || userAgent.includes('windows');
+    var isMac = platform.includes('mac') || userAgent.includes('macintosh');
+
+    var isArm = userAgent.includes('arm') ||
+                userAgent.includes('aarch64') ||
+                (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
+
+    if (isWindows) {
+      return 'windows-amd64';
+    }
+
+    if (isMac) {
+      return 'darwin-arm64';
+    }
+
+    if (isArm) {
+      return 'linux-arm64';
+    }
+
+    return 'linux-amd64';
+  }
+
+  function getDownloadUrl(detectedPlatform, version) {
+    var baseUrl = 'https://github.com/meysam81/oneoff/releases/download';
+    var platformMap = {
+      'linux-amd64': 'oneoff_linux_amd64.tar.gz',
+      'linux-arm64': 'oneoff_linux_arm64.tar.gz',
+      'darwin-amd64': 'oneoff_darwin_amd64.tar.gz',
+      'darwin-arm64': 'oneoff_darwin_arm64.tar.gz',
+      'windows-amd64': 'oneoff_windows_amd64.zip',
+    };
+    return baseUrl + '/' + version + '/' + platformMap[detectedPlatform];
+  }
+
+  function getInstallCommand(detectedPlatform, version) {
+    var url = getDownloadUrl(detectedPlatform, version);
+
+    if (detectedPlatform === 'windows-amd64') {
+      return 'Invoke-WebRequest -Uri "' + url + '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
+    }
+
+    return 'curl -fsSL ' + url + ' | tar xz';
+  }
+
+  function getShortCommand(detectedPlatform) {
+    if (detectedPlatform === 'windows-amd64') {
+      return 'Invoke-WebRequest ... | Expand-Archive';
+    }
+    return 'curl -fsSL github.com/.../oneoff.tar.gz | tar xz';
+  }
+
+  function updateHeroCommand() {
+    var detectedPlatform = detectPlatform();
+    var cmdEl = document.getElementById('hero-install-cmd');
+    var line2 = document.getElementById('line-2');
+
+    if (cmdEl) {
+      var fullCmd = getInstallCommand(detectedPlatform, fullVersion);
+      var shortCmd = getShortCommand(detectedPlatform);
+
+      cmdEl.innerHTML = '<span class="hidden sm:inline">' + fullCmd + '</span><span class="sm:hidden">' + shortCmd + '</span>';
+    }
+
+    if (line2 && detectedPlatform === 'windows-amd64') {
+      line2.innerHTML = '<span class="code-prompt">></span><span class="code-command text-xs sm:text-sm"> .\\oneoff.exe</span>';
+    }
+  }
+
   function animateTerminal() {
-    const lines = [
+    var lines = [
       { id: 'line-2', delay: 1500 },
       { id: 'line-3', delay: 2200 },
       { id: 'line-4', delay: 3000 },
     ];
 
-    lines.forEach(({ id, delay }) => {
-      setTimeout(() => {
-        const el = document.getElementById(id);
+    lines.forEach(function(item) {
+      setTimeout(function() {
+        var el = document.getElementById(item.id);
         if (el) {
           el.classList.remove('opacity-0');
           el.classList.add('animate-fade-in');
         }
-      }, delay);
+      }, item.delay);
     });
   }
 
-  // Run animation when element is in view
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+  updateHeroCommand();
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
       if (entry.isIntersecting) {
         animateTerminal();
         observer.disconnect();
@@ -134,7 +210,7 @@ const { version, fullVersion } = await getGitHubData();
     });
   });
 
-  const terminal = document.getElementById('hero-terminal');
+  var terminal = document.getElementById('hero-terminal');
   if (terminal) {
     observer.observe(terminal);
   }

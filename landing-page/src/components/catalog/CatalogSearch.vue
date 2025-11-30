@@ -120,13 +120,15 @@ function clearFilters() {
     </div>
 
     <!-- Filters row -->
-    <div
-      class="flex flex-col gap-3 sm:gap-4"
-    >
+    <div class="flex flex-col gap-3 sm:gap-4">
       <!-- Category filters -->
       <div class="overflow-x-auto -mx-2 px-2 pb-2 sm:mx-0 sm:px-0 sm:pb-0">
-        <div class="flex items-center gap-1.5 sm:gap-2 sm:flex-wrap min-w-max sm:min-w-0">
-          <span class="text-xs sm:text-sm text-fg-muted whitespace-nowrap">Filter:</span>
+        <div
+          class="flex items-center gap-1.5 sm:gap-2 sm:flex-wrap min-w-max sm:min-w-0"
+        >
+          <span class="text-xs sm:text-sm text-fg-muted whitespace-nowrap"
+            >Filter:</span
+          >
           <button
             v-for="cat in categories"
             :key="cat.value"
@@ -146,7 +148,9 @@ function clearFilters() {
       </div>
 
       <!-- Sort & Clear -->
-      <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+      <div
+        class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4"
+      >
         <select
           v-model="sortBy"
           class="px-2 sm:px-3 py-1 sm:py-1.5 bg-bg-tertiary border border-border-subtle rounded-lg text-xs sm:text-sm text-fg-secondary focus:outline-none focus:border-accent-primary/50"

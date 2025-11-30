@@ -60,24 +60,30 @@
                       :style="{ backgroundColor: project.color || '#6366f1' }"
                     ></div>
                     <n-text strong>{{ project.name }}</n-text>
-                    <n-tag v-if="project.id === 'default'" type="info" size="small">
+                    <n-tag
+                      v-if="project.id === 'default'"
+                      type="info"
+                      size="small"
+                    >
                       Default
                     </n-tag>
                   </n-space>
                 </td>
                 <td>
-                  <n-text depth="3">{{ project.description || '-' }}</n-text>
+                  <n-text depth="3">{{ project.description || "-" }}</n-text>
                 </td>
                 <td>
                   <n-tag type="info">{{ project.job_count || 0 }} jobs</n-tag>
                 </td>
                 <td>
                   <n-tag :type="project.is_archived ? 'warning' : 'success'">
-                    {{ project.is_archived ? 'Archived' : 'Active' }}
+                    {{ project.is_archived ? "Archived" : "Active" }}
                   </n-tag>
                 </td>
                 <td>
-                  <n-text depth="3">{{ formatDate(project.created_at) }}</n-text>
+                  <n-text depth="3">{{
+                    formatDate(project.created_at)
+                  }}</n-text>
                 </td>
                 <td>
                   <n-space>
@@ -174,11 +180,13 @@
     >
       <n-space vertical>
         <n-text>
-          Are you sure you want to delete the project "{{ projectToDelete?.name }}"?
+          Are you sure you want to delete the project "{{
+            projectToDelete?.name
+          }}"?
         </n-text>
         <n-alert type="warning" :show-icon="false">
-          This action cannot be undone. All jobs in this project will be moved to
-          the default project.
+          This action cannot be undone. All jobs in this project will be moved
+          to the default project.
         </n-alert>
       </n-space>
     </n-modal>
@@ -227,7 +235,7 @@ const filteredProjects = computed(() => {
     result = result.filter(
       (p) =>
         p.name.toLowerCase().includes(query) ||
-        (p.description && p.description.toLowerCase().includes(query))
+        (p.description && p.description.toLowerCase().includes(query)),
     );
   }
 
@@ -255,7 +263,12 @@ const formData = reactive({
 const formRules = {
   name: [
     { required: true, message: "Name is required", trigger: "blur" },
-    { min: 1, max: 100, message: "Name must be 1-100 characters", trigger: "blur" },
+    {
+      min: 1,
+      max: 100,
+      message: "Name must be 1-100 characters",
+      trigger: "blur",
+    },
   ],
 };
 
@@ -269,7 +282,9 @@ const fetchProjects = async () => {
   try {
     await systemStore.fetchProjects(false);
   } catch (error) {
-    message.error(`Failed to fetch projects: ${error?.message || 'Unknown error'}`);
+    message.error(
+      `Failed to fetch projects: ${error?.message || "Unknown error"}`,
+    );
   } finally {
     loading.value = false;
   }

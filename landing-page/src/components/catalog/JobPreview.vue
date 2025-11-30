@@ -76,9 +76,15 @@ function formatDate(dateStr: string) {
         >
           <div class="flex items-center gap-1.5 sm:gap-2">
             <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-error/80"></span>
-            <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-warning/80"></span>
-            <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-success/80"></span>
-            <span class="text-[10px] sm:text-xs text-fg-muted ml-1 sm:ml-2">job-config.json</span>
+            <span
+              class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-warning/80"
+            ></span>
+            <span
+              class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-success/80"
+            ></span>
+            <span class="text-[10px] sm:text-xs text-fg-muted ml-1 sm:ml-2"
+              >job-config.json</span
+            >
           </div>
           <button
             @click="copyConfig"
@@ -118,7 +124,9 @@ function formatDate(dateStr: string) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span class="xs:inline">{{ copied ? "Copied!" : "Copy config" }}</span>
+            <span class="xs:inline">{{
+              copied ? "Copied!" : "Copy config"
+            }}</span>
             <span class="xs:hidden">{{ copied ? "Copied!" : "Copy" }}</span>
           </button>
         </div>
@@ -131,7 +139,9 @@ function formatDate(dateStr: string) {
       <div
         class="mt-4 sm:mt-6 bg-bg-secondary rounded-lg sm:rounded-xl border border-border-subtle p-3 sm:p-4"
       >
-        <h4 class="text-xs sm:text-sm font-semibold text-fg-primary mb-2 sm:mb-3">
+        <h4
+          class="text-xs sm:text-sm font-semibold text-fg-primary mb-2 sm:mb-3"
+        >
           Import via API
         </h4>
         <div
@@ -153,7 +163,9 @@ function formatDate(dateStr: string) {
       <div class="space-y-4 sm:space-y-6">
         <!-- Title -->
         <div>
-          <h1 class="text-xl sm:text-2xl font-display font-bold text-fg-primary mb-1.5 sm:mb-2">
+          <h1
+            class="text-xl sm:text-2xl font-display font-bold text-fg-primary mb-1.5 sm:mb-2"
+          >
             {{ template.name }}
           </h1>
           <p class="text-fg-secondary leading-relaxed text-sm sm:text-base">
@@ -166,7 +178,9 @@ function formatDate(dateStr: string) {
           <div
             class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
           >
-            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1">Job Type</span>
+            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1"
+              >Job Type</span
+            >
             <span
               class="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm font-medium rounded-full border"
               :class="
@@ -180,7 +194,9 @@ function formatDate(dateStr: string) {
           <div
             class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
           >
-            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1">Category</span>
+            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1"
+              >Category</span
+            >
             <span class="text-xs sm:text-sm text-fg-primary font-medium">
               {{ categoryLabels[template.category] || template.category }}
             </span>
@@ -188,8 +204,13 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Tags -->
-        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4">
-          <span class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2">Tags</span>
+        <div
+          class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
+        >
+          <span
+            class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2"
+            >Tags</span
+          >
           <div class="flex flex-wrap gap-1.5 sm:gap-2">
             <span
               v-for="tag in template.tags"
@@ -202,8 +223,13 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Author -->
-        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4">
-          <span class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2">Author</span>
+        <div
+          class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
+        >
+          <span
+            class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2"
+            >Author</span
+          >
           <a
             :href="`https://github.com/${template.author.github}`"
             target="_blank"
@@ -217,9 +243,10 @@ function formatDate(dateStr: string) {
               loading="lazy"
             />
             <div>
-              <span class="text-xs sm:text-sm font-medium text-fg-primary block">{{
-                template.author.name
-              }}</span>
+              <span
+                class="text-xs sm:text-sm font-medium text-fg-primary block"
+                >{{ template.author.name }}</span
+              >
               <span class="text-[10px] sm:text-xs text-fg-muted"
                 >@{{ template.author.github }}</span
               >

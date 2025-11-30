@@ -1,25 +1,35 @@
 ---
 import Container from '../ui/Container.astro';
 import Icon from '../icons/index.astro';
+import { getGitHubData } from '../../utils/github';
+
+const { fullVersion } = await getGitHubData();
 
 const platforms = [
   {
-    id: 'linux',
+    id: 'linux-amd64',
     name: 'Linux',
-    arch: 'amd64',
-    command: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff && chmod +x oneoff && ./oneoff',
+    arch: 'x86_64',
   },
   {
-    id: 'macos',
+    id: 'linux-arm64',
+    name: 'Linux',
+    arch: 'ARM64',
+  },
+  {
+    id: 'darwin-arm64',
     name: 'macOS',
     arch: 'Apple Silicon',
-    command: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-darwin-arm64 -o oneoff && chmod +x oneoff && ./oneoff',
   },
   {
-    id: 'windows',
+    id: 'darwin-amd64',
+    name: 'macOS',
+    arch: 'Intel',
+  },
+  {
+    id: 'windows-amd64',
     name: 'Windows',
-    arch: 'PowerShell',
-    command: 'Invoke-WebRequest -Uri "https://github.com/meysam81/oneoff/releases/latest/download/oneoff-windows-amd64.exe" -OutFile "oneoff.exe"; .\\oneoff.exe',
+    arch: 'x86_64',
   },
 ];
 ---
@@ -34,24 +44,20 @@ const platforms = [
     </div>
 
     <div class="max-w-3xl mx-auto px-2 sm:px-0">
-      <!-- Platform tabs -->
       <div class="flex items-center justify-center gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2" id="platform-tabs">
-        {platforms.map((platform, index) => (
-          <button
-            class={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-              index === 0
-                ? 'bg-bg-tertiary text-accent-primary border border-accent-primary/30'
-                : 'text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50'
-            }`}
-            data-platform={platform.id}
-          >
-            {platform.name}
-            <span class="text-[10px] sm:text-xs text-fg-muted ml-1 hidden xs:inline">({platform.arch})</span>
-          </button>
-        ))}
+        {platforms.map(function(platform, index) {
+          return (
+            <button
+              class="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50"
+              data-platform={platform.id}
+            >
+              {platform.name}
+              <span class="text-[10px] sm:text-xs text-fg-muted ml-1 hidden xs:inline">({platform.arch})</span>
+            </button>
+          );
+        })}
       </div>
 
-      <!-- Command display -->
       <div class="terminal-window mb-4 sm:mb-6">
         <div class="terminal-header">
           <div class="flex items-center gap-1.5 sm:gap-2">
@@ -62,16 +68,10 @@ const platforms = [
           <span class="text-[10px] sm:text-xs text-fg-muted ml-2 sm:ml-4" id="terminal-title">Terminal</span>
         </div>
         <div class="terminal-body relative group">
-          {platforms.map((platform, index) => (
-            <div
-              class={`platform-command ${index === 0 ? '' : 'hidden'}`}
-              data-command={platform.id}
-            >
-              <code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">{platform.command}</code>
-            </div>
-          ))}
+          <div id="install-command-display">
+            <code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed"></code>
+          </div>
 
-          <!-- Copy button - always visible on mobile -->
           <button
             id="copy-btn"
             class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted hover:text-fg-primary sm:opacity-0 sm:group-hover:opacity-100 sm:invisible sm:group-hover:visible transition-all duration-200"
@@ -83,13 +83,11 @@ const platforms = [
         </div>
       </div>
 
-      <!-- Copy feedback -->
       <div id="copy-feedback" class="hidden text-center text-xs sm:text-sm text-success mb-4 sm:mb-6">
         <Icon name="check" size={14} class="inline mr-1 sm:w-4 sm:h-4" />
         Copied to clipboard!
       </div>
 
-      <!-- Additional links -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm">
         <a
           href="https://github.com/meysam81/oneoff/releases"
@@ -115,57 +113,101 @@ const platforms = [
   </Container>
 </section>
 
-<script>
-  const platformTabs = document.querySelectorAll('[data-platform]');
-  const platformCommands = document.querySelectorAll('[data-command]');
-  const copyBtn = document.getElementById('copy-btn');
-  const copyFeedback = document.getElementById('copy-feedback');
-
-  let currentPlatform = 'linux';
-
-  const commands: Record<string, string> = {
-    linux: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-linux-amd64 -o oneoff && chmod +x oneoff && ./oneoff',
-    macos: 'curl -fsSL https://github.com/meysam81/oneoff/releases/latest/download/oneoff-darwin-arm64 -o oneoff && chmod +x oneoff && ./oneoff',
-    windows: 'Invoke-WebRequest -Uri "https://github.com/meysam81/oneoff/releases/latest/download/oneoff-windows-amd64.exe" -OutFile "oneoff.exe"; .\\oneoff.exe',
+<script define:vars={{ fullVersion }}>
+  var platformCommands = {
+    'linux-amd64': 'curl -fsSL https://github.com/meysam81/oneoff/releases/download/' + fullVersion + '/oneoff_linux_amd64.tar.gz | tar xz && ./oneoff',
+    'linux-arm64': 'curl -fsSL https://github.com/meysam81/oneoff/releases/download/' + fullVersion + '/oneoff_linux_arm64.tar.gz | tar xz && ./oneoff',
+    'darwin-amd64': 'curl -fsSL https://github.com/meysam81/oneoff/releases/download/' + fullVersion + '/oneoff_darwin_amd64.tar.gz | tar xz && ./oneoff',
+    'darwin-arm64': 'curl -fsSL https://github.com/meysam81/oneoff/releases/download/' + fullVersion + '/oneoff_darwin_arm64.tar.gz | tar xz && ./oneoff',
+    'windows-amd64': 'Invoke-WebRequest -Uri "https://github.com/meysam81/oneoff/releases/download/' + fullVersion + '/oneoff_windows_amd64.zip" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."; .\\oneoff.exe',
   };
 
-  platformTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const platform = tab.getAttribute('data-platform');
-      if (!platform) return;
+  var currentPlatform = 'linux-amd64';
 
-      currentPlatform = platform;
+  function detectPlatform() {
+    if (typeof navigator === 'undefined') {
+      return 'linux-amd64';
+    }
 
-      // Update tab styles
-      platformTabs.forEach(t => {
-        t.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
-        t.classList.add('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
-      });
-      tab.classList.remove('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
-      tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+    var userAgent = navigator.userAgent.toLowerCase();
+    var platform = (navigator.platform || '').toLowerCase();
 
-      // Show/hide commands
-      platformCommands.forEach(cmd => {
-        if (cmd.getAttribute('data-command') === platform) {
-          cmd.classList.remove('hidden');
-        } else {
-          cmd.classList.add('hidden');
-        }
-      });
+    var isWindows = platform.includes('win') || userAgent.includes('windows');
+    var isMac = platform.includes('mac') || userAgent.includes('macintosh');
+
+    var isArm = userAgent.includes('arm') ||
+                userAgent.includes('aarch64') ||
+                (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
+
+    if (isWindows) {
+      return 'windows-amd64';
+    }
+
+    if (isMac) {
+      return 'darwin-arm64';
+    }
+
+    if (isArm) {
+      return 'linux-arm64';
+    }
+
+    return 'linux-amd64';
+  }
+
+  function selectPlatform(platformId) {
+    currentPlatform = platformId;
+
+    var tabs = document.querySelectorAll('[data-platform]');
+    tabs.forEach(function(tab) {
+      tab.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+      tab.classList.add('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+
+      if (tab.getAttribute('data-platform') === platformId) {
+        tab.classList.remove('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
+        tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
+      }
+    });
+
+    var commandDisplay = document.getElementById('install-command-display');
+    if (commandDisplay) {
+      commandDisplay.innerHTML = '<code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">' + platformCommands[platformId] + '</code>';
+    }
+
+    var terminalTitle = document.getElementById('terminal-title');
+    if (terminalTitle) {
+      terminalTitle.textContent = platformId === 'windows-amd64' ? 'PowerShell' : 'Terminal';
+    }
+  }
+
+  var detectedPlatform = detectPlatform();
+  selectPlatform(detectedPlatform);
+
+  var platformTabs = document.querySelectorAll('[data-platform]');
+  platformTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var platformId = tab.getAttribute('data-platform');
+      if (platformId) {
+        selectPlatform(platformId);
+      }
     });
   });
 
-  // Copy to clipboard
-  copyBtn?.addEventListener('click', async () => {
-    const command = commands[currentPlatform];
-    try {
-      await navigator.clipboard.writeText(command);
-      copyFeedback?.classList.remove('hidden');
-      setTimeout(() => {
-        copyFeedback?.classList.add('hidden');
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  });
+  var copyBtn = document.getElementById('copy-btn');
+  var copyFeedback = document.getElementById('copy-feedback');
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      var command = platformCommands[currentPlatform];
+      navigator.clipboard.writeText(command).then(function() {
+        if (copyFeedback) {
+          copyFeedback.classList.remove('hidden');
+          setTimeout(function() {
+            copyFeedback.classList.add('hidden');
+          }, 2000);
+        }
+      }).catch(function(err) {
+        console.error('Failed to copy:', err);
+      });
+    });
+  }
 </script>

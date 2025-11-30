@@ -78,7 +78,10 @@ function formatDate(dateStr: string) {
       </p>
     </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+    <div
+      v-else
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+    >
       <a
         v-for="template in templates"
         :key="template.id"
@@ -132,7 +135,9 @@ function formatDate(dateStr: string) {
         >
           {{ template.name }}
         </h3>
-        <p class="text-fg-secondary text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 line-clamp-2">
+        <p
+          class="text-fg-secondary text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 line-clamp-2"
+        >
           {{ template.description }}
         </p>
 

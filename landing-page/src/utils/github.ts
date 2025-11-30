@@ -67,7 +67,7 @@ function parseTarHeaderSize(header: Buffer): number {
  */
 async function getBinarySize(
   downloadUrl: string,
-  token?: string
+  token?: string,
 ): Promise<number> {
   const headers: Record<string, string> = {
     Accept: "application/octet-stream",
@@ -178,7 +178,7 @@ export async function fetchGitHubData(): Promise<GitHubData> {
 
     // Find linux_amd64 tar.gz asset
     const linuxAsset = release.assets.find(
-      (a) => a.name === "oneoff_linux_amd64.tar.gz"
+      (a) => a.name === "oneoff_linux_amd64.tar.gz",
     );
 
     if (!linuxAsset) {

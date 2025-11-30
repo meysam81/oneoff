@@ -37,25 +37,29 @@ const painPoints = [
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-16 px-2 sm:px-0">
-      {painPoints.map((point, index) => (
-        <Card variant="default" class="group relative overflow-hidden">
-          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-error/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      {painPoints.map(function renderPainPoint(point, index) {
+        return (
+        <Card variant="default" class="group relative overflow-hidden h-full">
+          <div class="flex flex-col h-full">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-error/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted">
-              <Icon name={point.icon} size={20} class="sm:w-6 sm:h-6" />
+            <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted">
+                <Icon name={point.icon} size={20} class="sm:w-6 sm:h-6" />
+              </div>
+              <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{point.title}</h3>
             </div>
-            <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{point.title}</h3>
+
+            <p class="text-fg-secondary text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow">{point.description}</p>
+
+            <span class="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-error/80 mt-auto">
+              <Icon name="x" size={12} class="sm:w-[14px] sm:h-[14px]" />
+              {point.highlight}
+            </span>
           </div>
-
-          <p class="text-fg-secondary text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">{point.description}</p>
-
-          <span class="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-error/80">
-            <Icon name="x" size={12} class="sm:w-[14px] sm:h-[14px]" />
-            {point.highlight}
-          </span>
         </Card>
-      ))}
+        );
+      })}
     </div>
 
     <!-- Solution statement -->

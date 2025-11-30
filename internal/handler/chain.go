@@ -87,7 +87,7 @@ func (h *ChainHandler) ListChains(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondList(w, chains, total, filter.Limit, filter.Offset)
+	respondListChains(w, chains, total, filter.Limit, filter.Offset)
 }
 
 // UpdateChain handles PATCH /api/chains/:id
@@ -181,19 +181,7 @@ func extractChainID(path string) string {
 	return id
 }
 
-func respondError(w http.ResponseWriter, status int, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]string{"error": message})
-}
-
-func respondSuccess(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]interface{}{"data": data})
-}
-
-func respondList(w http.ResponseWriter, data interface{}, total int64, limit, offset int) {
+func respondListChains(w http.ResponseWriter, data interface{}, total int64, limit, offset int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(map[string]interface{}{

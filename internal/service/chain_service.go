@@ -172,7 +172,3 @@ func (s *ChainService) ExecuteChain(ctx context.Context, id string) error {
 
 	return nil
 }
-
-func stringPtr(s string) *string {
-	return &s
-}

@@ -2,8 +2,8 @@
 
 This document provides comprehensive guidance for AI assistants working on the OneOff codebase. It explains the architecture, conventions, workflows, and important considerations for making changes.
 
-**Last Updated**: 2025-11-27
-**Codebase Size**: ~10,300 lines across 77 source files
+**Last Updated**: 2025-11-29
+**Codebase Size**: ~11,400 lines across 63 source files
 **Version**: 1.0.2
 
 ---
@@ -37,6 +37,9 @@ This document provides comprehensive guidance for AI assistants working on the O
 - Real-time worker monitoring
 - Job chaining for sequential execution
 - Landing page with job template catalog
+- API key authentication with scopes (read, write, admin)
+- Webhook notifications for job lifecycle events
+- Prometheus-compatible metrics endpoint
 
 ### Key Design Goals
 
@@ -85,6 +88,8 @@ This document provides comprehensive guidance for AI assistants working on the O
 - **Domain Models** (`internal/domain/models.go`): Core business entities
 - **Domain Interfaces** (`internal/domain/job.go`): Contracts for job executors
 - **Domain Errors** (`internal/domain/errors.go`): Business rule violations
+- **API Key Models** (`internal/domain/apikey.go`): API key authentication
+- **Webhook Models** (`internal/domain/webhook.go`): Webhook event system
 
 #### 3. Plugin Architecture (Job Registry)
 
@@ -179,12 +184,16 @@ internal/
 ├── domain/             # Domain models and interfaces
 │   ├── models.go       # Core entities (Job, Execution, Project, etc.)
 │   ├── job.go          # JobExecutor interface and registry
-│   └── errors.go       # Domain errors (ErrNotFound, ErrInvalidPriority, etc.)
+│   ├── errors.go       # Domain errors (ErrNotFound, ErrInvalidPriority, etc.)
+│   ├── apikey.go       # API key authentication models
+│   └── webhook.go      # Webhook event models and types
 │
 ├── handler/            # HTTP request handlers
 │   ├── handler.go      # Base handler with common utilities
 │   ├── job.go          # Job endpoints (CRUD, execute, clone, cancel)
-│   └── misc.go         # System/worker/job-type/project/tag endpoints
+│   ├── misc.go         # System/worker/job-type/project/tag endpoints
+│   ├── apikey.go       # API key management endpoints
+│   └── webhook.go      # Webhook configuration endpoints
 │
 ├── jobs/               # Job executor implementations
 │   ├── http.go         # HTTP request job (with retry)
@@ -192,11 +201,16 @@ internal/
 │   ├── docker.go       # Docker container execution
 │   └── registry.go     # Factory registration
 │
+├── metrics/            # Observability
+│   └── metrics.go      # Prometheus-compatible metrics collector
+│
 ├── repository/         # Database layer
 │   ├── repository.go   # Repository interface
 │   ├── sqlite.go       # SQLite implementation (job CRUD)
 │   ├── sqlite_execution.go  # Execution-related queries
 │   ├── sqlite_misc.go       # Project/tag/config queries
+│   ├── sqlite_apikey.go     # API key CRUD operations
+│   ├── sqlite_webhook.go    # Webhook CRUD and delivery tracking
 │   └── migrations.go   # Migration runner
 │
 ├── service/            # Business logic
@@ -204,7 +218,9 @@ internal/
 │   ├── execution_service.go # Execution tracking
 │   ├── project_service.go   # Project management
 │   ├── tag_service.go       # Tag management
-│   └── system_service.go    # System stats and config
+│   ├── system_service.go    # System stats and config
+│   ├── apikey_service.go    # API key generation and validation
+│   └── webhook_service.go   # Webhook dispatch and delivery
 │
 ├── worker/             # Job execution workers
 │   └── pool.go         # Worker pool with scheduler
@@ -901,6 +917,106 @@ The landing page includes a catalog of reusable job templates. To add a new temp
    - Document required environment variables in description
    - One job per template file
 
+### Working with API Keys
+
+API keys provide authentication for programmatic access to the OneOff API.
+
+**Key Concepts**:
+- Keys are generated with a secure random token
+- Only the hash is stored; the full key is shown once on creation
+- Scopes: `read` (view only), `write` (create/update), `admin` (full access)
+- Keys can have optional expiration dates
+- `last_used_at` tracks usage for auditing
+
+**Creating an API Key**:
+
+```bash
+curl -X POST http://localhost:8080/api/api-keys \
+  -H "Content-Type: application/json" \
+  -d '{"name": "CI Pipeline", "scopes": "read,write"}'
+
+# Response includes the key (only shown once):
+# {"id": "...", "key": "oneoff_xxxxxxxxxxxx", "key_prefix": "oneoff_xxx..."}
+```
+
+**Using API Keys**:
+
+```bash
+# Via Authorization header (recommended)
+curl http://localhost:8080/api/jobs \
+  -H "Authorization: Bearer oneoff_xxxxxxxxxxxx"
+
+# Via X-API-Key header
+curl http://localhost:8080/api/jobs \
+  -H "X-API-Key: oneoff_xxxxxxxxxxxx"
+```
+
+### Working with Webhooks
+
+Webhooks notify external services when job events occur.
+
+**Supported Events**:
+- `job.created` - Job was created
+- `job.started` - Job execution started
+- `job.completed` - Job completed successfully
+- `job.failed` - Job execution failed
+- `job.cancelled` - Job was cancelled
+
+**Creating a Webhook**:
+
+```bash
+curl -X POST http://localhost:8080/api/webhooks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Slack Notifications",
+    "url": "https://hooks.slack.com/...",
+    "events": "job.completed,job.failed",
+    "secret": "optional-hmac-secret"
+  }'
+```
+
+**Webhook Payload**:
+
+```json
+{
+  "event": "job.completed",
+  "timestamp": "2025-11-29T10:30:00Z",
+  "data": {
+    "job": { "id": "...", "name": "...", "type": "http", ... },
+    "execution": { "id": "...", "status": "completed", ... }
+  }
+}
+```
+
+**Webhook Security**:
+- If a secret is configured, requests include `X-OneOff-Signature` header
+- Signature is HMAC-SHA256: `sha256=<hex-encoded-hmac>`
+- Verify by computing HMAC of request body with the secret
+
+**Delivery Retry**:
+- Failed deliveries retry with exponential backoff
+- Max 5 retries, capped at 5 minutes between attempts
+- Track delivery status via `GET /api/webhooks/:id/deliveries`
+
+### Working with Metrics
+
+The `/metrics` endpoint exposes Prometheus-compatible metrics:
+
+```bash
+curl http://localhost:8080/metrics
+```
+
+**Available Metrics**:
+- `oneoff_uptime_seconds` - Service uptime
+- `oneoff_workers_total` - Total worker count
+- `oneoff_workers_active` - Currently active workers
+- `oneoff_jobs_queued` - Jobs waiting in queue
+- `oneoff_jobs_total{type,status}` - Jobs processed by type and status
+- `oneoff_job_duration_seconds{type}` - Job execution duration
+- `oneoff_http_requests_total{method,path,status}` - HTTP requests
+- `oneoff_apikey_validations_total{result}` - API key validations
+- `oneoff_webhook_deliveries_total{result}` - Webhook delivery outcomes
+
 ---
 
 ## Testing Strategy
@@ -1039,19 +1155,32 @@ describe("Jobs Store", () => {
    db.QueryContext(ctx, fmt.Sprintf("SELECT * FROM jobs WHERE id = '%s'", jobID))
    ```
 
-2. **Command Injection** (Shell/Docker jobs)
+2. **API Key Authentication**
+   - API keys are hashed using SHA-256 before storage
+   - Full key is only returned once on creation
+   - Keys support scopes: `read`, `write`, `admin`
+   - Admin scope grants all permissions
+   - Write scope implies read permissions
+   - Keys can be disabled or expired without deletion
+
+3. **Command Injection** (Shell/Docker jobs)
    - Shell jobs execute arbitrary commands - document security implications
    - Docker jobs require Docker socket access - document risks
    - Consider adding execution restrictions in production
 
-3. **XSS Prevention**
+4. **XSS Prevention**
    - Vue automatically escapes template interpolations
    - Be careful with `v-html` directive
    - Sanitize job outputs before display
 
-4. **CORS Configuration**
+5. **CORS Configuration**
    - Currently configured in `internal/server/server.go`
    - Adjust for production deployment
+
+6. **Webhook Security**
+   - Configure secrets for HMAC signature verification
+   - Validate `X-OneOff-Signature` header on receiving end
+   - Use HTTPS endpoints for webhook URLs in production
 
 ### Performance
 
@@ -1267,6 +1396,9 @@ rm oneoff.db oneoff.db-shm oneoff.db-wal
 | Database         | `internal/repository/*.go`               |
 | Job executors    | `internal/jobs/*.go`                     |
 | Domain models    | `internal/domain/*.go`                   |
+| Metrics          | `internal/metrics/metrics.go`            |
+| API key auth     | `internal/service/apikey_service.go`     |
+| Webhooks         | `internal/service/webhook_service.go`    |
 | Migrations       | `migrations/*.sql`                       |
 | Frontend entry   | `src/main.js`                            |
 | Vue components   | `src/components/*.vue`                   |
@@ -1317,6 +1449,11 @@ System:      GET /api/system/status
              PATCH /api/system/config
 Workers:     GET /api/workers/status
 Job Types:   GET /api/job-types
+API Keys:    GET/POST/PATCH/DELETE /api/api-keys
+Webhooks:    GET/POST/PATCH/DELETE /api/webhooks
+             GET /api/webhooks/:id/deliveries
+             POST /api/webhooks/:id/test
+Metrics:     GET /metrics (Prometheus format)
 ```
 
 ---
@@ -1357,6 +1494,6 @@ When making changes to this codebase:
 
 ---
 
-**Document Version**: 1.2
-**Last Updated**: 2025-11-27
+**Document Version**: 1.3
+**Last Updated**: 2025-11-29
 **Maintainer**: OneOff Development Team

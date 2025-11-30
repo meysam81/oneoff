@@ -26,19 +26,19 @@ const platforms = [
 
 <section class="section bg-bg-secondary/30" id="installation">
   <Container size="xl">
-    <div class="section-header">
-      <h2 class="section-title">Up and running in <span class="text-accent-primary">10 seconds</span></h2>
-      <p class="section-subtitle">
+    <div class="section-header px-2 sm:px-0">
+      <h2 class="section-title text-2xl sm:text-3xl md:text-headline">Up and running in <span class="text-accent-primary">10 seconds</span></h2>
+      <p class="section-subtitle text-sm sm:text-base">
         One command. No package managers. No containers. Just download and run.
       </p>
     </div>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto px-2 sm:px-0">
       <!-- Platform tabs -->
-      <div class="flex items-center justify-center gap-2 mb-6" id="platform-tabs">
+      <div class="flex items-center justify-center gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2" id="platform-tabs">
         {platforms.map((platform, index) => (
           <button
-            class={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            class={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
               index === 0
                 ? 'bg-bg-tertiary text-accent-primary border border-accent-primary/30'
                 : 'text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50'
@@ -46,20 +46,20 @@ const platforms = [
             data-platform={platform.id}
           >
             {platform.name}
-            <span class="text-xs text-fg-muted ml-1">({platform.arch})</span>
+            <span class="text-[10px] sm:text-xs text-fg-muted ml-1 hidden xs:inline">({platform.arch})</span>
           </button>
         ))}
       </div>
 
       <!-- Command display -->
-      <div class="terminal-window mb-6">
+      <div class="terminal-window mb-4 sm:mb-6">
         <div class="terminal-header">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2">
             <span class="terminal-dot terminal-dot-red"></span>
             <span class="terminal-dot terminal-dot-yellow"></span>
             <span class="terminal-dot terminal-dot-green"></span>
           </div>
-          <span class="text-xs text-fg-muted ml-4" id="terminal-title">Terminal</span>
+          <span class="text-[10px] sm:text-xs text-fg-muted ml-2 sm:ml-4" id="terminal-title">Terminal</span>
         </div>
         <div class="terminal-body relative group">
           {platforms.map((platform, index) => (
@@ -67,37 +67,37 @@ const platforms = [
               class={`platform-command ${index === 0 ? '' : 'hidden'}`}
               data-command={platform.id}
             >
-              <code class="text-sm text-fg-secondary break-all">{platform.command}</code>
+              <code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">{platform.command}</code>
             </div>
           ))}
 
-          <!-- Copy button -->
+          <!-- Copy button - always visible on mobile -->
           <button
             id="copy-btn"
-            class="absolute top-2 right-2 p-2 bg-bg-tertiary rounded-lg text-fg-muted hover:text-fg-primary opacity-0 group-hover:opacity-100 transition-all duration-200"
+            class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted hover:text-fg-primary sm:opacity-0 sm:group-hover:opacity-100 sm:invisible sm:group-hover:visible transition-all duration-200"
             title="Copy to clipboard"
             aria-label="Copy installation command to clipboard"
           >
-            <Icon name="copy" size={16} />
+            <Icon name="copy" size={14} class="sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
 
       <!-- Copy feedback -->
-      <div id="copy-feedback" class="hidden text-center text-sm text-success mb-6">
-        <Icon name="check" size={16} class="inline mr-1" />
+      <div id="copy-feedback" class="hidden text-center text-xs sm:text-sm text-success mb-4 sm:mb-6">
+        <Icon name="check" size={14} class="inline mr-1 sm:w-4 sm:h-4" />
         Copied to clipboard!
       </div>
 
       <!-- Additional links -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm">
         <a
           href="https://github.com/meysam81/oneoff/releases"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center gap-2 text-fg-secondary hover:text-accent-primary transition-colors"
+          class="flex items-center gap-1.5 sm:gap-2 text-fg-secondary hover:text-accent-primary transition-colors"
         >
-          <Icon name="external" size={16} />
+          <Icon name="external" size={14} class="sm:w-4 sm:h-4" />
           View all releases
         </a>
         <span class="text-fg-muted hidden sm:inline">|</span>
@@ -105,9 +105,9 @@ const platforms = [
           href="https://github.com/meysam81/oneoff#installation"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center gap-2 text-fg-secondary hover:text-accent-primary transition-colors"
+          class="flex items-center gap-1.5 sm:gap-2 text-fg-secondary hover:text-accent-primary transition-colors"
         >
-          <Icon name="github" size={16} />
+          <Icon name="github" size={14} class="sm:w-4 sm:h-4" />
           Installation docs
         </a>
       </div>

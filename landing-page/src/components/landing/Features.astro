@@ -51,144 +51,144 @@ const features = [
 
 <section class="section bg-bg-primary" id="features">
   <Container size="xl">
-    <div class="section-header">
-      <h2 class="section-title">Everything you need,<br />nothing you don't</h2>
-      <p class="section-subtitle">
+    <div class="section-header px-2 sm:px-0">
+      <h2 class="section-title text-2xl sm:text-3xl md:text-headline">Everything you need,<br class="hidden sm:block" /><span class="sm:hidden"> </span>nothing you don't</h2>
+      <p class="section-subtitle text-sm sm:text-base">
         Built for developers who want to get things done without wrestling with infrastructure.
       </p>
     </div>
 
     <!-- Bento Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-fr px-2 sm:px-0">
       <!-- Single Binary - Large -->
-      <Card variant="accent" class="lg:col-span-2 lg:row-span-2 flex flex-col">
+      <Card variant="accent" class="sm:col-span-2 lg:col-span-2 lg:row-span-2 flex flex-col">
         <div class="flex-1">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="p-3 bg-accent-primary/10 rounded-xl">
-              <Icon name="package" size={28} class="text-accent-primary" />
+          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div class="p-2 sm:p-3 bg-accent-primary/10 rounded-lg sm:rounded-xl">
+              <Icon name="package" size={24} class="text-accent-primary sm:w-7 sm:h-7" />
             </div>
-            <h3 class="text-xl font-display font-semibold text-fg-primary">Single Binary</h3>
+            <h3 class="text-lg sm:text-xl font-display font-semibold text-fg-primary">Single Binary</h3>
           </div>
-          <p class="text-fg-secondary leading-relaxed mb-6">
+          <p class="text-fg-secondary leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
             Zero dependencies. No Redis. No Postgres. No Docker required to run.
-            Just one executable with SQLite built-in. Download it. Run it. Done.
+            Just one executable with SQLite built-in. <span class="hidden sm:inline">Download it. Run it. Done.</span>
           </p>
 
           <!-- Visual representation -->
-          <div class="bg-bg-tertiary rounded-xl p-4 border border-border-subtle">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-accent-primary/20 rounded-lg flex items-center justify-center">
-                <span class="text-2xl">📦</span>
+          <div class="bg-bg-tertiary rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border-subtle">
+            <div class="flex items-center gap-2 sm:gap-3">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-accent-primary/20 rounded-lg flex items-center justify-center">
+                <span class="text-xl sm:text-2xl">📦</span>
               </div>
               <div>
                 <div class="font-mono text-sm text-fg-primary">oneoff</div>
                 <div class="text-xs text-fg-muted">{binarySize} • Self-contained</div>
               </div>
             </div>
-            <div class="mt-4 flex items-center gap-2 text-xs text-fg-muted">
-              <span class="px-2 py-1 bg-bg-secondary rounded">Linux</span>
-              <span class="px-2 py-1 bg-bg-secondary rounded">macOS</span>
-              <span class="px-2 py-1 bg-bg-secondary rounded">Windows</span>
+            <div class="mt-3 sm:mt-4 flex items-center gap-1.5 sm:gap-2 text-xs text-fg-muted">
+              <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-bg-secondary rounded">Linux</span>
+              <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-bg-secondary rounded">macOS</span>
+              <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-bg-secondary rounded">Windows</span>
             </div>
           </div>
         </div>
       </Card>
 
       <!-- Three Job Types - Medium -->
-      <Card variant="accent" class="lg:col-span-2">
-        <div class="flex items-center gap-3 mb-4">
-          <h3 class="text-lg font-display font-semibold text-fg-primary">Three Job Types</h3>
+      <Card variant="accent" class="sm:col-span-2 lg:col-span-2">
+        <div class="flex items-center gap-3 mb-3 sm:mb-4">
+          <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">Three Job Types</h3>
         </div>
-        <p class="text-fg-secondary text-sm mb-4">
+        <p class="text-fg-secondary text-xs sm:text-sm mb-3 sm:mb-4">
           HTTP webhooks, shell scripts, Docker containers. Cover 99% of automation needs.
         </p>
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-2 px-3 py-2 bg-bg-tertiary rounded-lg">
-            <Icon name="globe" size={18} class="text-accent-primary" />
-            <span class="text-sm text-fg-secondary">HTTP</span>
+        <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+          <div class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-bg-tertiary rounded-lg">
+            <Icon name="globe" size={16} class="text-accent-primary sm:w-[18px] sm:h-[18px]" />
+            <span class="text-xs sm:text-sm text-fg-secondary">HTTP</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 bg-bg-tertiary rounded-lg">
-            <Icon name="terminal" size={18} class="text-success" />
-            <span class="text-sm text-fg-secondary">Shell</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-bg-tertiary rounded-lg">
+            <Icon name="terminal" size={16} class="text-success sm:w-[18px] sm:h-[18px]" />
+            <span class="text-xs sm:text-sm text-fg-secondary">Shell</span>
           </div>
-          <div class="flex items-center gap-2 px-3 py-2 bg-bg-tertiary rounded-lg">
-            <Icon name="container" size={18} class="text-warning" />
-            <span class="text-sm text-fg-secondary">Docker</span>
+          <div class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-bg-tertiary rounded-lg">
+            <Icon name="container" size={16} class="text-warning sm:w-[18px] sm:h-[18px]" />
+            <span class="text-xs sm:text-sm text-fg-secondary">Docker</span>
           </div>
         </div>
       </Card>
 
       <!-- Priority Queue - Small -->
       <Card variant="accent">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 bg-bg-tertiary rounded-lg">
-            <Icon name="layers" size={20} class="text-accent-primary" />
+        <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+            <Icon name="layers" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
           </div>
-          <h3 class="text-base font-display font-semibold text-fg-primary">Priority Queue</h3>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Priority Queue</h3>
         </div>
-        <p class="text-fg-secondary text-sm">10 priority levels. Critical jobs always run first.</p>
+        <p class="text-fg-secondary text-xs sm:text-sm">10 priority levels. Critical jobs always run first.</p>
       </Card>
 
       <!-- Job Chaining - Small -->
       <Card variant="accent">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 bg-bg-tertiary rounded-lg">
-            <Icon name="link" size={20} class="text-accent-primary" />
+        <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+            <Icon name="link" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
           </div>
-          <h3 class="text-base font-display font-semibold text-fg-primary">Job Chaining</h3>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Job Chaining</h3>
         </div>
-        <p class="text-fg-secondary text-sm">Sequence jobs together. Build simple workflows.</p>
+        <p class="text-fg-secondary text-xs sm:text-sm">Sequence jobs together. Build simple workflows.</p>
       </Card>
 
       <!-- Modern UI - Large with Screenshot -->
-      <Card variant="accent" padding="none" class="lg:col-span-2 lg:row-span-2 overflow-hidden">
-        <div class="p-6 pb-0">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="p-2 bg-bg-tertiary rounded-lg">
-              <Icon name="server" size={20} class="text-accent-primary" />
+      <Card variant="accent" padding="none" class="sm:col-span-2 lg:col-span-2 lg:row-span-2 overflow-hidden">
+        <div class="p-4 sm:p-6 pb-0">
+          <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+            <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+              <Icon name="server" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
             </div>
-            <h3 class="text-lg font-display font-semibold text-fg-primary">Modern UI</h3>
+            <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">Modern UI</h3>
           </div>
-          <p class="text-fg-secondary text-sm mb-4">
+          <p class="text-fg-secondary text-xs sm:text-sm mb-3 sm:mb-4">
             Dark-mode-first interface. Real-time worker monitoring. Full execution history.
           </p>
         </div>
 
         <!-- UI Preview -->
-        <div class="relative mt-2">
+        <div class="relative mt-1 sm:mt-2">
           <div class="absolute inset-0 bg-gradient-to-t from-bg-secondary via-transparent to-transparent z-10"></div>
-          <div class="bg-bg-tertiary rounded-t-xl mx-4 p-4 border-t border-x border-border-subtle">
+          <div class="bg-bg-tertiary rounded-t-lg sm:rounded-t-xl mx-3 sm:mx-4 p-3 sm:p-4 border-t border-x border-border-subtle">
             <!-- Mock UI -->
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-success"></div>
-                <span class="text-xs text-fg-muted">3 workers active</span>
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+              <div class="flex items-center gap-1.5 sm:gap-2">
+                <div class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-success"></div>
+                <span class="text-[10px] sm:text-xs text-fg-muted">3 workers active</span>
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-xs px-2 py-1 bg-accent-primary/10 text-accent-primary rounded">12 jobs scheduled</span>
+                <span class="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-accent-primary/10 text-accent-primary rounded">12 scheduled</span>
               </div>
             </div>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between p-2 bg-bg-secondary rounded">
-                <div class="flex items-center gap-2">
-                  <Icon name="globe" size={14} class="text-accent-primary" />
-                  <span class="text-xs text-fg-primary">Send Slack notification</span>
+            <div class="space-y-1.5 sm:space-y-2">
+              <div class="flex items-center justify-between p-1.5 sm:p-2 bg-bg-secondary rounded">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                  <Icon name="globe" size={12} class="text-accent-primary sm:w-[14px] sm:h-[14px]" />
+                  <span class="text-[10px] sm:text-xs text-fg-primary truncate max-w-[100px] sm:max-w-none">Slack notification</span>
                 </div>
-                <span class="text-xs text-success">Completed</span>
+                <span class="text-[10px] sm:text-xs text-success">Done</span>
               </div>
-              <div class="flex items-center justify-between p-2 bg-bg-secondary rounded">
-                <div class="flex items-center gap-2">
-                  <Icon name="terminal" size={14} class="text-success" />
-                  <span class="text-xs text-fg-primary">Database backup</span>
+              <div class="flex items-center justify-between p-1.5 sm:p-2 bg-bg-secondary rounded">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                  <Icon name="terminal" size={12} class="text-success sm:w-[14px] sm:h-[14px]" />
+                  <span class="text-[10px] sm:text-xs text-fg-primary truncate max-w-[100px] sm:max-w-none">DB backup</span>
                 </div>
-                <span class="text-xs text-warning">Running</span>
+                <span class="text-[10px] sm:text-xs text-warning">Running</span>
               </div>
-              <div class="flex items-center justify-between p-2 bg-bg-secondary rounded">
-                <div class="flex items-center gap-2">
-                  <Icon name="container" size={14} class="text-warning" />
-                  <span class="text-xs text-fg-primary">Clean Docker images</span>
+              <div class="flex items-center justify-between p-1.5 sm:p-2 bg-bg-secondary rounded">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                  <Icon name="container" size={12} class="text-warning sm:w-[14px] sm:h-[14px]" />
+                  <span class="text-[10px] sm:text-xs text-fg-primary truncate max-w-[100px] sm:max-w-none">Clean Docker</span>
                 </div>
-                <span class="text-xs text-fg-muted">Scheduled</span>
+                <span class="text-[10px] sm:text-xs text-fg-muted">Queued</span>
               </div>
             </div>
           </div>
@@ -196,18 +196,18 @@ const features = [
       </Card>
 
       <!-- Project Organization - Small -->
-      <Card variant="accent" class="lg:col-span-2">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 bg-bg-tertiary rounded-lg">
-            <Icon name="folder" size={20} class="text-accent-primary" />
+      <Card variant="accent" class="sm:col-span-2 lg:col-span-2">
+        <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+          <div class="p-1.5 sm:p-2 bg-bg-tertiary rounded-lg">
+            <Icon name="folder" size={18} class="text-accent-primary sm:w-5 sm:h-5" />
           </div>
-          <h3 class="text-base font-display font-semibold text-fg-primary">Project Organization</h3>
+          <h3 class="text-sm sm:text-base font-display font-semibold text-fg-primary">Project Organization</h3>
         </div>
-        <p class="text-fg-secondary text-sm mb-3">Group jobs by project. Add tags. Stay organized.</p>
-        <div class="flex flex-wrap gap-2">
-          <span class="px-2 py-1 text-xs bg-accent-primary/10 text-accent-primary rounded-full">#production</span>
-          <span class="px-2 py-1 text-xs bg-success/10 text-success rounded-full">#backup</span>
-          <span class="px-2 py-1 text-xs bg-warning/10 text-warning rounded-full">#alerts</span>
+        <p class="text-fg-secondary text-xs sm:text-sm mb-2 sm:mb-3">Group jobs by project. Add tags. Stay organized.</p>
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-accent-primary/10 text-accent-primary rounded-full">#production</span>
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-success/10 text-success rounded-full">#backup</span>
+          <span class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-warning/10 text-warning rounded-full">#alerts</span>
         </div>
       </Card>
     </div>

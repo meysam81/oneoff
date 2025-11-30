@@ -25,23 +25,29 @@ const tools = [
 
 <section class="section bg-bg-primary" id="comparison">
   <Container size="xl">
-    <div class="section-header">
-      <h2 class="section-title">How OneOff compares</h2>
-      <p class="section-subtitle">
+    <div class="section-header px-2 sm:px-0">
+      <h2 class="section-title text-2xl sm:text-3xl md:text-headline">How OneOff compares</h2>
+      <p class="section-subtitle text-sm sm:text-base">
         The right tool for the job. OneOff fills the gap between basic utilities and enterprise solutions.
       </p>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="comparison-table w-full min-w-[640px]">
+    <!-- Mobile scroll hint -->
+    <div class="flex items-center justify-center gap-2 text-xs text-fg-muted mb-3 sm:hidden px-2">
+      <Icon name="arrowRight" size={12} />
+      <span>Scroll to see all tools</span>
+    </div>
+
+    <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin" role="region" aria-label="Comparison table: OneOff vs other tools">
+      <table class="comparison-table w-full min-w-[500px] sm:min-w-[640px]">
         <thead>
           <tr>
-            <th class="text-left">Feature</th>
+            <th class="text-left text-xs sm:text-sm">Feature</th>
             {tools.map(tool => (
               <th class={`text-center ${tool.highlight ? 'bg-accent-primary/5' : ''}`}>
-                <div class="flex flex-col items-center gap-1">
-                  <span class={tool.highlight ? 'text-accent-primary font-semibold' : ''}>{tool.name}</span>
-                  <span class="text-xs font-normal text-fg-muted">{tool.description}</span>
+                <div class="flex flex-col items-center gap-0.5 sm:gap-1">
+                  <span class={`text-xs sm:text-sm ${tool.highlight ? 'text-accent-primary font-semibold' : ''}`}>{tool.name}</span>
+                  <span class="text-[10px] sm:text-xs font-normal text-fg-muted">{tool.description}</span>
                 </div>
               </th>
             ))}
@@ -50,49 +56,49 @@ const tools = [
         <tbody>
           {features.map(feature => (
             <tr>
-              <td class="font-medium text-fg-primary">{feature.name}</td>
+              <td class="font-medium text-fg-primary text-xs sm:text-sm whitespace-nowrap">{feature.name}</td>
               <td class="text-center">
                 {typeof feature.at === 'boolean' ? (
                   feature.at ? (
-                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                    <Icon name="check" size={16} class="mx-auto text-accent-primary sm:w-[18px] sm:h-[18px]" />
                   ) : (
-                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                    <Icon name="x" size={16} class="mx-auto text-fg-muted/50 sm:w-[18px] sm:h-[18px]" />
                   )
                 ) : (
-                  <span class="text-fg-secondary text-sm">{feature.at}</span>
+                  <span class="text-fg-secondary text-[10px] sm:text-sm">{feature.at}</span>
                 )}
               </td>
               <td class="text-center">
                 {typeof feature.cron === 'boolean' ? (
                   feature.cron ? (
-                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                    <Icon name="check" size={16} class="mx-auto text-accent-primary sm:w-[18px] sm:h-[18px]" />
                   ) : (
-                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                    <Icon name="x" size={16} class="mx-auto text-fg-muted/50 sm:w-[18px] sm:h-[18px]" />
                   )
                 ) : (
-                  <span class="text-fg-secondary text-sm">{feature.cron}</span>
+                  <span class="text-fg-secondary text-[10px] sm:text-sm">{feature.cron}</span>
                 )}
               </td>
               <td class="text-center">
                 {typeof feature.airflow === 'boolean' ? (
                   feature.airflow ? (
-                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                    <Icon name="check" size={16} class="mx-auto text-accent-primary sm:w-[18px] sm:h-[18px]" />
                   ) : (
-                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                    <Icon name="x" size={16} class="mx-auto text-fg-muted/50 sm:w-[18px] sm:h-[18px]" />
                   )
                 ) : (
-                  <span class="text-fg-secondary text-sm">{feature.airflow}</span>
+                  <span class="text-fg-secondary text-[10px] sm:text-sm">{feature.airflow}</span>
                 )}
               </td>
               <td class="text-center bg-accent-primary/5">
                 {typeof feature.oneoff === 'boolean' ? (
                   feature.oneoff ? (
-                    <Icon name="check" size={18} class="mx-auto text-accent-primary" />
+                    <Icon name="check" size={16} class="mx-auto text-accent-primary sm:w-[18px] sm:h-[18px]" />
                   ) : (
-                    <Icon name="x" size={18} class="mx-auto text-fg-muted/50" />
+                    <Icon name="x" size={16} class="mx-auto text-fg-muted/50 sm:w-[18px] sm:h-[18px]" />
                   )
                 ) : (
-                  <span class="text-accent-primary font-medium text-sm">{feature.oneoff}</span>
+                  <span class="text-accent-primary font-medium text-[10px] sm:text-sm">{feature.oneoff}</span>
                 )}
               </td>
             </tr>
@@ -102,10 +108,10 @@ const tools = [
     </div>
 
     <!-- Summary -->
-    <div class="mt-12 text-center">
-      <p class="text-fg-secondary">
+    <div class="mt-8 sm:mt-12 text-center px-2 sm:px-0">
+      <p class="text-fg-secondary text-sm sm:text-base">
         <span class="text-accent-primary font-semibold">OneOff</span> gives you the simplicity of
-        <code class="bg-bg-tertiary px-1.5 py-0.5 rounded text-sm">at</code> with the features of enterprise schedulers.
+        <code class="bg-bg-tertiary px-1 sm:px-1.5 py-0.5 rounded text-xs sm:text-sm">at</code> with the features of enterprise schedulers.
       </p>
     </div>
   </Container>
@@ -114,7 +120,7 @@ const tools = [
 <style>
   .comparison-table th,
   .comparison-table td {
-    @apply px-4 py-4 border-b border-border-subtle;
+    @apply px-2 py-2 sm:px-4 sm:py-4 border-b border-border-subtle;
   }
 
   .comparison-table thead th {
@@ -127,5 +133,17 @@ const tools = [
 
   .comparison-table tbody tr:last-child td {
     @apply border-b-0;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-bg-secondary;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-fg-muted/30 rounded-full;
   }
 </style>

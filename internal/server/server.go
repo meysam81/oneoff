@@ -9,11 +9,13 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/meysam81/oneoff/internal/config"
 	"github.com/meysam81/oneoff/internal/domain"
 	"github.com/meysam81/oneoff/internal/handler"
 	"github.com/meysam81/oneoff/internal/jobs"
+	"github.com/meysam81/oneoff/internal/metrics"
 	"github.com/meysam81/oneoff/internal/repository"
 	"github.com/meysam81/oneoff/internal/service"
 	"github.com/meysam81/oneoff/internal/worker"
@@ -25,10 +27,14 @@ var distFS embed.FS
 
 // Server represents the HTTP server
 type Server struct {
-	httpServer *http.Server
-	config     *config.Config
-	repo       repository.Repository
-	pool       *worker.Pool
+	httpServer       *http.Server
+	config           *config.Config
+	repo             repository.Repository
+	pool             *worker.Pool
+	apiKeyService    *service.APIKeyService
+	webhookService   *service.WebhookService
+	authMiddleware   *AuthMiddleware
+	metricsCollector metrics.Collector
 }
 
 // New creates a new server instance
@@ -51,6 +57,30 @@ func New(cfg *config.Config) (*Server, error) {
 
 	// Initialize worker pool
 	pool := worker.NewPool(cfg.WorkersCount, repo, registry)
+	pool.SetLogRetention(cfg.LogRetentionDays)
+
+	// Initialize webhook service early (needed for pool callback)
+	webhookService := service.NewWebhookService(repo)
+
+	// Wire up webhook events from worker pool
+	pool.SetJobEventCallback(func(ctx context.Context, event domain.WebhookEvent) {
+		webhookService.Dispatch(ctx, event)
+	})
+
+	// Initialize metrics collector (early, needed for pool callback)
+	var metricsCollector metrics.Collector
+	if cfg.MetricsEnabled {
+		metricsCollector = metrics.NewCollector()
+		metricsCollector.SetTotalWorkers(cfg.WorkersCount)
+		// Wire up metrics from worker pool
+		pool.SetMetricsCallback(func(jobType, status string, duration time.Duration) {
+			metricsCollector.IncJobsTotal(jobType, status)
+			metricsCollector.ObserveJobDuration(jobType, duration)
+		})
+		log.Info().Msg("Prometheus metrics enabled at /metrics")
+	} else {
+		metricsCollector = &metrics.NoopCollector{}
+	}
 
 	// Initialize services
 	jobService := service.NewJobService(repo, registry, pool)
@@ -58,34 +88,65 @@ func New(cfg *config.Config) (*Server, error) {
 	projectService := service.NewProjectService(repo)
 	tagService := service.NewTagService(repo)
 	systemService := service.NewSystemService(repo, pool)
+	apiKeyService := service.NewAPIKeyService(repo)
+	chainService := service.NewChainService(repo, jobService)
+	// Note: webhookService initialized earlier for pool callback
 
 	// Initialize handlers
 	h := handler.NewHandler(jobService, executionService, projectService, tagService, systemService)
+	apiKeyHandler := handler.NewAPIKeyHandler(apiKeyService)
+	webhookHandler := handler.NewWebhookHandler(webhookService)
+	chainHandler := handler.NewChainHandler(chainService)
+
+	// Initialize auth middleware
+	authConfig := DefaultAuthConfig()
+	authConfig.Enabled = cfg.AuthEnabled
+	authMiddleware := NewAuthMiddleware(apiKeyService, authConfig)
 
 	// Setup router
 	mux := http.NewServeMux()
-	setupRoutes(mux, h)
+	setupRoutes(mux, h, apiKeyHandler, webhookHandler, chainHandler, metricsCollector)
+
+	// Build middleware chain: CORS -> Logging -> Metrics -> Auth -> Handler
+	var finalHandler http.Handler = mux
+	finalHandler = authMiddleware.Middleware(finalHandler)
+	if cfg.MetricsEnabled {
+		metricsMiddleware := NewMetricsMiddleware(metricsCollector)
+		finalHandler = metricsMiddleware.Middleware(finalHandler)
+	}
+	finalHandler = loggingMiddleware(finalHandler)
+	finalHandler = corsMiddleware(finalHandler)
 
 	// Create HTTP server
 	httpServer := &http.Server{
 		Addr:    cfg.Address(),
-		Handler: corsMiddleware(loggingMiddleware(mux)),
+		Handler: finalHandler,
 	}
 
 	server := &Server{
-		httpServer: httpServer,
-		config:     cfg,
-		repo:       repo,
-		pool:       pool,
+		httpServer:       httpServer,
+		config:           cfg,
+		repo:             repo,
+		pool:             pool,
+		apiKeyService:    apiKeyService,
+		webhookService:   webhookService,
+		authMiddleware:   authMiddleware,
+		metricsCollector: metricsCollector,
 	}
+
+	log.Info().Bool("auth_enabled", cfg.AuthEnabled).Msg("Authentication configuration")
 
 	return server, nil
 }
 
 // Start starts the server
 func (s *Server) Start() error {
-	// Start worker pool
 	ctx := context.Background()
+
+	// Start webhook service
+	s.webhookService.Start(ctx)
+
+	// Start worker pool
 	if err := s.pool.Start(ctx); err != nil {
 		return fmt.Errorf("failed to start worker pool: %w", err)
 	}
@@ -102,6 +163,9 @@ func (s *Server) Start() error {
 // Shutdown gracefully shuts down the server
 func (s *Server) Shutdown(ctx context.Context) error {
 	log.Info().Msg("Shutting down server")
+
+	// Stop webhook service
+	s.webhookService.Stop()
 
 	// Stop worker pool
 	if err := s.pool.Stop(ctx); err != nil {
@@ -124,7 +188,138 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 // setupRoutes configures all HTTP routes
-func setupRoutes(mux *http.ServeMux, h *handler.Handler) {
+func setupRoutes(mux *http.ServeMux, h *handler.Handler, apiKeyHandler *handler.APIKeyHandler, webhookHandler *handler.WebhookHandler, chainHandler *handler.ChainHandler, metricsCollector metrics.Collector) {
+	// Metrics endpoint (no auth required for Prometheus scraping)
+	mux.Handle("/metrics", metricsCollector.Handler())
+
+	// Health check endpoint
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	})
+
+	// Webhook routes
+	mux.HandleFunc("/api/webhooks", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			webhookHandler.ListWebhooks(w, r)
+		case http.MethodPost:
+			webhookHandler.CreateWebhook(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/webhooks/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if strings.HasSuffix(path, "/test") {
+			if r.Method == http.MethodPost {
+				webhookHandler.TestWebhook(w, r)
+				return
+			}
+		}
+		if strings.HasSuffix(path, "/deliveries") {
+			if r.Method == http.MethodGet {
+				webhookHandler.ListDeliveries(w, r)
+				return
+			}
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			webhookHandler.GetWebhook(w, r)
+		case http.MethodPatch:
+			webhookHandler.UpdateWebhook(w, r)
+		case http.MethodDelete:
+			webhookHandler.DeleteWebhook(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/webhook-events", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			webhookHandler.GetWebhookEvents(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// API Key routes
+	mux.HandleFunc("/api/api-keys", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			apiKeyHandler.ListAPIKeys(w, r)
+		case http.MethodPost:
+			apiKeyHandler.CreateAPIKey(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/api-keys/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if strings.HasSuffix(path, "/revoke") {
+			if r.Method == http.MethodPost {
+				apiKeyHandler.RevokeAPIKey(w, r)
+				return
+			}
+		}
+		if strings.HasSuffix(path, "/rotate") {
+			if r.Method == http.MethodPost {
+				apiKeyHandler.RotateAPIKey(w, r)
+				return
+			}
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			apiKeyHandler.GetAPIKey(w, r)
+		case http.MethodPatch:
+			apiKeyHandler.UpdateAPIKey(w, r)
+		case http.MethodDelete:
+			apiKeyHandler.DeleteAPIKey(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Chain routes
+	mux.HandleFunc("/api/chains", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			chainHandler.ListChains(w, r)
+		case http.MethodPost:
+			chainHandler.CreateChain(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	mux.HandleFunc("/api/chains/", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if strings.HasSuffix(path, "/execute") {
+			if r.Method == http.MethodPost {
+				chainHandler.ExecuteChain(w, r)
+				return
+			} else {
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+				return
+			}
+		}
+
+		switch r.Method {
+		case http.MethodGet:
+			chainHandler.GetChain(w, r)
+		case http.MethodPatch:
+			chainHandler.UpdateChain(w, r)
+		case http.MethodDelete:
+			chainHandler.DeleteChain(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	// API routes
 	// Jobs
 	mux.HandleFunc("/api/jobs", func(w http.ResponseWriter, r *http.Request) {

@@ -13,47 +13,48 @@ const { binarySize } = await getGitHubData();
   <div class="absolute inset-0 grid-bg opacity-30"></div>
 
   <Container size="lg" class="relative z-10">
-    <div class="text-center">
+    <div class="text-center px-2 sm:px-0">
       <!-- Decorative icon -->
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent-primary/10 mb-8">
-        <Icon name="zap" size={32} class="text-accent-primary" />
+      <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-accent-primary/10 mb-6 sm:mb-8">
+        <Icon name="zap" size={24} class="text-accent-primary sm:w-8 sm:h-8" />
       </div>
 
-      <h2 class="text-headline font-display font-bold text-fg-primary mb-4">
+      <h2 class="text-xl sm:text-2xl md:text-headline font-display font-bold text-fg-primary mb-3 sm:mb-4">
         Ready to simplify your job scheduling?
       </h2>
 
-      <p class="text-lg text-fg-secondary max-w-2xl mx-auto mb-10">
+      <p class="text-sm sm:text-base md:text-lg text-fg-secondary max-w-2xl mx-auto mb-8 sm:mb-10">
         Join developers who've ditched complex infrastructure for a single binary.
         Download OneOff and schedule your first job in under a minute.
       </p>
 
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <Button href="#installation" size="lg">
-          <Icon name="download" size={20} />
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 sm:px-0">
+        <Button href="#installation" size="lg" class="w-full sm:w-auto justify-center">
+          <Icon name="download" size={18} class="sm:w-5 sm:h-5" />
           Download OneOff
         </Button>
-        <Button href="/catalog" variant="secondary" size="lg">
-          Browse Job Templates
-          <Icon name="arrowRight" size={16} />
+        <Button href="/catalog" variant="secondary" size="lg" class="w-full sm:w-auto justify-center">
+          <span class="sm:hidden">Job Templates</span>
+          <span class="hidden sm:inline">Browse Job Templates</span>
+          <Icon name="arrowRight" size={14} class="sm:w-4 sm:h-4" />
         </Button>
       </div>
 
       <!-- Social proof -->
-      <div class="mt-12 pt-8 border-t border-border-subtle">
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-fg-muted">
-          <div class="flex items-center gap-2">
-            <Icon name="github" size={18} />
-            <span>Open Source • Apache-2.0 License</span>
+      <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border-subtle">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-fg-muted">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <Icon name="github" size={16} class="sm:w-[18px] sm:h-[18px]" />
+            <span>Open Source • Apache-2.0</span>
           </div>
           <div class="hidden sm:block w-1 h-1 rounded-full bg-fg-muted"></div>
-          <div class="flex items-center gap-2">
-            <Icon name="shield" size={18} />
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <Icon name="shield" size={16} class="sm:w-[18px] sm:h-[18px]" />
             <span>Self-hosted • Your data stays yours</span>
           </div>
           <div class="hidden sm:block w-1 h-1 rounded-full bg-fg-muted"></div>
-          <div class="flex items-center gap-2">
-            <Icon name="package" size={18} />
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <Icon name="package" size={16} class="sm:w-[18px] sm:h-[18px]" />
             <span>Single Binary • {binarySize}</span>
           </div>
         </div>

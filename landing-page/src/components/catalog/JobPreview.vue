@@ -65,24 +65,24 @@ function formatDate(dateStr: string) {
 </script>
 
 <template>
-  <div class="job-preview grid lg:grid-cols-2 gap-8">
+  <div class="job-preview grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
     <!-- Left: Code Preview -->
     <div class="order-2 lg:order-1">
       <div
-        class="bg-bg-secondary rounded-xl border border-border-subtle overflow-hidden"
+        class="bg-bg-secondary rounded-lg sm:rounded-xl border border-border-subtle overflow-hidden"
       >
         <div
-          class="flex items-center justify-between px-4 py-3 bg-bg-tertiary border-b border-border-subtle"
+          class="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 bg-bg-tertiary border-b border-border-subtle"
         >
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-error/80"></span>
-            <span class="w-3 h-3 rounded-full bg-warning/80"></span>
-            <span class="w-3 h-3 rounded-full bg-success/80"></span>
-            <span class="text-xs text-fg-muted ml-2">job-config.json</span>
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-error/80"></span>
+            <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-warning/80"></span>
+            <span class="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-success/80"></span>
+            <span class="text-[10px] sm:text-xs text-fg-muted ml-1 sm:ml-2">job-config.json</span>
           </div>
           <button
             @click="copyConfig"
-            class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-200"
+            class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium rounded-lg transition-all duration-200"
             :class="
               copied
                 ? 'bg-success/10 text-success'
@@ -92,7 +92,7 @@ function formatDate(dateStr: string) {
           >
             <svg
               v-if="!copied"
-              class="w-4 h-4"
+              class="w-3 h-3 sm:w-4 sm:h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -106,7 +106,7 @@ function formatDate(dateStr: string) {
             </svg>
             <svg
               v-else
-              class="w-4 h-4"
+              class="w-3 h-3 sm:w-4 sm:h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -118,30 +118,31 @@ function formatDate(dateStr: string) {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            {{ copied ? "Copied!" : "Copy config" }}
+            <span class="xs:inline">{{ copied ? "Copied!" : "Copy config" }}</span>
+            <span class="xs:hidden">{{ copied ? "Copied!" : "Copy" }}</span>
           </button>
         </div>
         <pre
-          class="p-4 overflow-x-auto text-sm font-mono text-fg-secondary"
+          class="p-3 sm:p-4 overflow-x-auto text-[10px] sm:text-sm font-mono text-fg-secondary"
         ><code>{{ configJson }}</code></pre>
       </div>
 
       <!-- Import instructions -->
       <div
-        class="mt-6 bg-bg-secondary rounded-xl border border-border-subtle p-4"
+        class="mt-4 sm:mt-6 bg-bg-secondary rounded-lg sm:rounded-xl border border-border-subtle p-3 sm:p-4"
       >
-        <h4 class="text-sm font-semibold text-fg-primary mb-3">
+        <h4 class="text-xs sm:text-sm font-semibold text-fg-primary mb-2 sm:mb-3">
           Import via API
         </h4>
         <div
-          class="bg-bg-tertiary rounded-lg p-3 font-mono text-xs text-fg-secondary overflow-x-auto"
+          class="bg-bg-tertiary rounded-lg p-2 sm:p-3 font-mono text-[10px] sm:text-xs text-fg-secondary overflow-x-auto"
         >
           <code
             >curl -X POST http://localhost:8080/api/jobs -H "Content-Type:
             application/json" -d '{{ JSON.stringify(template.job) }}'</code
           >
         </div>
-        <p class="text-xs text-fg-muted mt-3">
+        <p class="text-[10px] sm:text-xs text-fg-muted mt-2 sm:mt-3">
           Or copy the config above and create the job manually via the web UI.
         </p>
       </div>
@@ -149,25 +150,25 @@ function formatDate(dateStr: string) {
 
     <!-- Right: Metadata -->
     <div class="order-1 lg:order-2">
-      <div class="space-y-6">
+      <div class="space-y-4 sm:space-y-6">
         <!-- Title -->
         <div>
-          <h1 class="text-2xl font-display font-bold text-fg-primary mb-2">
+          <h1 class="text-xl sm:text-2xl font-display font-bold text-fg-primary mb-1.5 sm:mb-2">
             {{ template.name }}
           </h1>
-          <p class="text-fg-secondary leading-relaxed">
+          <p class="text-fg-secondary leading-relaxed text-sm sm:text-base">
             {{ template.description }}
           </p>
         </div>
 
         <!-- Metadata cards -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-4">
           <div
-            class="bg-bg-secondary rounded-lg border border-border-subtle p-4"
+            class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
           >
-            <span class="text-xs text-fg-muted block mb-1">Job Type</span>
+            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1">Job Type</span>
             <span
-              class="inline-flex items-center px-2 py-1 text-sm font-medium rounded-full border"
+              class="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm font-medium rounded-full border"
               :class="
                 jobTypeColors[template.job.type] ||
                 'text-fg-secondary bg-bg-tertiary border-border-subtle'
@@ -177,23 +178,23 @@ function formatDate(dateStr: string) {
             </span>
           </div>
           <div
-            class="bg-bg-secondary rounded-lg border border-border-subtle p-4"
+            class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4"
           >
-            <span class="text-xs text-fg-muted block mb-1">Category</span>
-            <span class="text-sm text-fg-primary font-medium">
+            <span class="text-[10px] sm:text-xs text-fg-muted block mb-1">Category</span>
+            <span class="text-xs sm:text-sm text-fg-primary font-medium">
               {{ categoryLabels[template.category] || template.category }}
             </span>
           </div>
         </div>
 
         <!-- Tags -->
-        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-4">
-          <span class="text-xs text-fg-muted block mb-2">Tags</span>
-          <div class="flex flex-wrap gap-2">
+        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4">
+          <span class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2">Tags</span>
+          <div class="flex flex-wrap gap-1.5 sm:gap-2">
             <span
               v-for="tag in template.tags"
               :key="tag"
-              class="px-2 py-1 text-xs bg-bg-tertiary text-fg-secondary rounded-full"
+              class="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-bg-tertiary text-fg-secondary rounded-full"
             >
               #{{ tag }}
             </span>
@@ -201,25 +202,25 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Author -->
-        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-4">
-          <span class="text-xs text-fg-muted block mb-2">Author</span>
+        <div class="bg-bg-secondary rounded-lg border border-border-subtle p-3 sm:p-4">
+          <span class="text-[10px] sm:text-xs text-fg-muted block mb-1.5 sm:mb-2">Author</span>
           <a
             :href="`https://github.com/${template.author.github}`"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center gap-3 hover:text-accent-primary transition-colors"
+            class="flex items-center gap-2 sm:gap-3 hover:text-accent-primary transition-colors"
           >
             <img
               :src="`https://github.com/${template.author.github}.png?size=40`"
               :alt="template.author.name"
-              class="w-10 h-10 rounded-full bg-bg-tertiary"
+              class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-bg-tertiary"
               loading="lazy"
             />
             <div>
-              <span class="text-sm font-medium text-fg-primary block">{{
+              <span class="text-xs sm:text-sm font-medium text-fg-primary block">{{
                 template.author.name
               }}</span>
-              <span class="text-xs text-fg-muted"
+              <span class="text-[10px] sm:text-xs text-fg-muted"
                 >@{{ template.author.github }}</span
               >
             </div>
@@ -227,7 +228,7 @@ function formatDate(dateStr: string) {
         </div>
 
         <!-- Created date -->
-        <div class="text-sm text-fg-muted">
+        <div class="text-xs sm:text-sm text-fg-muted">
           Added on {{ formatDate(template.created_at) }}
         </div>
       </div>

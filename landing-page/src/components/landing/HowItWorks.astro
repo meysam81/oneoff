@@ -2,9 +2,18 @@
 import Container from '../ui/Container.astro';
 import Icon from '../icons/index.astro';
 import { getGitHubData } from '../../utils/github';
-import { getDownloadCommand, getRunCommand, getOpenCommand } from '../../utils/os-detect';
+import {
+  getAllDownloadCommands,
+  getAllRunCommands,
+  getAllOpenCommands,
+} from '../../utils/os-detect';
+import StepsCommands from '../vue/StepsCommands.vue';
 
 const { fullVersion } = await getGitHubData();
+
+const downloadCommands = getAllDownloadCommands(fullVersion);
+const runCommands = getAllRunCommands();
+const openCommands = getAllOpenCommands();
 
 const steps = [
   {
@@ -12,24 +21,21 @@ const steps = [
     title: 'Download',
     description: 'Grab the binary for your platform (Linux, macOS, Windows)',
     icon: 'download',
-    code: getDownloadCommand('linux-amd64', fullVersion),
-    codeId: 'step-download-cmd',
+    commandKey: 'download',
   },
   {
     number: '02',
     title: 'Run',
     description: 'Execute the binary — server starts in <1 second',
     icon: 'terminal',
-    code: getRunCommand('linux-amd64'),
-    codeId: 'step-run-cmd',
+    commandKey: 'run',
   },
   {
     number: '03',
     title: 'Schedule',
     description: 'Use the web UI or API to create jobs',
     icon: 'clock',
-    code: getOpenCommand('linux-amd64'),
-    codeId: 'step-open-cmd',
+    commandKey: 'open',
   },
 ];
 
@@ -97,50 +103,57 @@ const jobExamples = [
       <!-- Connection line - hidden on mobile and tablet -->
       <div class="hidden lg:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border-default to-transparent -translate-y-1/2"></div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-        {steps.map(function(step, index) {
-          return (
-            <div class="relative group">
-              <!-- Step card -->
-              <div class="bg-bg-secondary rounded-xl sm:rounded-2xl border border-border-subtle p-4 sm:p-6 transition-all duration-300 group-hover:border-accent-primary/30">
-                <div class="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  <div class="relative flex-shrink-0">
-                    <div class="w-11 h-11 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-accent-primary/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent-primary/20">
-                      <Icon name={step.icon} size={20} class="text-accent-primary sm:w-6 sm:h-6" />
+      <StepsCommands
+        client:load
+        downloadCommands={downloadCommands}
+        runCommands={runCommands}
+        openCommands={openCommands}
+      >
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8" slot="default" v-slot="{ downloadCommand, runCommand, openCommand }">
+          {steps.map(function(step, index) {
+            return (
+              <div class="relative group">
+                <div class="bg-bg-secondary rounded-xl sm:rounded-2xl border border-border-subtle p-4 sm:p-6 transition-all duration-300 group-hover:border-accent-primary/30">
+                  <div class="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                    <div class="relative flex-shrink-0">
+                      <div class="w-11 h-11 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-accent-primary/10 flex items-center justify-center transition-all duration-300 group-hover:bg-accent-primary/20">
+                        <Icon name={step.icon} size={20} class="text-accent-primary sm:w-6 sm:h-6" />
+                      </div>
+                      <span class="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-bg-tertiary border border-border-default flex items-center justify-center text-[10px] sm:text-xs font-mono text-accent-primary">
+                        {step.number}
+                      </span>
                     </div>
-                    <span class="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-bg-tertiary border border-border-default flex items-center justify-center text-[10px] sm:text-xs font-mono text-accent-primary">
-                      {step.number}
-                    </span>
+                    <div class="min-w-0 flex-1">
+                      <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{step.title}</h3>
+                      <p class="text-xs sm:text-sm text-fg-muted line-clamp-2">{step.description}</p>
+                    </div>
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-base sm:text-lg font-display font-semibold text-fg-primary">{step.title}</h3>
-                    <p class="text-xs sm:text-sm text-fg-muted line-clamp-2">{step.description}</p>
+
+                  <div class="bg-bg-tertiary rounded-lg p-2 sm:p-3 font-mono text-[10px] sm:text-xs text-fg-secondary overflow-x-auto">
+                    <code class="whitespace-nowrap" id={`step-${step.commandKey}-cmd`}>
+                      {step.commandKey === 'download' ? downloadCommands['linux-amd64'] : step.commandKey === 'run' ? runCommands['linux-amd64'] : openCommands['linux-amd64']}
+                    </code>
                   </div>
                 </div>
 
-                <!-- Code snippet -->
-                <div class="bg-bg-tertiary rounded-lg p-2 sm:p-3 font-mono text-[10px] sm:text-xs text-fg-secondary overflow-x-auto">
-                  <code class="whitespace-nowrap" id={step.codeId}>{step.code}</code>
-                </div>
+                {/* Arrow between steps - visible on medium+ screens */}
+                {index < steps.length - 1 && (
+                  <div class="hidden md:flex absolute top-1/2 -right-3 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 items-center justify-center -translate-y-1/2 z-10">
+                    <Icon name="arrowRight" size={14} class="text-fg-muted sm:w-4 sm:h-4" />
+                  </div>
+                )}
+
+                {/* Arrow below step on mobile */}
+                {index < steps.length - 1 && (
+                  <div class="flex md:hidden justify-center py-2">
+                    <Icon name="arrowRight" size={14} class="text-fg-muted rotate-90" />
+                  </div>
+                )}
               </div>
-
-              {/* Arrow between steps - visible on medium+ screens */}
-              {index < steps.length - 1 && (
-                <div class="hidden md:flex absolute top-1/2 -right-3 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 items-center justify-center -translate-y-1/2 z-10">
-                  <Icon name="arrowRight" size={14} class="text-fg-muted sm:w-4 sm:h-4" />
-                </div>
-              )}
-
-              {/* Arrow below step on mobile */}
-              {index < steps.length - 1 && (
-                <div class="flex md:hidden justify-center py-2">
-                  <Icon name="arrowRight" size={14} class="text-fg-muted rotate-90" />
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </StepsCommands>
     </div>
 
     <!-- Job Examples -->
@@ -197,75 +210,12 @@ const jobExamples = [
   </Container>
 </section>
 
-<script define:vars={{ fullVersion }}>
-  function detectPlatform() {
-    if (typeof navigator === 'undefined') return 'linux-amd64';
-
-    var userAgent = navigator.userAgent.toLowerCase();
-    var platform = (navigator.platform || '').toLowerCase();
-
-    var isWindows = platform.includes('win') || userAgent.includes('windows');
-    var isMac = platform.includes('mac') || userAgent.includes('macintosh');
-    var isArm = userAgent.includes('arm') || userAgent.includes('aarch64') ||
-                (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
-
-    if (isWindows) return 'windows-amd64';
-    if (isMac) return isArm ? 'darwin-arm64' : 'darwin-amd64';
-    if (isArm) return 'linux-arm64';
-    return 'linux-amd64';
-  }
-
-  function getDownloadUrl(platform) {
-    var baseUrl = 'https://github.com/meysam81/oneoff/releases/download/' + fullVersion;
-    var files = {
-      'linux-amd64': 'oneoff_linux_amd64.tar.gz',
-      'linux-arm64': 'oneoff_linux_arm64.tar.gz',
-      'darwin-amd64': 'oneoff_darwin_amd64.tar.gz',
-      'darwin-arm64': 'oneoff_darwin_arm64.tar.gz',
-      'windows-amd64': 'oneoff_windows_amd64.zip',
-    };
-    return baseUrl + '/' + files[platform];
-  }
-
-  function getDownloadCommand(platform) {
-    var url = getDownloadUrl(platform);
-    if (platform === 'windows-amd64') {
-      return 'Invoke-WebRequest -Uri "' + url + '" `\n' +
-             '  -OutFile "oneoff.zip"; `\n' +
-             'Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
-    }
-    return 'curl -fsSL ' + url + ' | tar xz';
-  }
-
-  function getRunCommand(platform) {
-    return platform === 'windows-amd64' ? '.\\oneoff.exe' : './oneoff';
-  }
-
-  function getOpenCommand(platform) {
-    if (platform === 'windows-amd64') return 'Start-Process "http://localhost:8080"';
-    if (platform.startsWith('darwin')) return 'open http://localhost:8080';
-    return 'xdg-open http://localhost:8080';
-  }
-
-  function updateStepCommands() {
-    var platform = detectPlatform();
-
-    var downloadCmd = document.getElementById('step-download-cmd');
-    var runCmd = document.getElementById('step-run-cmd');
-    var openCmd = document.getElementById('step-open-cmd');
-
-    if (downloadCmd) downloadCmd.textContent = getDownloadCommand(platform);
-    if (runCmd) runCmd.textContent = getRunCommand(platform);
-    if (openCmd) openCmd.textContent = getOpenCommand(platform);
-  }
-
-  updateStepCommands();
-
+<script>
   var tabs = document.querySelectorAll('[data-tab]');
   var configs = document.querySelectorAll('[data-config]');
 
   tabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
+    tab.addEventListener('click', function handleTabClick() {
       var target = tab.getAttribute('data-tab');
 
       tabs.forEach(function(t) {

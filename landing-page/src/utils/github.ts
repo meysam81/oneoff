@@ -22,6 +22,7 @@ interface GitHubRelease {
 interface GitHubData {
   version: string; // e.g., "v1.0"
   fullVersion: string; // e.g., "v1.0.2"
+  majorVersion: string; // e.g., "v1"
   binarySize: string; // e.g., "~15MB"
   downloadUrl: string; // URL for linux_amd64 tar.gz
 }
@@ -173,6 +174,7 @@ export async function fetchGitHubData(): Promise<GitHubData> {
     const release: GitHubRelease = await response.json();
     const fullVersion = release.tag_name;
     const version = extractMajorMinor(fullVersion);
+    const majorVersion = version.split(".")[0];
 
     log.info(`Found version: ${fullVersion} -> ${version}`);
 
@@ -189,14 +191,21 @@ export async function fetchGitHubData(): Promise<GitHubData> {
 
     // Get actual binary size by downloading and decompressing
     log.info("Downloading and measuring binary size...");
-    const binaryBytes = await getBinarySize(downloadUrl, token);
-    const binarySize = formatBytes(binaryBytes);
+    var binaryBytes, binarySize;
+    if (import.meta.env.DEV) {
+      log.debug("Development mode detected, using placeholder binary size");
+      binaryBytes = 10 * 1024 * 1024; // 10MB in dev for speed
+    } else {
+      binaryBytes = await getBinarySize(downloadUrl, token);
+    }
+    binarySize = formatBytes(binaryBytes);
 
     log.info(`Binary size: ${binarySize} (${binaryBytes} bytes)`);
 
     return {
       version,
       fullVersion,
+      majorVersion,
       binarySize,
       downloadUrl,
     };

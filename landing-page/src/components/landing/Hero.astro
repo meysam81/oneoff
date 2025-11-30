@@ -4,11 +4,22 @@ import Button from '../ui/Button.astro';
 import Badge from '../ui/Badge.astro';
 import Icon from '../icons/index.astro';
 import { getGitHubData } from '../../utils/github';
-import { getDownloadCommand, getRunCommand, getShortInstallCommand } from '../../utils/os-detect';
+import {
+  getAllDownloadCommands,
+  getAllShortCommands,
+  getAllRunCommands,
+  getAllPromptChars,
+  getAllDisplayNames,
+} from '../../utils/os-detect';
+import HeroTerminal from '../vue/HeroTerminal.vue';
+import DownloadButton from '../vue/DownloadButton.vue';
 
-const { version, fullVersion } = await getGitHubData();
-const defaultDownloadCmd = getDownloadCommand('linux-amd64', fullVersion);
-const defaultShortCmd = getShortInstallCommand('linux-amd64');
+const { majorVersion, fullVersion } = await getGitHubData();
+
+const downloadCommands = getAllDownloadCommands(fullVersion);
+const shortCommands = getAllShortCommands();
+const runCommands = getAllRunCommands();
+const promptChars = getAllPromptChars();
 ---
 
 <section class="relative min-h-screen flex items-center pt-16 pb-12 sm:py-20 overflow-hidden">
@@ -21,14 +32,14 @@ const defaultShortCmd = getShortInstallCommand('linux-amd64');
   <div class="absolute bottom-1/4 -right-20 w-80 h-56 bg-bg-secondary/20 rounded-lg border border-border-subtle transform rotate-6 blur-sm opacity-30 hidden xl:block"></div>
 
   <Container size="xl" class="relative z-10">
-    <div class="max-w-4xl mx-auto text-center px-1 sm:px-0">
+    <div class="max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto text-center px-1 sm:px-0">
       <!-- Badge -->
       <div class="mb-6 sm:mb-8 animate-fade-in">
         <Badge variant="accent">
           <span class="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
             <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-success rounded-full animate-pulse"></span>
-            <span class="hidden xs:inline">{version} &bull; Open Source</span>
-            <span class="xs:hidden">{version}</span>
+            <span class="hidden xs:inline">{majorVersion} &bull; Open Source</span>
+            <span class="xs:hidden">{majorVersion}</span>
           </span>
         </Badge>
       </div>
@@ -51,7 +62,7 @@ const defaultShortCmd = getShortInstallCommand('linux-amd64');
         <Button href="#installation" size="lg" class="w-full sm:w-auto justify-center" id="download-btn">
           <Icon name="download" size={20} />
           <span class="sm:hidden">Download</span>
-          <span class="hidden sm:inline" id="download-btn-text">Download for Linux</span>
+          <DownloadButton client:load />
         </Button>
         <Button href="https://github.com/meysam81/oneoff" variant="secondary" size="lg" external class="w-full sm:w-auto justify-center">
           <Icon name="github" size={20} />
@@ -68,33 +79,13 @@ const defaultShortCmd = getShortInstallCommand('linux-amd64');
 
       <!-- Terminal Animation -->
       <div class="animate-fade-in animate-delay-500 px-2 sm:px-0">
-        <div class="terminal-window max-w-2xl mx-auto text-left shadow-2xl">
-          <div class="terminal-header">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <span class="terminal-dot terminal-dot-red"></span>
-              <span class="terminal-dot terminal-dot-yellow"></span>
-              <span class="terminal-dot terminal-dot-green"></span>
-            </div>
-            <span class="text-xs text-fg-muted ml-2 sm:ml-4">Terminal</span>
-          </div>
-          <div class="terminal-body overflow-x-auto" id="hero-terminal">
-            <div class="code-line whitespace-nowrap">
-              <span class="code-prompt">$</span>
-              <span class="code-command text-xs sm:text-sm" id="cmd-1"> <span id="hero-install-cmd"><span class="hidden sm:inline">{defaultDownloadCmd}</span><span class="sm:hidden">{defaultShortCmd}</span></span></span>
-            </div>
-            <div class="code-line opacity-0" id="line-2">
-              <span class="code-prompt">$</span>
-              <span class="code-command text-xs sm:text-sm"> ./oneoff</span>
-            </div>
-            <div class="code-line opacity-0" id="line-3">
-              <span class="code-output text-xs sm:text-sm">→ Server running at http://localhost:8080</span>
-            </div>
-            <div class="code-line mt-2 opacity-0" id="line-4">
-              <span class="text-success text-xs sm:text-sm">✓ Ready to schedule jobs!</span>
-              <span class="cursor-blink"></span>
-            </div>
-          </div>
-        </div>
+        <HeroTerminal
+          client:load
+          downloadCommands={downloadCommands}
+          shortCommands={shortCommands}
+          runCommands={runCommands}
+          promptChars={promptChars}
+        />
       </div>
     </div>
   </Container>
@@ -106,116 +97,3 @@ const defaultShortCmd = getShortInstallCommand('linux-amd64');
     </svg>
   </div>
 </section>
-
-<script define:vars={{ fullVersion }}>
-  function detectPlatform() {
-    if (typeof navigator === 'undefined') return 'linux-amd64';
-
-    var userAgent = navigator.userAgent.toLowerCase();
-    var platform = (navigator.platform || '').toLowerCase();
-
-    var isWindows = platform.includes('win') || userAgent.includes('windows');
-    var isMac = platform.includes('mac') || userAgent.includes('macintosh');
-    var isArm = userAgent.includes('arm') || userAgent.includes('aarch64') ||
-                (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
-
-    if (isWindows) return 'windows-amd64';
-    if (isMac) return isArm ? 'darwin-arm64' : 'darwin-amd64';
-    if (isArm) return 'linux-arm64';
-    return 'linux-amd64';
-  }
-
-  function getPlatformDisplayName(platform) {
-    var names = {
-      'linux-amd64': 'Linux',
-      'linux-arm64': 'Linux ARM',
-      'darwin-amd64': 'macOS',
-      'darwin-arm64': 'macOS',
-      'windows-amd64': 'Windows'
-    };
-    return names[platform] || 'Linux';
-  }
-
-  function getDownloadUrl(platform) {
-    var baseUrl = 'https://github.com/meysam81/oneoff/releases/download';
-    var files = {
-      'linux-amd64': 'oneoff_linux_amd64.tar.gz',
-      'linux-arm64': 'oneoff_linux_arm64.tar.gz',
-      'darwin-amd64': 'oneoff_darwin_amd64.tar.gz',
-      'darwin-arm64': 'oneoff_darwin_arm64.tar.gz',
-      'windows-amd64': 'oneoff_windows_amd64.zip',
-    };
-    return baseUrl + '/' + fullVersion + '/' + files[platform];
-  }
-
-  function getInstallCommand(platform) {
-    var url = getDownloadUrl(platform);
-    if (platform === 'windows-amd64') {
-      return 'Invoke-WebRequest -Uri "' + url + '" -OutFile "oneoff.zip"; Expand-Archive -Path "oneoff.zip" -DestinationPath "."';
-    }
-    return 'curl -fsSL ' + url + ' | tar xz';
-  }
-
-  function getShortCommand(platform) {
-    if (platform === 'windows-amd64') return 'Invoke-WebRequest ... | Expand-Archive';
-    return 'curl -fsSL github.com/.../oneoff.tar.gz | tar xz';
-  }
-
-  function getRunCommand(platform) {
-    return platform === 'windows-amd64' ? '.\\oneoff.exe' : './oneoff';
-  }
-
-  function updateHeroCommand() {
-    var platform = detectPlatform();
-    var cmdEl = document.getElementById('hero-install-cmd');
-    var line2 = document.getElementById('line-2');
-    var downloadBtnText = document.getElementById('download-btn-text');
-
-    if (cmdEl) {
-      cmdEl.innerHTML = '<span class="hidden sm:inline">' + getInstallCommand(platform) + '</span><span class="sm:hidden">' + getShortCommand(platform) + '</span>';
-    }
-
-    if (line2) {
-      var prompt = platform === 'windows-amd64' ? '>' : '$';
-      line2.innerHTML = '<span class="code-prompt">' + prompt + '</span><span class="code-command text-xs sm:text-sm"> ' + getRunCommand(platform) + '</span>';
-    }
-
-    if (downloadBtnText) {
-      downloadBtnText.textContent = 'Download for ' + getPlatformDisplayName(platform);
-    }
-  }
-
-  function animateTerminal() {
-    var lines = [
-      { id: 'line-2', delay: 1500 },
-      { id: 'line-3', delay: 2200 },
-      { id: 'line-4', delay: 3000 },
-    ];
-
-    lines.forEach(function(item) {
-      setTimeout(function() {
-        var el = document.getElementById(item.id);
-        if (el) {
-          el.classList.remove('opacity-0');
-          el.classList.add('animate-fade-in');
-        }
-      }, item.delay);
-    });
-  }
-
-  updateHeroCommand();
-
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        animateTerminal();
-        observer.disconnect();
-      }
-    });
-  });
-
-  var terminal = document.getElementById('hero-terminal');
-  if (terminal) {
-    observer.observe(terminal);
-  }
-</script>

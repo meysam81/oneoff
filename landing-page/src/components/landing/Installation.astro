@@ -2,10 +2,17 @@
 import Container from '../ui/Container.astro';
 import Icon from '../icons/index.astro';
 import { getGitHubData } from '../../utils/github';
-import { platformList, generatePlatformCommandsJson } from '../../utils/os-detect';
+import {
+  platformList,
+  getAllInstallCommands,
+  getAllTerminalTitles,
+} from '../../utils/os-detect';
+import InstallationTerminal from '../vue/InstallationTerminal.vue';
 
 var { fullVersion } = await getGitHubData();
-var platformCommandsJson = generatePlatformCommandsJson(fullVersion);
+var platformCommands = getAllInstallCommands(fullVersion);
+var terminalTitles = getAllTerminalTitles();
+var platforms = platformList;
 ---
 
 <section class="section bg-bg-secondary/30" id="installation">
@@ -18,49 +25,12 @@ var platformCommandsJson = generatePlatformCommandsJson(fullVersion);
     </div>
 
     <div class="max-w-3xl mx-auto px-2 sm:px-0">
-      <div class="flex items-center justify-center gap-1 sm:gap-2 mb-4 sm:mb-6 overflow-x-auto pb-2" id="platform-tabs">
-        {platformList.map(function(platform) {
-          return (
-            <button
-              class="flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-fg-muted hover:text-fg-secondary hover:bg-bg-tertiary/50"
-              data-platform={platform.id}
-            >
-              {platform.name}
-              <span class="text-[10px] sm:text-xs text-fg-muted ml-1 hidden xs:inline">({platform.arch})</span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div class="terminal-window mb-4 sm:mb-6">
-        <div class="terminal-header">
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <span class="terminal-dot terminal-dot-red"></span>
-            <span class="terminal-dot terminal-dot-yellow"></span>
-            <span class="terminal-dot terminal-dot-green"></span>
-          </div>
-          <span class="text-[10px] sm:text-xs text-fg-muted ml-2 sm:ml-4" id="terminal-title">Terminal</span>
-        </div>
-        <div class="terminal-body relative group">
-          <div id="install-command-display">
-            <code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed"></code>
-          </div>
-
-          <button
-            id="copy-btn"
-            class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted hover:text-fg-primary sm:opacity-0 sm:group-hover:opacity-100 sm:invisible sm:group-hover:visible transition-all duration-200"
-            title="Copy to clipboard"
-            aria-label="Copy installation command to clipboard"
-          >
-            <Icon name="copy" size={14} class="sm:w-4 sm:h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div id="copy-feedback" class="hidden text-center text-xs sm:text-sm text-success mb-4 sm:mb-6">
-        <Icon name="check" size={14} class="inline mr-1 sm:w-4 sm:h-4" />
-        Copied to clipboard!
-      </div>
+      <InstallationTerminal
+        client:load
+        platformCommands={platformCommands}
+        terminalTitles={terminalTitles}
+        platforms={platforms}
+      />
 
       <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm">
         <a
@@ -76,122 +46,3 @@ var platformCommandsJson = generatePlatformCommandsJson(fullVersion);
     </div>
   </Container>
 </section>
-
-<script define:vars={{ platformCommandsJson }}>
-  var platformCommands = JSON.parse(platformCommandsJson);
-  var currentPlatform = 'linux-amd64';
-
-  function copyToClipboard(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
-    }
-
-    var textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.left = '-9999px';
-    textarea.style.top = '-9999px';
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-
-    return new Promise(function(resolve, reject) {
-      var success = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      if (success) {
-        resolve();
-      } else {
-        reject(new Error('execCommand copy failed'));
-      }
-    });
-  }
-
-  function detectPlatform() {
-    if (typeof navigator === 'undefined') {
-      return 'linux-amd64';
-    }
-
-    var userAgent = navigator.userAgent.toLowerCase();
-    var platform = (navigator.platform || '').toLowerCase();
-
-    var isWindows = platform.includes('win') || userAgent.includes('windows');
-    var isMac = platform.includes('mac') || userAgent.includes('macintosh');
-    var isArm = userAgent.includes('arm') || userAgent.includes('aarch64') ||
-                (navigator.userAgentData && navigator.userAgentData.architecture === 'arm');
-
-    if (isWindows) return 'windows-amd64';
-    if (isMac) return isArm ? 'darwin-arm64' : 'darwin-amd64';
-    if (isArm) return 'linux-arm64';
-    return 'linux-amd64';
-  }
-
-  function getTerminalTitle(platformId) {
-    return platformId === 'windows-amd64' ? 'PowerShell' : 'Terminal';
-  }
-
-  function formatCommandForDisplay(command) {
-    var lines = command.split('\n');
-    var formattedLines = lines.map(function(line) {
-      return '$ ' + line;
-    });
-    return formattedLines.join('<br>');
-  }
-
-  function selectPlatform(platformId) {
-    currentPlatform = platformId;
-
-    var tabs = document.querySelectorAll('[data-platform]');
-    tabs.forEach(function(tab) {
-      tab.classList.remove('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
-      tab.classList.add('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
-
-      if (tab.getAttribute('data-platform') === platformId) {
-        tab.classList.remove('text-fg-muted', 'hover:text-fg-secondary', 'hover:bg-bg-tertiary/50');
-        tab.classList.add('bg-bg-tertiary', 'text-accent-primary', 'border', 'border-accent-primary/30');
-      }
-    });
-
-    var commandDisplay = document.getElementById('install-command-display');
-    var rawCommand = platformCommands[currentPlatform];
-    var displayCommand = formatCommandForDisplay(rawCommand);
-    if (commandDisplay) {
-      commandDisplay.innerHTML = '<code class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed">' + displayCommand + '</code>';
-    }
-
-    var terminalTitle = document.getElementById('terminal-title');
-    if (terminalTitle) {
-      terminalTitle.textContent = getTerminalTitle(platformId);
-    }
-  }
-
-  selectPlatform(detectPlatform());
-
-  var platformTabs = document.querySelectorAll('[data-platform]');
-  platformTabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var platformId = tab.getAttribute('data-platform');
-      if (platformId) {
-        selectPlatform(platformId);
-      }
-    });
-  });
-
-  var copyBtn = document.getElementById('copy-btn');
-  var copyFeedback = document.getElementById('copy-feedback');
-
-  if (copyBtn) {
-    copyBtn.addEventListener('click', function() {
-      var rawCommand = platformCommands[currentPlatform];
-      copyToClipboard(rawCommand).then(function() {
-        if (copyFeedback) {
-          copyFeedback.classList.remove('hidden');
-          setTimeout(function() {
-            copyFeedback.classList.add('hidden');
-          }, 2000);
-        }
-      }).catch(function(err) {
-        console.error('Failed to copy:', err);
-      });
-    });
-  }
-</script>

@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.1.0](https://github.com/meysam81/oneoff/compare/v1.0.2...v1.1.0) (2025-11-30)
+
+
+### Features
+
+* **docs:** redesign landing page for higher conversions ([#36](https://github.com/meysam81/oneoff/issues/36)) ([8307b61](https://github.com/meysam81/oneoff/commit/8307b61eba1a2b48c72f858cd0e6177f38f204e6))
+* **landing-page:** add comprehensive mobile responsiveness ([744b7e8](https://github.com/meysam81/oneoff/commit/744b7e8599d069d95110be4fa5e7a2895a10965c))
+* plan first phase development roadmap ([#27](https://github.com/meysam81/oneoff/issues/27)) ([fd52dfc](https://github.com/meysam81/oneoff/commit/fd52dfcd72a8a0d9cf6414f8f3a223bd98ea87af))
+
+
+### Bug Fixes
+
+* add context to init and use cgo aware sqlite ([6065170](https://github.com/meysam81/oneoff/commit/6065170b5554b056b5ff264c1a74b99ed9a85c8a))
+* add OS detection to landing page ([cc29ff2](https://github.com/meysam81/oneoff/commit/cc29ff2353c34e8df01c3dc5563e727fc33123e0))
+* **CI:** sign the blobs ([b070e1a](https://github.com/meysam81/oneoff/commit/b070e1a89075870a809de95a0b6751d32f34d4f9))
+* consolidate header and footer of landing page ([8102e46](https://github.com/meysam81/oneoff/commit/8102e46fc31064801c9a1ab722ed13abf23f3241))
+* delegate more of OS tasks to ts file ([da49533](https://github.com/meysam81/oneoff/commit/da4953301448d1ae35e4477aa57482315812a5f0))
+* detect OS and render landing page accordingly client-side ([e7be21e](https://github.com/meysam81/oneoff/commit/e7be21e44f6dbd6c7aadf93b1814957be44ddf24))
+* Fetch GitHub version at build time for Hero ([#34](https://github.com/meysam81/oneoff/issues/34)) ([f559a08](https://github.com/meysam81/oneoff/commit/f559a08965e083aaaebbcdedafb3969f7cc2dafe))
+* make features fully rectangular ([5da86b1](https://github.com/meysam81/oneoff/commit/5da86b1244be7ba9064c3b499ddfbb1d9c82f19c))
+* run dev on all hosts ([21dad3f](https://github.com/meysam81/oneoff/commit/21dad3f4ef4ae9f7372d7d545e5a0a2f1571000e))
+* use the header and footer from base layout in catalog ([99aea27](https://github.com/meysam81/oneoff/commit/99aea27e7a4fbe4ca0eabd433665863875f082e7))
+
 ## [1.0.2](https://github.com/meysam81/oneoff/compare/v1.0.1...v1.0.2) (2025-11-27)
 
 

@@ -95,10 +95,11 @@
 
     <n-spin v-else :show="loading" />
 
-    <CloneJobModal
+    <JobFormModal
       v-model:show="showCloneModal"
+      mode="clone"
       :job="job"
-      @cloned="handleJobCloned"
+      @submitted="handleJobCloned"
     />
   </div>
 </template>
@@ -111,7 +112,7 @@ import { ArrowBackOutline } from "@vicons/ionicons5";
 import { useJobsStore } from "../stores/jobs";
 import { useSystemStore } from "../stores/system";
 import ExecutionsList from "../components/ExecutionsList.vue";
-import CloneJobModal from "../components/CloneJobModal.vue";
+import JobFormModal from "../components/JobFormModal.vue";
 
 const route = useRoute();
 const router = useRouter();

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.2](https://github.com/meysam81/oneoff/compare/v1.1.1...v1.1.2) (2025-12-01)
+
+
+### Bug Fixes
+
+* account for immediate watch execution ([ee5f39a](https://github.com/meysam81/oneoff/commit/ee5f39aa75aef0b79473a5f6e35320d5c18f6d69))
+* add built by meysam to the footer ([04c098c](https://github.com/meysam81/oneoff/commit/04c098cf3c7fdd7e37f3e4389b42d0169f48a231))
+* correctly identify the platform using vue islands ([7cf5b3a](https://github.com/meysam81/oneoff/commit/7cf5b3a212b23f0dba8bab14ba92bfde0d7e823f))
+* updat broken header links in other pages ([bb53abc](https://github.com/meysam81/oneoff/commit/bb53abcdfb970496b6b20cbc16ce1d5700f73a48))
+
 ## [1.1.1](https://github.com/meysam81/oneoff/compare/v1.1.0...v1.1.1) (2025-11-30)
 
 

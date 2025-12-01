@@ -57,7 +57,7 @@
       </n-card>
     </n-space>
 
-    <CreateJobModal v-model:show="showCreateModal" />
+    <JobFormModal v-model:show="showCreateModal" mode="create" />
   </div>
 </template>
 
@@ -68,7 +68,7 @@ import { useJobsStore } from "../stores/jobs";
 import { useSystemStore } from "../stores/system";
 import { debounce } from "../utils/debounce";
 import JobsTable from "../components/JobsTable.vue";
-import CreateJobModal from "../components/CreateJobModal.vue";
+import JobFormModal from "../components/JobFormModal.vue";
 
 const jobsStore = useJobsStore();
 const systemStore = useSystemStore();

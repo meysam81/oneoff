@@ -115,7 +115,7 @@
     </n-space>
 
     <!-- Create Job Modal -->
-    <CreateJobModal v-model:show="showCreateJobModal" />
+    <JobFormModal v-model:show="showCreateJobModal" mode="create" />
   </div>
 </template>
 
@@ -133,7 +133,7 @@ import {
 import { useSystemStore } from "../stores/system";
 import { useJobsStore } from "../stores/jobs";
 import JobsTable from "../components/JobsTable.vue";
-import CreateJobModal from "../components/CreateJobModal.vue";
+import JobFormModal from "../components/JobFormModal.vue";
 
 const systemStore = useSystemStore();
 const jobsStore = useJobsStore();

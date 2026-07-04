@@ -7,7 +7,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.19.0
 	github.com/imroc/req/v3 v3.56.0
 	github.com/meysam81/x v1.13.0
-	github.com/rs/zerolog v1.34.0
+	github.com/rs/zerolog v1.35.1
 	github.com/urfave/cli/v3 v3.6.1
 )
 

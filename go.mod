@@ -8,7 +8,7 @@ require (
 	github.com/imroc/req/v3 v3.56.0
 	github.com/meysam81/x v1.13.0
 	github.com/rs/zerolog v1.34.0
-	github.com/urfave/cli/v3 v3.6.1
+	github.com/urfave/cli/v3 v3.11.0
 )
 
 require (

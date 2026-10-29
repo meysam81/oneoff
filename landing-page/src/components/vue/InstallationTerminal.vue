@@ -105,8 +105,7 @@ function showFeedback() {
       <div class="terminal-body relative group">
         <pre
           class="text-[10px] sm:text-sm text-fg-secondary break-all leading-relaxed whitespace-pre-wrap"
-          >{{ formattedCommand }}</pre
-        >
+          >{{ formattedCommand }}</pre>
         <button
           class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-bg-tertiary rounded-lg text-fg-muted hover:text-fg-primary sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200"
           title="Copy to clipboard"

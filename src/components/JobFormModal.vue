@@ -199,7 +199,9 @@ var submitButtonText = computed(function () {
       ? "Clone & Execute Now"
       : "Clone Job";
   }
-  return executeMode.value === "immediate" ? "Create & Execute Now" : "Create Job";
+  return executeMode.value === "immediate"
+    ? "Create & Execute Now"
+    : "Create Job";
 });
 
 var jobTypeOptions = computed(function () {
@@ -291,7 +293,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 // Watch for show changes to reset form
@@ -303,7 +305,7 @@ watch(
     if (newShow) {
       resetForm();
     }
-  }
+  },
 );
 
 // Watch for type changes in create mode to reset config
@@ -315,7 +317,7 @@ watch(
     if (props.mode === "create") {
       jobConfig.value = {};
     }
-  }
+  },
 );
 
 async function handleSubmit() {
@@ -378,7 +380,10 @@ async function handleSubmit() {
     visible.value = false;
     emit("submitted");
   } catch (error) {
-    message.error(error.message || "Failed to " + (props.mode === "clone" ? "clone" : "create") + " job");
+    message.error(
+      error.message ||
+        "Failed to " + (props.mode === "clone" ? "clone" : "create") + " job",
+    );
   } finally {
     loading.value = false;
   }

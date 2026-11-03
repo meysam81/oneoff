@@ -184,20 +184,20 @@ func (c *PrometheusCollector) Handler() http.Handler {
 		uptime := time.Since(c.startTime).Seconds()
 		sb.WriteString("# HELP oneoff_uptime_seconds Time since service started\n")
 		sb.WriteString("# TYPE oneoff_uptime_seconds gauge\n")
-		sb.WriteString(fmt.Sprintf("oneoff_uptime_seconds %f\n\n", uptime))
+		fmt.Fprintf(&sb, "oneoff_uptime_seconds %f\n\n", uptime)
 
 		// Worker metrics
 		sb.WriteString("# HELP oneoff_workers_total Total number of workers\n")
 		sb.WriteString("# TYPE oneoff_workers_total gauge\n")
-		sb.WriteString(fmt.Sprintf("oneoff_workers_total %d\n\n", atomic.LoadInt64(&c.totalWorkers)))
+		fmt.Fprintf(&sb, "oneoff_workers_total %d\n\n", atomic.LoadInt64(&c.totalWorkers))
 
 		sb.WriteString("# HELP oneoff_workers_active Number of currently active workers\n")
 		sb.WriteString("# TYPE oneoff_workers_active gauge\n")
-		sb.WriteString(fmt.Sprintf("oneoff_workers_active %d\n\n", atomic.LoadInt64(&c.activeWorkers)))
+		fmt.Fprintf(&sb, "oneoff_workers_active %d\n\n", atomic.LoadInt64(&c.activeWorkers))
 
 		sb.WriteString("# HELP oneoff_jobs_queued Number of jobs in queue\n")
 		sb.WriteString("# TYPE oneoff_jobs_queued gauge\n")
-		sb.WriteString(fmt.Sprintf("oneoff_jobs_queued %d\n\n", atomic.LoadInt64(&c.queuedJobs)))
+		fmt.Fprintf(&sb, "oneoff_jobs_queued %d\n\n", atomic.LoadInt64(&c.queuedJobs))
 
 		// Job totals
 		sb.WriteString("# HELP oneoff_jobs_total Total number of jobs processed\n")
@@ -211,8 +211,8 @@ func (c *PrometheusCollector) Handler() http.Handler {
 		for _, key := range jobKeys {
 			parts := strings.SplitN(key, ":", 2)
 			if len(parts) == 2 {
-				sb.WriteString(fmt.Sprintf("oneoff_jobs_total{type=\"%s\",status=\"%s\"} %d\n",
-					parts[0], parts[1], atomic.LoadInt64(c.jobsTotal[key])))
+				fmt.Fprintf(&sb, "oneoff_jobs_total{type=\"%s\",status=\"%s\"} %d\n",
+					parts[0], parts[1], atomic.LoadInt64(c.jobsTotal[key]))
 			}
 		}
 		c.mu.RUnlock()
@@ -233,8 +233,8 @@ func (c *PrometheusCollector) Handler() http.Handler {
 			count := b.count
 			sum := b.sum
 			b.mu.Unlock()
-			sb.WriteString(fmt.Sprintf("oneoff_job_duration_seconds_count{type=\"%s\"} %d\n", jobType, count))
-			sb.WriteString(fmt.Sprintf("oneoff_job_duration_seconds_sum{type=\"%s\"} %f\n", jobType, sum))
+			fmt.Fprintf(&sb, "oneoff_job_duration_seconds_count{type=\"%s\"} %d\n", jobType, count)
+			fmt.Fprintf(&sb, "oneoff_job_duration_seconds_sum{type=\"%s\"} %f\n", jobType, sum)
 		}
 		c.mu.RUnlock()
 		sb.WriteString("\n")
@@ -251,8 +251,8 @@ func (c *PrometheusCollector) Handler() http.Handler {
 		for _, key := range reqKeys {
 			parts := strings.SplitN(key, ":", 3)
 			if len(parts) == 3 {
-				sb.WriteString(fmt.Sprintf("oneoff_http_requests_total{method=\"%s\",path=\"%s\",status=\"%s\"} %d\n",
-					parts[0], parts[1], parts[2], atomic.LoadInt64(c.requestsTotal[key])))
+				fmt.Fprintf(&sb, "oneoff_http_requests_total{method=\"%s\",path=\"%s\",status=\"%s\"} %d\n",
+					parts[0], parts[1], parts[2], atomic.LoadInt64(c.requestsTotal[key]))
 			}
 		}
 		c.mu.RUnlock()
@@ -275,10 +275,10 @@ func (c *PrometheusCollector) Handler() http.Handler {
 				count := b.count
 				sum := b.sum
 				b.mu.Unlock()
-				sb.WriteString(fmt.Sprintf("oneoff_http_request_duration_seconds_count{method=\"%s\",path=\"%s\"} %d\n",
-					parts[0], parts[1], count))
-				sb.WriteString(fmt.Sprintf("oneoff_http_request_duration_seconds_sum{method=\"%s\",path=\"%s\"} %f\n",
-					parts[0], parts[1], sum))
+				fmt.Fprintf(&sb, "oneoff_http_request_duration_seconds_count{method=\"%s\",path=\"%s\"} %d\n",
+					parts[0], parts[1], count)
+				fmt.Fprintf(&sb, "oneoff_http_request_duration_seconds_sum{method=\"%s\",path=\"%s\"} %f\n",
+					parts[0], parts[1], sum)
 			}
 		}
 		c.mu.RUnlock()
@@ -287,18 +287,18 @@ func (c *PrometheusCollector) Handler() http.Handler {
 		// API key validations
 		sb.WriteString("# HELP oneoff_apikey_validations_total Total number of API key validations\n")
 		sb.WriteString("# TYPE oneoff_apikey_validations_total counter\n")
-		sb.WriteString(fmt.Sprintf("oneoff_apikey_validations_total{result=\"success\"} %d\n",
-			atomic.LoadInt64(&c.apiKeyValidationsSuccess)))
-		sb.WriteString(fmt.Sprintf("oneoff_apikey_validations_total{result=\"failed\"} %d\n\n",
-			atomic.LoadInt64(&c.apiKeyValidationsFailed)))
+		fmt.Fprintf(&sb, "oneoff_apikey_validations_total{result=\"success\"} %d\n",
+			atomic.LoadInt64(&c.apiKeyValidationsSuccess))
+		fmt.Fprintf(&sb, "oneoff_apikey_validations_total{result=\"failed\"} %d\n\n",
+			atomic.LoadInt64(&c.apiKeyValidationsFailed))
 
 		// Webhook deliveries
 		sb.WriteString("# HELP oneoff_webhook_deliveries_total Total number of webhook deliveries\n")
 		sb.WriteString("# TYPE oneoff_webhook_deliveries_total counter\n")
-		sb.WriteString(fmt.Sprintf("oneoff_webhook_deliveries_total{result=\"success\"} %d\n",
-			atomic.LoadInt64(&c.webhookDeliveriesSuccess)))
-		sb.WriteString(fmt.Sprintf("oneoff_webhook_deliveries_total{result=\"failed\"} %d\n",
-			atomic.LoadInt64(&c.webhookDeliveriesFailed)))
+		fmt.Fprintf(&sb, "oneoff_webhook_deliveries_total{result=\"success\"} %d\n",
+			atomic.LoadInt64(&c.webhookDeliveriesSuccess))
+		fmt.Fprintf(&sb, "oneoff_webhook_deliveries_total{result=\"failed\"} %d\n",
+			atomic.LoadInt64(&c.webhookDeliveriesFailed))
 
 		w.Write([]byte(sb.String())) //nolint:errcheck // HTTP write errors are connection issues
 	})

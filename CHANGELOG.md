@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.1.2](https://github.com/meysam81/oneoff/compare/v1.1.1...v1.1.2) (2026-11-13)
+
+
+### Bug Fixes
+
+* account for immediate watch execution ([ee5f39a](https://github.com/meysam81/oneoff/commit/ee5f39aa75aef0b79473a5f6e35320d5c18f6d69))
+* add built by meysam to the footer ([04c098c](https://github.com/meysam81/oneoff/commit/04c098cf3c7fdd7e37f3e4389b42d0169f48a231))
+* correctly identify the platform using vue islands ([7cf5b3a](https://github.com/meysam81/oneoff/commit/7cf5b3a212b23f0dba8bab14ba92bfde0d7e823f))
+* updat broken header links in other pages ([bb53abc](https://github.com/meysam81/oneoff/commit/bb53abcdfb970496b6b20cbc16ce1d5700f73a48))
+
+
+### CI
+
+* pin actions to commit SHAs, renovate on the shared preset, release-please manifest config ([#60](https://github.com/meysam81/oneoff/issues/60)) ([b8e797f](https://github.com/meysam81/oneoff/commit/b8e797f05280c24ea5c60d9ad02de7601cf82ce5))
+* pin pre-commit hooks and CI tool versions ([#69](https://github.com/meysam81/oneoff/issues/69)) ([0aa5dfe](https://github.com/meysam81/oneoff/commit/0aa5dfe0c370be934b32bb17efd510499fe9a213))
+
+
+### Refactoring
+
+* consolidate CreateJobModal and CloneJobModal into JobFormModal ([#46](https://github.com/meysam81/oneoff/issues/46)) ([eb38869](https://github.com/meysam81/oneoff/commit/eb3886932782849d94be06509a9c704487978970))
+
 ## [1.1.1](https://github.com/meysam81/oneoff/compare/v1.1.0...v1.1.1) (2025-11-30)
 
 

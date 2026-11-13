@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/oxc-project/mirrors-oxlint
-    rev: v1.30.0
+    rev: b64b1ba3c8ed09b7793da7d0404370805b70d413 # frozen: v1.30.0
     hooks:
       - id: oxlint
         verbose: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # frozen: v6.0.0
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=2000"]
@@ -57,13 +57,14 @@ repos:
             renovate.json
           )$
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.23.0
+    rev: e46582c71e18e81b19f77b5c754a6816bdd6c3f5 # frozen: v9.23.0
     hooks:
       - id: commitlint
+        language: node
         stages: [commit-msg]
-        additional_dependencies: ["@commitlint/config-conventional"]
+        additional_dependencies: ["@commitlint/config-conventional@21.2.4"]
   - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
+    rev: fb24a639f7c938759fe56eeebbb7713b69d60494 # frozen: v0.5.1
     hooks:
       - id: go-fmt
       # - id: go-vet
@@ -79,11 +80,11 @@ repos:
       # - id: go-build
       - id: go-mod-tidy
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.9
+    rev: a443f344ff32813837fa49f7aa6cbc478d770e62 # frozen: v1.7.9
     hooks:
       - id: actionlint
   - repo: https://github.com/reteps/dockerfmt
-    rev: v0.3.9
+    rev: 21be1f69cec5e77953bdb40a2f1d95de0eeb56ac # frozen: v0.3.9
     hooks:
       - id: dockerfmt
         args:
